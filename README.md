@@ -38,27 +38,23 @@ There is a specific npm package for the Typescript to recognize the Express type
 
 ## How to Compile and Run
 ### Mobile Application
-#### Compile
 If you have Android Studio, just build inside the IDE. If not, you can build the project usiong the terminal, check this [guide](https://developer.android.com/studio/build/building-cmdline) how to use gradle to build an android project.
 
-#### Run
 To run, you should use the android emulator or deploy in an android device.
 
 ### Server
-#### Compile
 The code of the server runs in nodejs and node can't run typescript, so it's needed to transpile the _ts_ code to _js_ code. To do that, you can must be in the folder **/server/** and run the command.
 
 ```
     tsc
 ```
-#### Run
+
 After transpilation, the javascript files will be generated under **/server/dist/**.
 In the folder **/server/** run the command:
 ```
     node dist/main.js
 ```
 
-#### Compile and Run
 There is a configurated script that compiles and runs the server (previous 2 steps in one), in folder **/server/** run the command:
 ```
     npm run server
