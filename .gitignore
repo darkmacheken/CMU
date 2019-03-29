@@ -65,3 +65,6 @@ node_modules/
 
 #Exclude tsc generated files
 server/dist/*
+
+#Exclude .vscode folder
+.vscode/
