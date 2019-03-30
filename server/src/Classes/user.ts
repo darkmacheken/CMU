@@ -9,4 +9,7 @@ export class User {
         this.pass = pass;
         this.albums = new Array<{id:number, name:string}>();
     }
+    addAlbum(album: {id: number, name: string}) {
+        this.albums.push(album);
+    }
 }

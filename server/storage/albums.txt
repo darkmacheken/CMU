@@ -1,1 +1,29 @@
-[]
+[
+	{
+		"id": 0,
+		"name": "Portugal",
+		"users": [
+			{
+				"id": 0,
+				"username": "Pedro",
+				"link": ""
+			},
+			{
+				"id": 1,
+				"username": "Joao",
+				"link": ""
+			}
+		]
+	},
+	{
+		"id": 1,
+		"name": "Portugal",
+		"users": [
+			{
+				"id": 1,
+				"username": "Joao",
+				"link": ""
+			}
+		]
+	}
+]

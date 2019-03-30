@@ -1,24 +1,19 @@
 [
 	{
-		"id": "0",
-		"username": "asdfg",
+		"id": 0,
+		"username": "Pedro",
 		"pass": "123",
 		"albums": [
 			{
-				"id": "0",
+				"id": 0,
 				"name": "Portugal"
 			}
 		]
 	},
 	{
-		"id": "1",
-		"username": "PEdro",
+		"id": 1,
+		"username": "Joao",
 		"pass": "123",
-		"albums": [
-			{
-				"id": "0",
-				"name": "Portugal"
-			}
-		]
+		"albums": []
 	}
 ]

@@ -7,4 +7,7 @@ export class Album {
         this.name = name;
         this.users = new Array<{id: number, username: string, link: string}>();
     }
+    addUser(user: {id: number, username: string, link: string}) {
+        this.users.push(user);
+    }
 }
