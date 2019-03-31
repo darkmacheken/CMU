@@ -35,6 +35,7 @@ mobile/captures/
 # IntelliJ
 *.iml
 mobile/.idea/*
+mobile/app/build/*
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
