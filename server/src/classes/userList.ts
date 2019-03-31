@@ -40,10 +40,10 @@ export class UserList {
     public findUserById(id: number) {
         for(const user of this.list) {
             if(user.id == id) {
-            return user
+                return user;
             }
         }
-        return ;
+        return false;
     }
 
     private updateCounter() {

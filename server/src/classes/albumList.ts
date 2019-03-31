@@ -40,10 +40,10 @@ export class AlbumList {
     public findAlbumById(id: number) {
         for(const album of this.list) {
             if(album.id == id) {
-            return album
+                return album;
             }
         }
-        return false
+        return false;
     }
     
     private updateCounter() {
