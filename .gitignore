@@ -16,6 +16,7 @@ mobile/out/
 # Gradle files
 mobile/.gradle/
 mobile/build/*
+mobile/app/build/*
 
 # Local configuration file (sdk path, etc)
 mobile/local.properties
