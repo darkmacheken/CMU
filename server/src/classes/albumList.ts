@@ -5,8 +5,8 @@ const albumsPath = "./storage/albums.json";
 
 export class AlbumList {
     
-    list: Album[];
-    counter: number;
+    public list: Album[];
+    public counter: number;
     
     constructor(counter: number) {
         this.list = [];
@@ -21,20 +21,12 @@ export class AlbumList {
     }
     
     public saveToFile() {
-        fs.writeFile(albumsPath, JSON.stringify(this.list, null, "\t"), function (err) {
+        fs.writeFile(albumsPath, JSON.stringify(this.list, null, "\t"), (err) => {
             if (err) {
                 return console.log(err);
             }
             console.log("The file was saved!");
         });
-    }
-    
-    public readFromFile() {
-        this.list = JSON.parse(fs.readFileSync(albumsPath, 'utf-8'));
-        this.counter = this.updateCounter();
-        console.log("Albums List");
-        console.log(this.list);
-        console.log("Counter > " + this.counter);
     }
     
     public findAlbumById(id: number) {
@@ -44,6 +36,14 @@ export class AlbumList {
             }
         }
         return false;
+    }
+
+    public readFromFile() {
+        this.list = JSON.parse(fs.readFileSync(albumsPath, "utf-8"));
+        this.counter = this.updateCounter();
+        console.log("Albums List");
+        console.log(this.list);
+        console.log("Counter > " + this.counter);
     }
     
     private updateCounter() {

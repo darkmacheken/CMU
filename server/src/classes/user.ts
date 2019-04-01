@@ -3,7 +3,7 @@ export class User {
     public id: number;
     public username: string;
     public pass: string;
-    public albums: Array<{id:number, name:string}>;
+    public albums: Array<{id: number, name: string}>;
 
     constructor(id: number, username: string, pass: string) {
         this.id = id;

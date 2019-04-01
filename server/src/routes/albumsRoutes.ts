@@ -34,8 +34,7 @@ router.get("/albums/:id", (req, res) => {
    const album = albumList.findAlbumById(req.params.id);
    if(album) {
       res.end(JSON.stringify(album));
-   }
-   else {
+   } else {
       res.statusCode = 400;
       res.end();
    }

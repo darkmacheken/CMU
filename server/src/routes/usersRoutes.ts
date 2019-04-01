@@ -27,8 +27,7 @@ router.get("/users/:id", (req, res) => {
    const user = userList.findUserById(req.params.id);
    if(user) {
       res.end(JSON.stringify(user));
-   }
-   else {
+   } else {
       res.statusCode = 400;
       res.end();
    }
@@ -40,8 +39,7 @@ router.get("/users/:id/albums", (req, res) => {
    const user = userList.findUserById(req.params.id);
    if(user) {
       res.end(JSON.stringify(user.albums));
-   }
-   else {
+   } else {
       res.statusCode = 400;
       res.end();
    }
@@ -57,7 +55,7 @@ router.post("/users/:id/albums", (req, res) => {
       return;
    }
    const album = new Album(albumList.counter, req.body.name);
-   album.users.push({id: user.id, username: user.username, link:""});
+   album.users.push({id: user.id, username: user.username, link: ""});
    albumList.addAlbum(album);
    user.albums.push({id: album.id, name: album.name});
    console.log("New album" + user);
