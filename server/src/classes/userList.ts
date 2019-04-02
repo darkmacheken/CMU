@@ -31,7 +31,7 @@ export class UserList {
 
     public findUserById(id: number) {
         for(const user of this.list) {
-            if(user.id == id) {
+            if(user.id === id) {
                 return user;
             }
         }
@@ -39,7 +39,7 @@ export class UserList {
     }
 
     private readFromFile() {
-        this.list = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+        this.list = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
         this.counter = this.updateCounter();
         console.log("Users List");
         console.log(this.list);

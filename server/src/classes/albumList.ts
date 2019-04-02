@@ -31,7 +31,7 @@ export class AlbumList {
     
     public findAlbumById(id: number) {
         for(const album of this.list) {
-            if(album.id == id) {
+            if(album.id === id) {
                 return album;
             }
         }

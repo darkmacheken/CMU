@@ -24,7 +24,7 @@ router.post("/users", (req, res) => {
 // Get specific user
 router.get("/users/:id", (req, res) => {
    console.log("GET /users/" + req.params.id);
-   const user = userList.findUserById(req.params.id);
+   const user = userList.findUserById(+req.params.id);
    if(user) {
       res.end(JSON.stringify(user));
    } else {
@@ -36,7 +36,7 @@ router.get("/users/:id", (req, res) => {
  // List all albums from a specific user
 router.get("/users/:id/albums", (req, res) => {
    console.log("GET /users/" + req.params.id + "/albums");
-   const user = userList.findUserById(req.params.id);
+   const user = userList.findUserById(+req.params.id);
    if(user) {
       res.end(JSON.stringify(user.albums));
    } else {
@@ -48,7 +48,7 @@ router.get("/users/:id/albums", (req, res) => {
 // Create a new album
 router.post("/users/:id/albums", (req, res) => {
    console.log("POST /users/" + req.params.id + "/albums");
-   const user = userList.findUserById(req.params.id);
+   const user = userList.findUserById(+req.params.id);
    if(!user) {
       res.statusCode = 400;
       res.end();

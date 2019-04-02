@@ -7,8 +7,8 @@ export const router = express.Router();
 // Add user to album
 router.post("/albums/:id/addUser", (req, res) => {
    console.log("POST /albums/" + req.params.id + "/addUser");
-   const user = userList.findUserById(req.body.id);
-   const album = albumList.findAlbumById(req.params.id);
+   const user = userList.findUserById(+req.body.id);
+   const album = albumList.findAlbumById(+req.params.id);
    
    if(!user || !album) {
       res.statusCode = 400;
@@ -31,7 +31,7 @@ router.get("/albums", (_req, res) => {
 // Get a specific album
 router.get("/albums/:id", (req, res) => {
    console.log("GET /albums/" + req.params.id);
-   const album = albumList.findAlbumById(req.params.id);
+   const album = albumList.findAlbumById(+req.params.id);
    if(album) {
       res.end(JSON.stringify(album));
    } else {
