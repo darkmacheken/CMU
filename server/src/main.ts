@@ -14,5 +14,5 @@ app.use(UsersRoutes);
 app.use(AlbumRoutes);
 
 app.listen(8080, () => {
-   console.log("Server is running!");
+	console.log("Server is running!");
 });
