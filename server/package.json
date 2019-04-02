@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "server": "tsc && node ./dist/main.js"
+    "start": "tsc && node ./dist/main.js",
+    "dev": "tsc && nodemon ./dist/main.js"
   },
   "keywords": [],
   "author": "",

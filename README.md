@@ -57,5 +57,5 @@ In the folder **/server/** run the command:
 
 There is a configurated script that compiles and runs the server (previous 2 steps in one), in folder **/server/** run the command:
 ```
-    npm run server
+    npm start
 ```
