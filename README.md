@@ -36,6 +36,19 @@ There is a specific npm package for the Typescript to recognize the Express type
     npm install @types/express -s
 ```
 
+### Install HTTPS
+To install https go to the folder **/server/** and run the command:
+
+```
+    npm install https -s
+```
+
+And to install the types for the typescript, run the command:
+
+```
+    npm install @types/https -s
+```
+
 ## How to Compile and Run
 ### Mobile Application
 If you have Android Studio, just build inside the IDE. If not, you can build the project usiong the terminal, check this [guide](https://developer.android.com/studio/build/building-cmdline) how to use gradle to build an android project.
@@ -59,3 +72,7 @@ There is a configurated script that compiles and runs the server (previous 2 ste
 ```
     npm start
 ```
+
+The server is, by default, running in port **8443**.
+
+Note: It uses HTTPS, so in the browser you **MUST** put the protocol https (e.g. **https**://localhost:8443/users) otherwise it won't work.
