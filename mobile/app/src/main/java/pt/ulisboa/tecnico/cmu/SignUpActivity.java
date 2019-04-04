@@ -3,69 +3,75 @@ package pt.ulisboa.tecnico.cmu;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-/**
- * A login screen that offers login via email/password.
- */
-public class LoginActivity extends AppCompatActivity {
+import com.dropbox.core.DbxException;
+import com.dropbox.core.android.Auth;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.users.FullAccount;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+import java.util.concurrent.ExecutionException;
+
+import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.AlertUtils;
+import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.DropboxUtils;
+import pt.ulisboa.tecnico.cmu.tasks.UserAccountTask;
+
+public class SignUpActivity extends AppCompatActivity {
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mConfirmPasswordView;
     private View mProgressView;
-    private View mLoginFormView;
+    private View mSignUpFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_sign_up);
         setupActionBar();
         // Set up the login form.
         mEmailView = findViewById(R.id.email);
 
         mPasswordView = findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mConfirmPasswordView = findViewById(R.id.confirm_password);
+        mConfirmPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptSignUp();
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mSignUpButton = findViewById(R.id.sign_up_button);
+        mSignUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptSignUp();
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mSignUpFormView = findViewById(R.id.sign_up_form);
+        mProgressView = findViewById(R.id.sign_up_progress);
     }
 
     /**
@@ -79,24 +85,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    private void attemptLogin() {
+    private void attemptSignUp() {
 
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mConfirmPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
+        // Store values at the time of the sign up attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String confirmPassword = mConfirmPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
-
 
         // Check password empty
         if (TextUtils.isEmpty(password)) {
@@ -120,24 +122,88 @@ public class LoginActivity extends AppCompatActivity {
             cancel = true;
         }
 
+        // Check if password inputs match.
+        if (TextUtils.isEmpty(confirmPassword)) {
+            mConfirmPasswordView.setError(getString(R.string.error_passwords_dont_match));
+            focusView = mConfirmPasswordView;
+            cancel = true;
+        } else if (!confirmPassword.equals(password)) {
+            mConfirmPasswordView.setError(getString(R.string.error_passwords_dont_match));
+            focusView = mConfirmPasswordView;
+            cancel = true;
+        }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
         } else {
+            //Start dropbox auth activity
+            Auth.startOAuth2Authentication(getApplicationContext(), getString(R.string.APP_KEY));
+
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getAccessToken();
+    }
+
+    public void getAccessToken() {
+        String accessToken = Auth.getOAuth2Token(); //generate Access Token
+        if (accessToken != null) {
+            String accountId = "";
+            DbxClientV2 dbxClient = DropboxUtils.getClient(accessToken);
+
+            //Store accessToken in SharedPreferences
+            SharedPreferences prefs = getSharedPreferences("pt.ulisboa.tecnico.cmu", Context.MODE_PRIVATE);
+            prefs.edit().putString("access-token", accessToken).apply();
+
+            accountId = getUserAccount(accessToken);
+
+            Log.d("User", "Account id received: " + accountId);
+        }
+    }
+
+    private String getUserAccount(String accessToken) {
+        if (accessToken == null) {
+            return "";
+        }
+
+        FullAccount account = null;
+        try {
+            account = new UserAccountTask(DropboxUtils.getClient(accessToken),
+                    new UserAccountTask.TaskDelegate() {
+                @Override
+                public void onError(Exception e) {
+                    Log.d("User", "Error: " + e.getMessage());
+                    restartActivity();
+                }
+            }).execute().get();
+        } catch (Exception e) {
+            Log.d("User", "Error: " + e.getMessage());
+            restartActivity();
+        }
+
+        return account.getAccountId();
+    }
+
+    private void restartActivity() {
+        AlertUtils.alert("Error receiving dropbox account details.", SignUpActivity.this);
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+    }
+
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -152,12 +218,12 @@ public class LoginActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+            mSignUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mSignUpFormView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    mSignUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
@@ -173,15 +239,8 @@ public class LoginActivity extends AppCompatActivity {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mSignUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
-    /** Called when the user taps the Cloud Storage button */
-    public void startSignUpActivity(View view) {
-        Intent intent = new Intent(this, SignUpActivity.class);
-        startActivity(intent);
-    }
-
 }
-
