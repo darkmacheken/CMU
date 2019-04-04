@@ -3,9 +3,7 @@ package pt.ulisboa.tecnico.cmu;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -21,12 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.dropbox.core.DbxException;
 import com.dropbox.core.android.Auth;
-import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.users.FullAccount;
 
-import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.DropboxUtils;
@@ -156,8 +151,7 @@ public class SignUpActivity extends AppCompatActivity {
     public void getAccessToken() {
         String accessToken = Auth.getOAuth2Token(); //generate Access Token
         if (accessToken != null) {
-            String accountId = "";
-            DbxClientV2 dbxClient = DropboxUtils.getClient(accessToken);
+            String accountId;
 
             //Store accessToken in SharedPreferences
             SharedPreferences prefs = getSharedPreferences("pt.ulisboa.tecnico.cmu", Context.MODE_PRIVATE);
