@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,6 +24,7 @@ import com.dropbox.core.v2.users.FullAccount;
 
 import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.DropboxUtils;
+import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
 import pt.ulisboa.tecnico.cmu.tasks.UserAccountTask;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -92,52 +92,25 @@ public class SignUpActivity extends AppCompatActivity {
         String password = mPasswordView.getText().toString();
         String confirmPassword = mConfirmPasswordView.getText().toString();
 
-        boolean cancel = false;
         View focusView = null;
 
-        // Check password empty
-        if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
-            cancel = true;
-        } else if (!isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
+        focusView = InputValidationUtils.validateConfirmPassword(focusView, password, confirmPassword,
+                mConfirmPasswordView, getApplicationContext());
+        focusView = InputValidationUtils.validatePassword(focusView, password, mPasswordView,
+                getApplicationContext());
+        focusView = InputValidationUtils.validateEmail(focusView, email, mEmailView,
+                getApplicationContext());
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
-
-        // Check if password inputs match.
-        if (TextUtils.isEmpty(confirmPassword)) {
-            mConfirmPasswordView.setError(getString(R.string.error_passwords_dont_match));
-            focusView = mConfirmPasswordView;
-            cancel = true;
-        } else if (!confirmPassword.equals(password)) {
-            mConfirmPasswordView.setError(getString(R.string.error_passwords_dont_match));
-            focusView = mConfirmPasswordView;
-            cancel = true;
-        }
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
+        if (focusView != null) {
+            // There was an error; don't attempt sign up and focus the first
             // form field with an error.
             focusView.requestFocus();
         } else {
             //Start dropbox auth activity
-            Auth.startOAuth2Authentication(getApplicationContext(), getString(R.string.APP_KEY));
+            Auth.startOAuth2Authentication(getApplicationContext(), getString(R.string.app_key));
 
             // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+            // perform the user sign up attempt.
             showProgress(true);
         }
     }
@@ -154,7 +127,7 @@ public class SignUpActivity extends AppCompatActivity {
             String accountId;
 
             //Store accessToken in SharedPreferences
-            SharedPreferences prefs = getSharedPreferences("pt.ulisboa.tecnico.cmu", Context.MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.cmu_package), Context.MODE_PRIVATE);
             prefs.edit().putString("access-token", accessToken).apply();
 
             accountId = getUserAccount(accessToken);
@@ -172,18 +145,22 @@ public class SignUpActivity extends AppCompatActivity {
         try {
             account = new UserAccountTask(DropboxUtils.getClient(accessToken),
                     new UserAccountTask.TaskDelegate() {
-                @Override
-                public void onError(Exception e) {
-                    Log.d("User", "Error: " + e.getMessage());
-                    restartActivity();
-                }
-            }).execute().get();
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d("User", "Error: " + e.getMessage());
+                            restartActivity();
+                        }
+                    }).execute().get();
         } catch (Exception e) {
             Log.d("User", "Error: " + e.getMessage());
             restartActivity();
         }
 
-        return account.getAccountId();
+        if (account == null) {
+            return "";
+        } else {
+            return account.getAccountId();
+        }
     }
 
     private void restartActivity() {
@@ -191,14 +168,6 @@ public class SignUpActivity extends AppCompatActivity {
         Intent intent = getIntent();
         finish();
         startActivity(intent);
-    }
-
-    private boolean isEmailValid(String email) {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 4;
     }
 
     /**

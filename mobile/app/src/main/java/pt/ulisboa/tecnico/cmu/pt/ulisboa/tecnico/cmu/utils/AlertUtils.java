@@ -6,8 +6,15 @@ import android.content.DialogInterface;
 
 public final class AlertUtils {
 
-    private AlertUtils() {}
+    private AlertUtils() {
+    }
 
+    /**
+     * Alerts user with a custom message
+     *
+     * @param message The message to be displayed
+     * @param context Current app context
+     */
     public static void alert(String message, Context context) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("Alert");
