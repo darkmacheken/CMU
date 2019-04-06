@@ -60,11 +60,11 @@
                     android:imeActionId="6"
                     android:imeActionLabel="@string/action_sign_up"
                     android:imeOptions="actionUnspecified"
+                    android:importantForAutofill="no"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColorLink="@android:color/background_light"
-                    android:importantForAutofill="no" />
+                    android:textColorLink="@android:color/background_light" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -80,11 +80,11 @@
                     android:imeActionId="6"
                     android:imeActionLabel="@string/action_sign_up"
                     android:imeOptions="actionUnspecified"
+                    android:importantForAutofill="no"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColorLink="@android:color/background_light"
-                    android:importantForAutofill="no" />
+                    android:textColorLink="@android:color/background_light" />
 
             </android.support.design.widget.TextInputLayout>
 
