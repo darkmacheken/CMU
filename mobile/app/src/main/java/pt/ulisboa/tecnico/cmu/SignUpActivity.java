@@ -22,9 +22,9 @@ import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.users.FullAccount;
 
 
-import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.AlertUtils;
-import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.DropboxUtils;
-import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
+import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
+import pt.ulisboa.tecnico.cmu.utils.DropboxUtils;
+import pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
 import pt.ulisboa.tecnico.cmu.tasks.UserAccountTask;
 
 public class SignUpActivity extends AppCompatActivity {

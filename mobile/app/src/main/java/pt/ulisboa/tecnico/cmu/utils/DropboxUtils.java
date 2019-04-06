@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils;
+package pt.ulisboa.tecnico.cmu.utils;
 
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;

@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
+import pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
 
 /**
  * A login screen that offers login via email/password.
@@ -110,6 +110,13 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+
+            Intent launchNextActivity;
+            launchNextActivity = new Intent(this, AlbumMenuActivity.class);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(launchNextActivity);
         }
     }
 

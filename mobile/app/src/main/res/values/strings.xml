@@ -23,4 +23,7 @@
     <string name="error_passwords_dont_match">Passwords don\'t match</string>
 
     <string name="app_key">4zsoe5fax200kn0</string>
+
+    <!-- String related to album menu -->
+    <string name="title_activity_album_menu">Album Menu</string>
 </resources>

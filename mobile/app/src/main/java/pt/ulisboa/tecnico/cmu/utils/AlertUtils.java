@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu.pt.ulisboa.tecnico.cmu.utils;
+package pt.ulisboa.tecnico.cmu.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
