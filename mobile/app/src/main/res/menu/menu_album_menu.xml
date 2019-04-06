@@ -6,11 +6,12 @@
 
     <item
         android:id="@+id/add_album"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/add_album"
         android:title="@string/add_album"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/logout"
+        android:icon="@drawable/logout"
         android:title="@string/logout"
-        app:showAsAction="never"></item>
+        app:showAsAction="ifRoom" />
 </menu>
