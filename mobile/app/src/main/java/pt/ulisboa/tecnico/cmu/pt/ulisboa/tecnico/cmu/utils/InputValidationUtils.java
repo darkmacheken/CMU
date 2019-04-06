@@ -17,11 +17,10 @@ public final class InputValidationUtils {
     /**
      * Performs password validation and returns the view to be focused
      *
-     * @param focusView The current focused view
-     * @param password The password string
+     * @param focusView     The current focused view
+     * @param password      The password string
      * @param mPasswordView The password view
-     * @param context The current app context
-     *
+     * @param context       The current app context
      * @return New view to be focused
      */
     public static View validatePassword(View focusView, String password, EditText mPasswordView, Context context) {
@@ -38,11 +37,10 @@ public final class InputValidationUtils {
     /**
      * Performs email validation and returns the view to be focused
      *
-     * @param focusView The current focused view
-     * @param email The email string
+     * @param focusView  The current focused view
+     * @param email      The email string
      * @param mEmailView The email view
-     * @param context The current app context
-     *
+     * @param context    The current app context
      * @return New view to be focused
      */
     public static View validateEmail(View focusView, String email, AutoCompleteTextView mEmailView, Context context) {
@@ -60,12 +58,11 @@ public final class InputValidationUtils {
     /**
      * Performs confirm-password validation and returns the view to be focused
      *
-     * @param focusView The current focused view
-     * @param password The password string
-     * @param confirmPassword The confirm-password string
+     * @param focusView            The current focused view
+     * @param password             The password string
+     * @param confirmPassword      The confirm-password string
      * @param mConfirmPasswordView The confirm-password view
-     * @param context The current app context
-     *
+     * @param context              The current app context
      * @return New view to be focused
      */
     public static View validateConfirmPassword(View focusView, String password, String confirmPassword, EditText

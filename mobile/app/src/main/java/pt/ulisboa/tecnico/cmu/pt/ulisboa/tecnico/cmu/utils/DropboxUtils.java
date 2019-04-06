@@ -12,7 +12,6 @@ public final class DropboxUtils {
      * Creates Dropbox client and returns it.
      *
      * @param accessToken The client's Dropbox access token
-     *
      * @return Dropbox client
      */
     public static DbxClientV2 getClient(String accessToken) {
