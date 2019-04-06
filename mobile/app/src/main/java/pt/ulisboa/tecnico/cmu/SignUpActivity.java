@@ -92,9 +92,9 @@ public class SignUpActivity extends AppCompatActivity {
         String password = mPasswordView.getText().toString();
         String confirmPassword = mConfirmPasswordView.getText().toString();
 
-        View focusView = null;
+        View focusView;
 
-        focusView = InputValidationUtils.validateConfirmPassword(focusView, password, confirmPassword,
+        focusView = InputValidationUtils.validateConfirmPassword(null, password, confirmPassword,
                 mConfirmPasswordView, getApplicationContext());
         focusView = InputValidationUtils.validatePassword(focusView, password, mPasswordView,
                 getApplicationContext());

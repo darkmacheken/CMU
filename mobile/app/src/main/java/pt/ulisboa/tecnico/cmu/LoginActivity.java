@@ -95,9 +95,9 @@ public class LoginActivity extends AppCompatActivity {
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        View focusView = null;
+        View focusView;
 
-        focusView = InputValidationUtils.validatePassword(focusView, password, mPasswordView,
+        focusView = InputValidationUtils.validatePassword(null, password, mPasswordView,
                 getApplicationContext());
         focusView = InputValidationUtils.validateEmail(focusView, email, mEmailView,
                 getApplicationContext());
