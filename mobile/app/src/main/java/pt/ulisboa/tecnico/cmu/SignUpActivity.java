@@ -95,11 +95,11 @@ public class SignUpActivity extends AppCompatActivity {
         View focusView;
 
         focusView = InputValidationUtils.validateConfirmPassword(null, password, confirmPassword,
-                mConfirmPasswordView, getApplicationContext());
+                mConfirmPasswordView, SignUpActivity.this);
         focusView = InputValidationUtils.validatePassword(focusView, password, mPasswordView,
-                getApplicationContext());
+                SignUpActivity.this);
         focusView = InputValidationUtils.validateEmail(focusView, email, mEmailView,
-                getApplicationContext());
+                SignUpActivity.this);
 
         if (focusView != null) {
             // There was an error; don't attempt sign up and focus the first
@@ -107,7 +107,7 @@ public class SignUpActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             //Start dropbox auth activity
-            Auth.startOAuth2Authentication(getApplicationContext(), getString(R.string.app_key));
+            Auth.startOAuth2Authentication(SignUpActivity.this, getString(R.string.app_key));
 
             // Show a progress spinner, and kick off a background task to
             // perform the user sign up attempt.

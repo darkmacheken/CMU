@@ -98,9 +98,9 @@ public class LoginActivity extends AppCompatActivity {
         View focusView;
 
         focusView = InputValidationUtils.validatePassword(null, password, mPasswordView,
-                getApplicationContext());
+                LoginActivity.this);
         focusView = InputValidationUtils.validateEmail(focusView, email, mEmailView,
-                getApplicationContext());
+                LoginActivity.this);
 
         if (focusView != null) {
             // There was an error; don't attempt login and focus the first

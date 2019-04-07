@@ -1,23 +1,23 @@
 package pt.ulisboa.tecnico.cmu.dataobjects;
 
 public class Album {
-    private int number;
+    private int id;
     private String name;
 
     public Album() {
     }
 
-    public Album(int number, String name) {
-        this.number = number;
+    public Album(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 
-    public int getNumber() {
-        return number;
+    public int getId() {
+        return id;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

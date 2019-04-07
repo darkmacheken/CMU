@@ -26,21 +26,25 @@ public class AlbumMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_menu);
+        setupActionBar();
+
+        RecyclerView recyclerView = findViewById(R.id.album_list);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(AlbumMenuActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
+        List<Album> albumList = getAlbums();
+        albumMenuAdapter = new AlbumMenuAdapter(albumList, AlbumMenuActivity.this);
+        recyclerView.setAdapter(albumMenuAdapter);
+    }
+
+    private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(false); // disable the button
             actionBar.setDisplayHomeAsUpEnabled(false); // remove the left caret
             actionBar.setDisplayShowHomeEnabled(false); // remove the icon
         }
-
-        RecyclerView recyclerView = findViewById(R.id.album_list);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
-        List<Album> albumList = getAlbums();
-        albumMenuAdapter = new AlbumMenuAdapter(albumList);
-        recyclerView.setAdapter(albumMenuAdapter);
     }
 
     private List<Album> getAlbums() {
@@ -73,7 +77,7 @@ public class AlbumMenuActivity extends AppCompatActivity {
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                Intent intent = new Intent(AlbumMenuActivity.this, MainActivity.class);
                                 finish();
                                 startActivity(intent);
                             }

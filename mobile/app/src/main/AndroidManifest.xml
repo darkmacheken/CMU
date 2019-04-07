@@ -17,7 +17,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:largeHeap="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ViewAlbumActivity"
+            android:label="@string/title_activity_view_album"
+            android:parentActivityName=".AlbumMenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.AlbumMenuActivity" />
+        </activity>
         <activity
             android:name=".AlbumMenuActivity"
             android:label="@string/title_activity_album_menu"
