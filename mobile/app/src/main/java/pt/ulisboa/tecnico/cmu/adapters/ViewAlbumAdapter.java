@@ -1,21 +1,17 @@
 package pt.ulisboa.tecnico.cmu.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.ViewAlbumActivity;
-import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 
 public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.PhotoViewHolder> {
     private List<String> photoList;

@@ -1,19 +1,11 @@
 package pt.ulisboa.tecnico.cmu;
 
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,13 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
-import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 
 public class ViewAlbumActivity extends AppCompatActivity {
-
-    private ViewAlbumAdapter viewAlbumAdapter;
-    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +28,9 @@ public class ViewAlbumActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.photo_list);
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new GridLayoutManager(ViewAlbumActivity.this,3);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(ViewAlbumActivity.this, 3);
         recyclerView.setLayoutManager(layoutManager);
-        viewAlbumAdapter = new ViewAlbumAdapter(getPhotos(), ViewAlbumActivity.this);
+        ViewAlbumAdapter viewAlbumAdapter = new ViewAlbumAdapter(getPhotos(), ViewAlbumActivity.this);
         recyclerView.setAdapter(viewAlbumAdapter);
     }
 
@@ -50,10 +38,10 @@ public class ViewAlbumActivity extends AppCompatActivity {
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
                 .toString() + "/Camera";
         File f = new File(path);
-        File file[] = f.listFiles();
+        File files[] = f.listFiles();
         List<String> photos = new ArrayList<>();
-        for (int i=0; i < file.length; i++) {
-            photos.add(file[i].getAbsolutePath());
+        for (File file : files) {
+            photos.add(file.getAbsolutePath());
         }
         return photos;
     }
