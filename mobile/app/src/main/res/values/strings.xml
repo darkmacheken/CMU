@@ -24,11 +24,16 @@
 
     <string name="app_key">4zsoe5fax200kn0</string>
 
-    <!-- String related to album menu -->
+    <!-- Strings related to album menu -->
     <string name="title_activity_album_menu">My Albums</string>
     <string name="add_album">Add Album</string>
     <string name="logout">Logout</string>
+
+    <!-- Strings related to view album -->
     <string name="title_activity_view_album">View Album</string>
     <string name="add_photo">Add Photo</string>
     <string name="add_user">Add User</string>
+
+    <!-- Strings related to view photo -->
+    <string name="title_activity_view_photo" />
 </resources>

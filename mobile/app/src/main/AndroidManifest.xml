@@ -14,13 +14,23 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:largeHeap="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ViewAlbumActivity"
+        <activity
+            android:name=".ViewPhotoActivity"
+            android:label="@string/title_activity_view_photo"
+            android:parentActivityName=".ViewAlbumActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.ViewAlbumActivity" />
+        </activity>
+        <activity
+            android:name=".ViewAlbumActivity"
             android:label="@string/title_activity_view_album"
+            android:launchMode="singleTop"
             android:parentActivityName=".AlbumMenuActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -29,6 +39,7 @@
         <activity
             android:name=".AlbumMenuActivity"
             android:label="@string/title_activity_album_menu"
+            android:launchMode="singleTop"
             android:parentActivityName=".LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

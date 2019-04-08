@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -12,10 +13,11 @@ import android.widget.ImageView;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.ViewPhotoActivity;
 
 public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.PhotoViewHolder> {
     private List<String> photoList;
-    private Context context; //Will be needed for the View Photo UI
+    private Context context;
 
     public ViewAlbumAdapter(List<String> photoList, Context context) {
         this.photoList = photoList;
@@ -36,6 +38,7 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.Phot
         options.inSampleSize = 16;
         Bitmap bmp = BitmapFactory.decodeFile(photoList.get(i), options);
         photoViewHolder.photo.setImageBitmap(bmp);
+        photoViewHolder.photo.setOnClickListener(new PhotoOnClickListener(photoList.get(i)));
     }
 
     @Override
@@ -49,6 +52,22 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.Phot
         PhotoViewHolder(View view) {
             super(view);
             photo = view.findViewById(R.id.photo);
+        }
+    }
+
+    class PhotoOnClickListener implements View.OnClickListener {
+        private String photo;
+
+        PhotoOnClickListener(String photo) {
+            this.photo = photo;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(context, ViewPhotoActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("photo", this.photo);
+            context.startActivity(intent);
         }
     }
 }
