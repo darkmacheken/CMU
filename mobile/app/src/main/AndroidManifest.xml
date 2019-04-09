@@ -20,6 +20,15 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".AddAlbumActivity"
+            android:label="@string/title_activity_add_album"
+            android:launchMode="singleTop"
+            android:parentActivityName=".AlbumMenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.AlbumMenuActivity" />
+        </activity>
+        <activity
             android:name=".ViewPhotoActivity"
             android:label="@string/title_activity_view_photo"
             android:parentActivityName=".ViewAlbumActivity">

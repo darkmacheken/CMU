@@ -36,4 +36,10 @@
 
     <!-- Strings related to view photo -->
     <string name="title_activity_view_photo" />
+
+    <!-- Strings related to add album -->
+    <string name="title_activity_add_album">Create Album</string>
+    <string name="prompt_name_of_the_album">Name of the album</string>
+    <string name="user_list_name">List of users:</string>
+    <string name="add_album_button">Create</string>
 </resources>

@@ -19,8 +19,9 @@ import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 
 public class AlbumMenuActivity extends AppCompatActivity {
 
+    private static final int ADD_ALBUM_REQUEST = 1;
     private AlbumMenuAdapter albumMenuAdapter;
-    RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,19 @@ public class AlbumMenuActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == ADD_ALBUM_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Bundle albumBundle = data.getBundleExtra("album");
+                albumMenuAdapter.addAlbum(new Album(albumBundle.getInt("id"), albumBundle.getString("name")));
+                ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_album_menu, menu);
@@ -67,8 +81,8 @@ public class AlbumMenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_album:
-                albumMenuAdapter.addAlbum(new Album(1, "New Album"));
-                ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+                Intent intent = new Intent(this, AddAlbumActivity.class);
+                startActivityForResult(intent, ADD_ALBUM_REQUEST);
                 return (true);
             case R.id.logout:
                 AlertDialog alertDialog = new AlertDialog.Builder(this).create();
