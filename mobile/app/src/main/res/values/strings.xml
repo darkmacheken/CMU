@@ -1,9 +1,12 @@
 <resources>
+    <string name="cmu_package">pt.ulisboa.tecnico.cmu</string>
+
     <!-- Strings related to Main Activity -->
     <string name="app_name">P2Photo</string>
     <string name="cloud_name">Cloud Storage</string>
     <string name="wifi_direct_name">Wi-Fi Direct</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_sign_up">Sign up</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -16,4 +19,27 @@
 
     <!-- Strings related to sign up -->
     <string name="action_sign_up">Sign up</string>
+    <string name="prompt_confirm_password">Confirm password</string>
+    <string name="error_passwords_dont_match">Passwords don\'t match</string>
+
+    <string name="app_key">4zsoe5fax200kn0</string>
+
+    <!-- Strings related to album menu -->
+    <string name="title_activity_album_menu">My Albums</string>
+    <string name="add_album">Add Album</string>
+    <string name="logout">Logout</string>
+
+    <!-- Strings related to view album -->
+    <string name="title_activity_view_album">View Album</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="add_user">Add User</string>
+
+    <!-- Strings related to view photo -->
+    <string name="title_activity_view_photo" />
+
+    <!-- Strings related to add album -->
+    <string name="title_activity_add_album">Create Album</string>
+    <string name="prompt_name_of_the_album">Name of the album</string>
+    <string name="user_list_name">List of users:</string>
+    <string name="add_album_button">Create</string>
 </resources>

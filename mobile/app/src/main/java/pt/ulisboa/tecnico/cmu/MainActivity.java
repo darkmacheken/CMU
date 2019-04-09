@@ -20,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** Called when the user taps the Cloud Storage button */
+    /**
+     * Called when the user taps the Cloud Storage button
+     */
     public void startLoginActivity(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
