@@ -20,6 +20,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".AddUserActivity"
+            android:label="@string/title_activity_add_user"
+            android:launchMode="singleTop"></activity>
+        <activity
             android:name=".AddAlbumActivity"
             android:label="@string/title_activity_add_album"
             android:launchMode="singleTop"

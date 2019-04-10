@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="photo_horizontal_margin">8dp</dimen>
     <dimen name="photo_vertical_margin">8dp</dimen>
+    <dimen name="user_button_vertical_margin">4dp</dimen>
 </resources>

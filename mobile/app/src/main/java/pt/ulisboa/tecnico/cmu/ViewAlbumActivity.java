@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmu;
 
+import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -69,7 +70,8 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 AlertUtils.alert("Photo added to album", ViewAlbumActivity.this);
                 return (true);
             case R.id.add_user:
-                AlertUtils.alert("User added to album", ViewAlbumActivity.this);
+                Intent intent = new Intent(this, AddUserActivity.class);
+                startActivity(intent);
                 return (true);
         }
         return (super.onOptionsItemSelected(item));

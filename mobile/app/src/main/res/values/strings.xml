@@ -42,4 +42,9 @@
     <string name="prompt_name_of_the_album">Name of the album</string>
     <string name="user_list_name">List of users:</string>
     <string name="add_album_button">Create</string>
+
+    <!-- Strings related to add user -->
+    <string name="title_activity_add_user">Add User</string>
+    <string name="prompt_username">Type a username</string>
+    <string name="search_user_button">Search</string>
 </resources>

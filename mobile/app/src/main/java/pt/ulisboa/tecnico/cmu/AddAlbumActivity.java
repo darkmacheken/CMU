@@ -21,6 +21,7 @@ import pt.ulisboa.tecnico.cmu.dataobjects.User;
 
 public class AddAlbumActivity extends AppCompatActivity {
 
+    private static final int ADD_USER_REQUEST = 1;
     private UserListAdapter userListAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private EditText nameOfAlbumView;
@@ -83,14 +84,24 @@ public class AddAlbumActivity extends AppCompatActivity {
     private List<User> getUsers() {
         List<User> users = new ArrayList<>();
         users.add(new User(1, "(me)"));
-        users.add(new User(2, "Alice"));
-        users.add(new User(3, "Bob"));
-        users.add(new User(4, "Charlie"));
         return users;
     }
 
     public void startAddUserActivity(View view) {
-        userListAdapter.addUser(new User(0, "New User"));
-        ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+        Intent intent = new Intent(this, AddUserActivity.class);
+        startActivityForResult(intent, ADD_USER_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == ADD_USER_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Bundle userBundle = data.getBundleExtra("user");
+                userListAdapter.addUser(new User(userBundle.getInt("id"), userBundle.getString("username")));
+                ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+            }
+        }
     }
 }
