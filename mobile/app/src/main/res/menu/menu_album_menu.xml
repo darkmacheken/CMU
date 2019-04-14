@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".AlbumMenuActivity">
+
+    <item
+        android:id="@+id/add_album"
+        android:icon="@drawable/add_album"
+        android:title="@string/add_album"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/logout"
+        android:title="@string/logout"
+        app:showAsAction="ifRoom" />
+</menu>
