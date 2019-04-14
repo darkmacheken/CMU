@@ -12,10 +12,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import pt.ulisboa.tecnico.cmu.adapters.UserListAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 

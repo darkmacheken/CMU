@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.dataobjects;
 
 public class Album {
+
     private int id;
     private String name;
 

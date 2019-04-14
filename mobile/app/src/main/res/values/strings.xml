@@ -35,7 +35,7 @@
     <string name="add_user">Add User</string>
 
     <!-- Strings related to view photo -->
-    <string name="title_activity_view_photo" />
+    <string name="title_activity_view_photo"/>
 
     <!-- Strings related to add album -->
     <string name="title_activity_add_album">Create Album</string>

@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-
 import pt.ulisboa.tecnico.cmu.R;
 
 public final class InputValidationUtils {
@@ -66,7 +65,7 @@ public final class InputValidationUtils {
      * @return New view to be focused
      */
     public static View validateConfirmPassword(View focusView, String password, String confirmPassword, EditText
-            mConfirmPasswordView, Context context) {
+        mConfirmPasswordView, Context context) {
 
         if (TextUtils.isEmpty(confirmPassword)) {
             mConfirmPasswordView.setError(context.getString(R.string.error_field_required));

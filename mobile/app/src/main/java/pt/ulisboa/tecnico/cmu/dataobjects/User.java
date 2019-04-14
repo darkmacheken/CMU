@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.dataobjects;
 
 public class User {
+
     private int id;
     private String username;
 

@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -17,15 +17,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.users.FullAccount;
-
-
+import pt.ulisboa.tecnico.cmu.tasks.UserAccountTask;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.DropboxUtils;
 import pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
-import pt.ulisboa.tecnico.cmu.tasks.UserAccountTask;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -95,11 +92,11 @@ public class SignUpActivity extends AppCompatActivity {
         View focusView;
 
         focusView = InputValidationUtils.validateConfirmPassword(null, password, confirmPassword,
-                mConfirmPasswordView, SignUpActivity.this);
+            mConfirmPasswordView, SignUpActivity.this);
         focusView = InputValidationUtils.validatePassword(focusView, password, mPasswordView,
-                SignUpActivity.this);
+            SignUpActivity.this);
         focusView = InputValidationUtils.validateEmail(focusView, email, mEmailView,
-                SignUpActivity.this);
+            SignUpActivity.this);
 
         if (focusView != null) {
             // There was an error; don't attempt sign up and focus the first
@@ -144,13 +141,13 @@ public class SignUpActivity extends AppCompatActivity {
         FullAccount account = null;
         try {
             account = new UserAccountTask(DropboxUtils.getClient(accessToken),
-                    new UserAccountTask.TaskDelegate() {
-                        @Override
-                        public void onError(Exception e) {
-                            Log.d("User", "Error: " + e.getMessage());
-                            restartActivity();
-                        }
-                    }).execute().get();
+                new UserAccountTask.TaskDelegate() {
+                    @Override
+                    public void onError(Exception e) {
+                        Log.d("User", "Error: " + e.getMessage());
+                        restartActivity();
+                    }
+                }).execute().get();
         } catch (Exception e) {
             Log.d("User", "Error: " + e.getMessage());
             restartActivity();
@@ -183,7 +180,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             mSignUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mSignUpFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mSignUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -192,7 +189,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);

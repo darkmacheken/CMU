@@ -15,7 +15,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
 
 /**
@@ -24,11 +23,11 @@ import pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
 public class LoginActivity extends AppCompatActivity {
 
     /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
+     * A dummy authentication store containing known user names and passwords. TODO: remove after connecting to a real
+     * authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+        "foo@example.com:hello", "bar@example.com:world"
     };
 
     // UI references.
@@ -81,9 +80,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Attempts to sign in or register the account specified by the login form. If there are form errors (invalid email,
+     * missing fields, etc.), the errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
 
@@ -98,9 +96,9 @@ public class LoginActivity extends AppCompatActivity {
         View focusView;
 
         focusView = InputValidationUtils.validatePassword(null, password, mPasswordView,
-                LoginActivity.this);
+            LoginActivity.this);
         focusView = InputValidationUtils.validateEmail(focusView, email, mEmailView,
-                LoginActivity.this);
+            LoginActivity.this);
 
         if (focusView != null) {
             // There was an error; don't attempt login and focus the first
@@ -127,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
 
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -136,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
 
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);

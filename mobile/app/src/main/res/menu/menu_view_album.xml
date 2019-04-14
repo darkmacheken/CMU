@@ -8,10 +8,10 @@
         android:id="@+id/add_photo"
         android:icon="@drawable/add_photo"
         android:title="@string/add_photo"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/add_user"
         android:icon="@drawable/add_user"
         android:title="@string/add_user"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"/>
 </menu>

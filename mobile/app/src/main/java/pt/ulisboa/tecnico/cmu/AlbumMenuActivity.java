@@ -3,17 +3,15 @@ package pt.ulisboa.tecnico.cmu;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import pt.ulisboa.tecnico.cmu.adapters.AlbumMenuAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 
@@ -89,19 +87,19 @@ public class AlbumMenuActivity extends AppCompatActivity {
                 alertDialog.setTitle("Alert");
                 alertDialog.setMessage("Are you sure you want to logout?");
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(AlbumMenuActivity.this, MainActivity.class);
-                                finish();
-                                startActivity(intent);
-                            }
-                        });
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(AlbumMenuActivity.this, MainActivity.class);
+                            finish();
+                            startActivity(intent);
+                        }
+                    });
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
                 alertDialog.show();
                 return (true);
         }

@@ -8,12 +8,12 @@
     <Button
         android:id="@+id/album"
         style="?android:textAppearanceSmall"
+        android:textStyle="normal"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:layout_gravity="start|center_vertical|center_horizontal"
         android:layout_marginTop="0.5dp"
+        android:layout_gravity="start|center_vertical|center_horizontal"
         android:gravity="start|center_vertical|center_horizontal"
         android:textAllCaps="false"
-        android:textSize="24sp"
-        android:textStyle="normal" />
+        android:textSize="24sp"/>
 </LinearLayout>

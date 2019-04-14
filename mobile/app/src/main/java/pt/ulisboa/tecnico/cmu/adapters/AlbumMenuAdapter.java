@@ -8,14 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import java.util.List;
-
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.ViewAlbumActivity;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 
 public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.AlbumViewHolder> {
+
     private List<Album> albumList;
     private Context context;
 
@@ -47,6 +46,7 @@ public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.Albu
     }
 
     class AlbumViewHolder extends RecyclerView.ViewHolder {
+
         private Button album;
 
         AlbumViewHolder(View view) {
@@ -56,6 +56,7 @@ public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.Albu
     }
 
     class AlbumOnClickListener implements View.OnClickListener {
+
         private Album album;
 
         AlbumOnClickListener(Album album) {

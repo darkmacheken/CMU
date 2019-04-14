@@ -5,13 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.List;
-
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 
-public class UserListAdapter extends RecyclerView.Adapter<pt.ulisboa.tecnico.cmu.adapters.UserListAdapter.UserViewHolder> {
+public class UserListAdapter
+    extends RecyclerView.Adapter<pt.ulisboa.tecnico.cmu.adapters.UserListAdapter.UserViewHolder> {
+
     private List<User> userList;
 
     public UserListAdapter(List<User> userList) {
@@ -19,7 +19,8 @@ public class UserListAdapter extends RecyclerView.Adapter<pt.ulisboa.tecnico.cmu
     }
 
     @Override
-    public pt.ulisboa.tecnico.cmu.adapters.UserListAdapter.UserViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public pt.ulisboa.tecnico.cmu.adapters.UserListAdapter.UserViewHolder onCreateViewHolder(ViewGroup viewGroup,
+        int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user, viewGroup, false);
         return new pt.ulisboa.tecnico.cmu.adapters.UserListAdapter.UserViewHolder(view);
     }
@@ -40,6 +41,7 @@ public class UserListAdapter extends RecyclerView.Adapter<pt.ulisboa.tecnico.cmu
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
+
         private TextView user;
 
         UserViewHolder(View view) {

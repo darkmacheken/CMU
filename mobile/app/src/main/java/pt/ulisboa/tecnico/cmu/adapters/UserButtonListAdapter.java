@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmu.adapters;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,15 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.List;
-
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 
-import static android.app.Activity.RESULT_OK;
+public class UserButtonListAdapter
+    extends RecyclerView.Adapter<pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder> {
 
-public class UserButtonListAdapter extends RecyclerView.Adapter<pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder> {
     private List<User> userList;
     private Activity activity;
 
@@ -26,13 +26,15 @@ public class UserButtonListAdapter extends RecyclerView.Adapter<pt.ulisboa.tecni
     }
 
     @Override
-    public pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder onCreateViewHolder(ViewGroup viewGroup,
+        int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_button, viewGroup, false);
         return new pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder userViewHolder, int i) {
+    public void onBindViewHolder(pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder userViewHolder,
+        int i) {
         userViewHolder.user.setText(userList.get(i).getUsername());
         userViewHolder.user.setOnClickListener(new UserButtonListAdapter.UserOnClickListener(userList.get(i)));
     }
@@ -48,6 +50,7 @@ public class UserButtonListAdapter extends RecyclerView.Adapter<pt.ulisboa.tecni
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
+
         private TextView user;
 
         UserViewHolder(View view) {
@@ -57,6 +60,7 @@ public class UserButtonListAdapter extends RecyclerView.Adapter<pt.ulisboa.tecni
     }
 
     class UserOnClickListener implements View.OnClickListener {
+
         private User user;
 
         UserOnClickListener(User user) {
