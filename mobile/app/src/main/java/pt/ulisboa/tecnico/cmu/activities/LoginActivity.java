@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -15,6 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
 
 /**

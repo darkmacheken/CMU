@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.ViewPhotoActivity;
+import pt.ulisboa.tecnico.cmu.activities.ViewPhotoActivity;
 
 public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.PhotoViewHolder> {
 

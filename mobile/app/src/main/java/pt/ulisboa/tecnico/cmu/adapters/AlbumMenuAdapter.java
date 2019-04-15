@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.ViewAlbumActivity;
+import pt.ulisboa.tecnico.cmu.activities.ViewAlbumActivity;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 
 public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.AlbumViewHolder> {

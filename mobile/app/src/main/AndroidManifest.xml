@@ -5,10 +5,11 @@
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.READ_PROFILE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -22,59 +23,59 @@
         <activity
             android:label="@string/title_activity_add_user"
             android:launchMode="singleTop"
-            android:name=".AddUserActivity"></activity>
+            android:name=".activities.AddUserActivity"/>
         <activity
             android:label="@string/title_activity_add_album"
             android:launchMode="singleTop"
-            android:name=".AddAlbumActivity"
-            android:parentActivityName=".AlbumMenuActivity">
+            android:name=".activities.AddAlbumActivity"
+            android:parentActivityName=".activities.AlbumMenuActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.AlbumMenuActivity"/>
+                android:value="pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity"/>
         </activity>
         <activity
             android:label="@string/title_activity_view_photo"
-            android:name=".ViewPhotoActivity"
-            android:parentActivityName=".ViewAlbumActivity">
+            android:name=".activities.ViewPhotoActivity"
+            android:parentActivityName=".activities.ViewAlbumActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.ViewAlbumActivity"/>
+                android:value="pt.ulisboa.tecnico.cmu.activities.ViewAlbumActivity"/>
         </activity>
         <activity
             android:label="@string/title_activity_view_album"
             android:launchMode="singleTop"
-            android:name=".ViewAlbumActivity"
-            android:parentActivityName=".AlbumMenuActivity">
+            android:name=".activities.ViewAlbumActivity"
+            android:parentActivityName=".activities.AlbumMenuActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.AlbumMenuActivity"/>
+                android:value="pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity"/>
         </activity>
         <activity
             android:label="@string/title_activity_album_menu"
             android:launchMode="singleTop"
-            android:name=".AlbumMenuActivity"
-            android:parentActivityName=".LoginActivity">
+            android:name=".activities.AlbumMenuActivity"
+            android:parentActivityName=".activities.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.LoginActivity"/>
+                android:value="pt.ulisboa.tecnico.cmu.activities.LoginActivity"/>
         </activity>
         <activity
             android:label="@string/title_activity_sign_up"
-            android:name=".SignUpActivity"
-            android:parentActivityName=".LoginActivity">
+            android:name=".activities.SignUpActivity"
+            android:parentActivityName=".activities.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.LoginActivity"/>
+                android:value="pt.ulisboa.tecnico.cmu.activities.LoginActivity"/>
         </activity>
         <activity
             android:label="@string/title_activity_login"
-            android:name=".LoginActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".activities.LoginActivity"
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.MainActivity"/>
+                android:value="pt.ulisboa.tecnico.cmu.activities.MainActivity"/>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

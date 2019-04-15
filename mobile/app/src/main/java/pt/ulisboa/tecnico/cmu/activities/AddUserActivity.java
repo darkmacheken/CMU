@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 
@@ -84,11 +85,11 @@ public class AddUserActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        } else {
+            return (super.onOptionsItemSelected(item));
         }
-        return (super.onOptionsItemSelected(item));
     }
 }

@@ -1,17 +1,21 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.AlbumMenuAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 
@@ -20,6 +24,7 @@ public class AlbumMenuActivity extends AppCompatActivity {
     private static final int ADD_ALBUM_REQUEST = 1;
     private AlbumMenuAdapter albumMenuAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    public static File mediaStorageDir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,14 @@ public class AlbumMenuActivity extends AppCompatActivity {
         List<Album> albumList = getAlbums();
         albumMenuAdapter = new AlbumMenuAdapter(albumList, AlbumMenuActivity.this);
         recyclerView.setAdapter(albumMenuAdapter);
+
+        mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "P2Photo Albums");
+
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.d("App", "failed to create albums directory");
+            }
+        }
     }
 
     private void setupActionBar() {
@@ -58,13 +71,11 @@ public class AlbumMenuActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == ADD_ALBUM_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                Bundle albumBundle = data.getBundleExtra("album");
-                albumMenuAdapter.addAlbum(new Album(albumBundle.getInt("id"), albumBundle.getString("name")));
-                ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
-            }
+        // Make sure the request was successful
+        if (requestCode == ADD_ALBUM_REQUEST && resultCode == RESULT_OK) {
+            Bundle albumBundle = data.getBundleExtra("album");
+            albumMenuAdapter.addAlbum(new Album(albumBundle.getInt("id"), albumBundle.getString("name")));
+            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
         }
     }
 
@@ -102,7 +113,8 @@ public class AlbumMenuActivity extends AppCompatActivity {
                     });
                 alertDialog.show();
                 return (true);
+            default:
+                return (super.onOptionsItemSelected(item));
         }
-        return (super.onOptionsItemSelected(item));
     }
 }

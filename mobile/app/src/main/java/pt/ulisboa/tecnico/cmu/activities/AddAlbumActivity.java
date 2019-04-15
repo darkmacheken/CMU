@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.UserListAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 
@@ -93,13 +94,11 @@ public class AddAlbumActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == ADD_USER_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                Bundle userBundle = data.getBundleExtra("user");
-                userListAdapter.addUser(new User(userBundle.getInt("id"), userBundle.getString("username")));
-                ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
-            }
+        // Make sure the request was successful
+        if (requestCode == ADD_USER_REQUEST && resultCode == RESULT_OK) {
+            Bundle userBundle = data.getBundleExtra("user");
+            userListAdapter.addUser(new User(userBundle.getInt("id"), userBundle.getString("username")));
+            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
         }
     }
 }

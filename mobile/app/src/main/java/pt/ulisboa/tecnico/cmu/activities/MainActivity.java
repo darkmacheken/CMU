@@ -1,10 +1,11 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import pt.ulisboa.tecnico.cmu.R;
 
 public class MainActivity extends AppCompatActivity {
 

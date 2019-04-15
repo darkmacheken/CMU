@@ -8,6 +8,6 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
 
-    tools:context=".ViewPhotoActivity">
+    tools:context=".activities.ViewPhotoActivity">
 
 </RelativeLayout>

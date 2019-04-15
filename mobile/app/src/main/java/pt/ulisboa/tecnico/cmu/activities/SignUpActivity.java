@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.users.FullAccount;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.UserAccountTask;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.DropboxUtils;

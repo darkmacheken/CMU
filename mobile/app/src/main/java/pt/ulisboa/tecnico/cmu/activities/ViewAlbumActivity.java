@@ -1,10 +1,11 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
+
+import static pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity.mediaStorageDir;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
 
 public class ViewAlbumActivity extends AppCompatActivity {
@@ -24,12 +26,14 @@ public class ViewAlbumActivity extends AppCompatActivity {
     private static final int GALLERY = 1;
     private ViewAlbumAdapter viewAlbumAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private String albumName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_album);
-        setTitle(getIntent().getBundleExtra("album").getString("name"));
+        this.albumName = getIntent().getBundleExtra("album").getString("name");
+        setTitle(this.albumName);
         setupActionBar();
 
         RecyclerView recyclerView = findViewById(R.id.photo_list);
@@ -42,14 +46,19 @@ public class ViewAlbumActivity extends AppCompatActivity {
     }
 
     private List<String> getPhotos() {
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            .toString() + "/Camera";
-        File f = new File(path);
-        File files[] = f.listFiles();
+
+        File albumFolder = new File(mediaStorageDir, this.albumName);
+
+        if (!albumFolder.exists()) {
+            if (!albumFolder.mkdirs()) {
+                Log.d("App", "failed to create " + this.albumName + " directory");
+            }
+        }
+
+        File[] files = albumFolder.listFiles();
         List<String> photos = new ArrayList<>();
         for (File file : files) {
             photos.add(file.getAbsolutePath());
-            Log.d("broas cagadas", file.getAbsolutePath());
         }
         return photos;
     }
@@ -80,8 +89,9 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, AddUserActivity.class);
                 startActivity(intent);
                 return (true);
+            default:
+                return (super.onOptionsItemSelected(item));
         }
-        return (super.onOptionsItemSelected(item));
     }
 
     private void choosePhotoFromGallery() {
@@ -93,17 +103,11 @@ public class ViewAlbumActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED) {
-            return;
-        }
-        if (requestCode == GALLERY) {
-            if (data != null) {
-                Uri contentURI = data.getData();
-                viewAlbumAdapter.addPhoto(getRealPathFromURI(contentURI));
-                ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
-            }
+        if (resultCode != RESULT_CANCELED && requestCode == GALLERY && data != null) {
+            Uri contentURI = data.getData();
+            viewAlbumAdapter.addPhoto(getRealPathFromURI(contentURI));
+            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
         }
     }
 
