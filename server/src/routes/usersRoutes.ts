@@ -1,28 +1,17 @@
 import express from "express";
-import { User } from "../classes/user";
 import { Album } from "../classes/album";
-import { userList } from "../main";
-import { albumList } from "../main";
+import { userList, albumList } from "../main";
 
 export const router = express.Router();
 
 // Get all users
-router.get("/users", (_req, res) => {
+router.get("/", (_req, res) => {
 	console.log("GET /users");
 	res.end(JSON.stringify(userList.list));
 });
 
-// Add new user
-router.post("/users", (req, res) => {
-	console.log("POST /users");
-	const user = new User(userList.counter, req.body.username, req.body.pass);
-	userList.addUser(user);
-	console.log(userList);
-	res.end(JSON.stringify(user));
-});
-
 // Get specific user
-router.get("/users/:id", (req, res) => {
+router.get("/:id", (req, res) => {
 	console.log("GET /users/" + req.params.id);
 	const user = userList.findUserById(+req.params.id);
 	if (user) {
@@ -34,7 +23,7 @@ router.get("/users/:id", (req, res) => {
 });
 
 // List all albums from a specific user
-router.get("/users/:id/albums", (req, res) => {
+router.get("/:id/albums", (req, res) => {
 	console.log("GET /users/" + req.params.id + "/albums");
 	const user = userList.findUserById(+req.params.id);
 	if (user) {
@@ -46,7 +35,7 @@ router.get("/users/:id/albums", (req, res) => {
 });
 
 // Create a new album
-router.post("/users/:id/albums", (req, res) => {
+router.post("/:id/albums", (req, res) => {
 	console.log("POST /users/" + req.params.id + "/albums");
 	const user = userList.findUserById(+req.params.id);
 	if (!user) {

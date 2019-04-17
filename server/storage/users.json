@@ -1,13 +1,7 @@
 [
 	{
 		"id": 1,
-		"username": "kjgfdgsgadgsqsdg",
-		"pass": "123",
-		"albums": []
-	},
-	{
-		"id": 2,
-		"username": "kjgfdgsgadgsqsdg",
+		"username": "Pedro",
 		"pass": "123",
 		"albums": []
 	}

@@ -28,6 +28,15 @@ export class UserList {
 		});
 	}
 
+	public findUserByName(name: string, done: (err: any, user?: User) => void) {
+		for (const user of this.list) {
+			if (user.username === name) {
+				return done(null, user);
+			}
+		}
+		return done(new Error("User not found!"));
+	}
+
 	public findUserById(id: number) {
 		for (const user of this.list) {
 			if (user.id === id) {
