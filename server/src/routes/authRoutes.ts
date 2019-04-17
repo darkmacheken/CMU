@@ -3,6 +3,7 @@ import { passport } from "../config/passport";
 import { app, userList } from "../main";
 import jwt from "jsonwebtoken";
 import { User } from "../classes/user";
+import bcrypt from "bcryptjs";
 
 export const router = express.Router();
 
@@ -30,8 +31,8 @@ router.post("/login", (req, res) => {
 // Add new user
 router.post("/register", (req, res) => {
 	console.log("POST /users");
-	const user = new User(userList.counter, req.body.username, req.body.password);
-	console.log("yo " + ((user as User) instanceof User));
+	const salt = bcrypt.genSaltSync(10);
+	const user = new User(userList.counter, req.body.username, bcrypt.hashSync(req.body.password, salt));
 	userList.addUser(user);
 	console.log(userList);
 	res.end(JSON.stringify(user));

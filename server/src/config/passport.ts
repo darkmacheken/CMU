@@ -2,6 +2,7 @@ import passport from "passport";
 import passportLocal from "passport-local";
 import passportJWT, { ExtractJwt } from "passport-jwt";
 import { userList } from "../main";
+import bcrypt from "bcryptjs";
 
 const localStrategy = passportLocal.Strategy;
 const jwtStrategy = passportJWT.Strategy;
@@ -12,7 +13,7 @@ passport.use(
 			if (!user || err) {
 				return done(err);
 			}
-			if (user.pass === password) {
+			if (bcrypt.compareSync(password, user.pass)) {
 				return done(null, user);
 			}
 			return done(new Error("Wrong password!"));
