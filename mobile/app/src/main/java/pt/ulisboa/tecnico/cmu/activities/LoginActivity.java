@@ -1,12 +1,12 @@
-package pt.ulisboa.tecnico.cmu;
+package pt.ulisboa.tecnico.cmu.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,6 +15,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.utils.InputValidationUtils;
 
 /**
  * A login screen that offers login via email/password.
@@ -22,11 +24,11 @@ import android.widget.TextView;
 public class LoginActivity extends AppCompatActivity {
 
     /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
+     * A dummy authentication store containing known user names and passwords. TODO: remove after connecting to a real
+     * authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+        "foo@example.com:hello", "bar@example.com:world"
     };
 
     // UI references.
@@ -79,9 +81,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Attempts to sign in or register the account specified by the login form. If there are form errors (invalid email,
+     * missing fields, etc.), the errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
 
@@ -93,33 +94,14 @@ public class LoginActivity extends AppCompatActivity {
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        boolean cancel = false;
-        View focusView = null;
+        View focusView;
 
+        focusView = InputValidationUtils.validatePassword(null, password, mPasswordView,
+            LoginActivity.this);
+        focusView = InputValidationUtils.validateEmail(focusView, email, mEmailView,
+            LoginActivity.this);
 
-        // Check password empty
-        if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
-            cancel = true;
-        } else if (!isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
-
-        if (cancel) {
+        if (focusView != null) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
@@ -127,17 +109,8 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            startAlbumMenuActivity();
         }
-    }
-
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
     }
 
     /**
@@ -153,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
 
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -162,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
 
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -174,6 +147,23 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    /**
+     * Called when the user taps the Sign Up button
+     */
+    public void startSignUpActivity(View view) {
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAlbumMenuActivity() {
+        Intent launchNextActivity;
+        launchNextActivity = new Intent(this, AlbumMenuActivity.class);
+        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(launchNextActivity);
     }
 
 }

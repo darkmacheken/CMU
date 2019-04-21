@@ -9,11 +9,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context=".activities.LoginActivity">
+    tools:context=".activities.SignUpActivity">
 
     <!-- Login progress -->
     <ProgressBar
-        android:id="@+id/login_progress"
+        android:id="@+id/sign_up_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,12 +21,12 @@
         android:visibility="gone"/>
 
     <ScrollView
-        android:id="@+id/login_form"
+        android:id="@+id/sign_up_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/email_login_form"
+            android:id="@+id/email_sign_up_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -58,7 +58,27 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_password"
                     android:imeActionId="6"
-                    android:imeActionLabel="@string/action_sign_in"
+                    android:imeActionLabel="@string/action_sign_up"
+                    android:imeOptions="actionUnspecified"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColorLink="@android:color/background_light"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_confirm_password"
+                    android:imeActionId="6"
+                    android:imeActionLabel="@string/action_sign_up"
                     android:imeOptions="actionUnspecified"
                     android:importantForAutofill="no"
                     android:inputType="textPassword"
@@ -69,7 +89,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/sign_up_button"
                 style="?android:textAppearanceSmall"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
@@ -80,22 +100,6 @@
                 android:drawablePadding="77dp"
                 android:drawableStart="@drawable/ic_keyboard_arrow_right_green"
                 android:gravity="start|center_vertical|center_horizontal"
-                android:text="@string/action_sign_in"
-                android:textAllCaps="false"
-                android:textSize="30sp"/>
-
-            <Button
-                android:id="@+id/sign_up_button"
-                style="?android:textAppearanceSmall"
-                android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:drawableLeft="@drawable/ic_mode_edit_green"
-                android:drawablePadding="69dp"
-                android:drawableStart="@drawable/ic_mode_edit_green"
-                android:gravity="start|center_vertical|center_horizontal"
-                android:onClick="startSignUpActivity"
                 android:text="@string/action_sign_up"
                 android:textAllCaps="false"
                 android:textSize="30sp"/>
