@@ -10,10 +10,23 @@ export const router = express.Router();
 router.post("/login", (req, res) => {
 	passport.authenticate("local", { session: false }, (err, user) => {
 		if (err || !user) {
-			return res.status(400).json({
-				error: err.message
-			});
+			if (!err) {
+				return res.status(400).json({
+					error: "No data in the request."
+				});
+			} else {
+				return res.status(400).json({
+					error: err.message
+				});
+			}
 		}
+
+		let userDb = userList.findUserByName(req.body.username);
+		if (!userDb) {
+			res.status(404);
+			res.send({ error: "User does not exist." });
+		}
+
 		req.login(user, { session: false }, (err) => {
 			if (err) {
 				res.send(err);

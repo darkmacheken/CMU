@@ -54,22 +54,6 @@
             android:label="@string/title_activity_album_menu"
             android:launchMode="singleTop"
             android:name=".activities.AlbumMenuActivity"
-            android:parentActivityName=".activities.LoginActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.activities.LoginActivity"/>
-        </activity>
-        <activity
-            android:label="@string/title_activity_sign_up"
-            android:name=".activities.SignUpActivity"
-            android:parentActivityName=".activities.LoginActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.activities.LoginActivity"/>
-        </activity>
-        <activity
-            android:label="@string/title_activity_login"
-            android:name=".activities.LoginActivity"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
