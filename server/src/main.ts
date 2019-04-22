@@ -20,8 +20,8 @@ export let albumList = new AlbumList(0);
 
 app.set("jwt-secret", "thisisasecret");
 app.use(express.json());
-app.use("/users", passport.authenticate("jwt", { session: false }), UsersRoutes);
-app.use("/albums", passport.authenticate("jwt", { session: false }), AlbumRoutes);
+app.use("/users", UsersRoutes);
+app.use("/albums", AlbumRoutes);
 app.use(AuthRoutes);
 app.use(passport.initialize());
 

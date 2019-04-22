@@ -11,7 +11,7 @@ router.post("/login", (req, res) => {
 	passport.authenticate("local", { session: false }, (err, user) => {
 		if (err || !user) {
 			return res.status(400).json({
-				message: err.message
+				error: err.message
 			});
 		}
 		req.login(user, { session: false }, (err) => {
@@ -32,8 +32,17 @@ router.post("/login", (req, res) => {
 router.post("/register", (req, res) => {
 	console.log("POST /users");
 	const salt = bcrypt.genSaltSync(10);
-	const user = new User(userList.counter, req.body.username, bcrypt.hashSync(req.body.password, salt));
-	userList.addUser(user);
-	console.log(userList);
-	res.end(JSON.stringify(user));
+	let user = userList.findUserByName(req.body.username);
+	if (user) {
+		res.status(400);
+		res.send({ error: "User already exists" });
+	} else if (!req.body.name || !req.body.username || !req.body.password) {
+		res.status(400);
+		res.send({ error: "Wrong parameters" });
+	} else {
+		user = new User(userList.counter, req.body.name, req.body.username, bcrypt.hashSync(req.body.password, salt));
+		userList.addUser(user);
+		console.log(userList);
+		res.end(JSON.stringify(user));
+	}
 });

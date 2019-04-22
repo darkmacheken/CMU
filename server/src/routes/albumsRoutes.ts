@@ -1,41 +1,88 @@
 import express from "express";
 import { userList } from "../main";
 import { albumList } from "../main";
+import { passport } from "../config/passport";
+import { Album } from "../classes/album";
+import { User } from "../classes/user";
 
 export const router = express.Router();
 
 // Add user to album
-router.post("/:id/addUser", (req, res) => {
+router.post("/:albumId/addUser", (req, res, next) => {
 	console.log("POST /albums/" + req.params.id + "/addUser");
-	const user = userList.findUserById(+req.body.id);
-	const album = albumList.findAlbumById(+req.params.id);
+	passport.authenticate("jwt", { session: false }, (err, user) => {
+		if (!req.body.id) {
+			res.status(400);
+			res.send({ error: "Wrong parameters" });
+			return;
+		}
 
-	if (!user || !album) {
-		res.statusCode = 400;
-		res.end();
-		return;
-	}
+		const userToAdd = userList.findUserById(+req.body.id);
+		const album = albumList.findAlbumById(+req.params.albumId);
 
-	user.addAlbum({ id: album.id, name: album.name });
-	album.addUser({ id: user.id, username: user.username, link: "" });
-	albumList.saveToFile();
-	res.end();
+		if (err || !user) {
+			res.status(403);
+			res.send({ error: err.message });
+		} else if (album === undefined) {
+			res.status(400);
+			res.send({ error: "Album not found" });
+		} else if (userToAdd === undefined) {
+			res.status(400);
+			res.send({ error: "User not found" });
+		} else if (!userIsInAlbum(user.id, album)) {
+			res.status(400);
+			res.send({ error: "User doesn't belong to album with id " + album.id });
+		} else if (userIsInAlbum(userToAdd.id, album)) {
+			res.status(400);
+			res.send({ error: "User with id " + userToAdd.id + " already is the album" });
+		} else {
+			userToAdd.albums.push({ id: album.id, name: album.name });
+			album.users.push({ id: userToAdd.id, username: userToAdd.username, link: "" });
+			albumList.saveToFile();
+			userList.saveToFile();
+			res.end();
+		}
+	})(req, res, next);
 });
 
 // List all albums
-router.get("/", (_req, res) => {
+router.get("/", (req, res, next) => {
 	console.log("GET /albums");
-	res.end(JSON.stringify(albumList.list));
+	passport.authenticate("jwt", { session: false }, (err: Error, user: User) => {
+		if (err || !user) {
+			res.status(403);
+			res.send({ error: err.message });
+		} else {
+			res.send(user.albums);
+		}
+	})(req, res, next);
 });
 
 // Get a specific album
-router.get("/:id", (req, res) => {
-	console.log("GET /albums/" + req.params.id);
-	const album = albumList.findAlbumById(+req.params.id);
-	if (album) {
-		res.end(JSON.stringify(album));
-	} else {
-		res.statusCode = 400;
-		res.end();
-	}
+router.get("/:albumId", (req, res, next) => {
+	console.log("GET /albums/" + req.params.albumId);
+	passport.authenticate("jwt", { session: false }, (err: Error, user: User) => {
+		// verificar se user pertence ao album?
+		const album = albumList.findAlbumById(+req.params.albumId);
+		if (err || !user) {
+			res.status(403);
+			res.send({ error: err.message });
+		} else if (album === undefined) {
+			res.status(400);
+			res.send({ error: "Album not found" });
+		} else {
+			res.send(album);
+		}
+	})(req, res, next);
 });
+
+// checks if user belongs to album
+function userIsInAlbum(userId: number, album: Album): boolean {
+	for (const user of album.users) {
+		console.log("userAlbumId: " + album.id);
+		if (user.id === userId) {
+			return true;
+		}
+	}
+	return false;
+}

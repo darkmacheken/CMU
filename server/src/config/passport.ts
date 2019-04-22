@@ -24,15 +24,17 @@ passport.use(
 passport.use(
 	new jwtStrategy(
 		{
+			passReqToCallback: true,
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			secretOrKey: "thisisasecret"
 		},
-		(payload, done) => {
+		(request: any, payload: any, done: any) => {
+			const id = request.params.id;
 			const user = userList.findUserById(payload.id);
-			if (!user) {
-				return done(new Error("User not found!"));
-			} else {
+			if ((user && id == payload.id) || (id === undefined && user)) {
 				return done(null, user);
+			} else {
+				return done(new Error("Users do not match or invalid"));
 			}
 		}
 	)
