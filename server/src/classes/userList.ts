@@ -28,13 +28,30 @@ export class UserList {
 		});
 	}
 
-	public findUserById(id: number) {
+	public findUserByName(name: string, done?: (err: any, user?: User) => void) {
+		for (const user of this.list) {
+			if (user.username === name) {
+				if (done) {
+					return done(null, user);
+				} else {
+					return user;
+				}
+			}
+		}
+		if (done) {
+			return done(new Error("User not found!"));
+		} else {
+			return undefined;
+		}
+	}
+
+	public findUserById(id: number): User | undefined {
 		for (const user of this.list) {
 			if (user.id === id) {
 				return user;
 			}
 		}
-		return false;
+		return undefined;
 	}
 
 	private readFromFile() {

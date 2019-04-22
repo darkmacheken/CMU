@@ -28,13 +28,13 @@ export class AlbumList {
 		});
 	}
 
-	public findAlbumById(id: number) {
+	public findAlbumById(id: number): Album | undefined {
 		for (const album of this.list) {
 			if (album.id === id) {
 				return album;
 			}
 		}
-		return false;
+		return undefined;
 	}
 
 	public readFromFile() {

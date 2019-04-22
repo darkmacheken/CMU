@@ -11,6 +11,9 @@ You must have installed the following tools:
 Necessary node packages :
 - TypeScript 3.3+
 - ExpressJS 4.16+
+- Passport 0.4.0+
+- Passport-jwt 4.0.0+
+- Passport-local 1.0.0+
 
 Also check if JAVA_HOME is set properly
 
@@ -50,6 +53,45 @@ And to install the types for the typescript, run the command:
 
 ```
     npm install @types/https -s
+```
+
+### Install Passport
+To install Passport go to the folder **/server/** and run the command:
+
+```
+    npm install passport -s
+```
+
+And to install the types for the typescript, run the command:
+
+```
+    npm install @types/passport -s
+```
+
+### Install Passport-JWT
+To install Passport-JWT go to the folder **/server/** and run the command:
+
+```
+    npm install passport-jwt -s
+```
+
+And to install the types for the typescript, run the command:
+
+```
+    npm install @types/passport-jwt -s
+```
+
+### Install Passport-Local
+To install Passport-Local go to the folder **/server/** and run the command:
+
+```
+    npm install passport-local -s
+```
+
+And to install the types for the typescript, run the command:
+
+```
+    npm install @types/passport-local -s
 ```
 
 ## How to Compile and Run
