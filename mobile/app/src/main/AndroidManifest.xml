@@ -82,21 +82,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:configChanges="orientation|keyboard"
-            android:launchMode="singleTask"
-            android:name="com.dropbox.core.android.AuthActivity">
-            <intent-filter>
-
-                <!-- Insert your app key after “db-  ...” -->
-                <data android:scheme="db-4zsoe5fax200kn0"/>
-
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

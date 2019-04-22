@@ -1,6 +1,8 @@
 <resources>
     <string name="cmu_package">pt.ulisboa.tecnico.cmu</string>
 
+    <string name="server_id">949378650699-p2jerhm9jm5jrpt5v27qrfps8jf41lbt.apps.googleusercontent.com</string>
+
     <!-- Strings related to Main Activity -->
     <string name="app_name">P2Photo</string>
     <string name="cloud_name">Cloud Storage</string>

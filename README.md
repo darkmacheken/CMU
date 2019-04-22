@@ -5,7 +5,10 @@ Mobile and Ubiquitous Computing Project - P2Photo
 You must have installed the following tools:
 - Java Development Kit 8+ (JDK 8+)
 - Android SDK 26+
+- Google Play services 49+ ([download and configure](https://developer.android.com/google/play-services/setup.html))  
 - Nodejs 10+
+
+Necessary node packages :
 - TypeScript 3.3+
 - ExpressJS 4.16+
 
@@ -37,7 +40,7 @@ There is a specific npm package for the Typescript to recognize the Express type
 ```
 
 ### Install HTTPS
-To install https go to the folder **/server/** and run the command:
+To install HTTPS go to the folder **/server/** and run the command:
 
 ```
     npm install https -s
