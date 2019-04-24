@@ -22,6 +22,9 @@ android {
         targetCompatibility = '1.8'
     }
 }
+repositories {
+    jcenter()
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -42,4 +45,8 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation 'com.squareup.okhttp3:okhttp:3.14.1'
+    implementation 'com.github.d-max:spots-dialog:1.1@aar'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+
 }

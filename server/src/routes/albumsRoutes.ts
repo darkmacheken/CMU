@@ -17,7 +17,7 @@ router.post("/:albumId/addUser", (req, res, next) => {
 			return;
 		}
 
-		const userToAdd = userList.findUserById(+req.body.id);
+		const userToAdd = userList.findUserById(req.body.id);
 		const album = albumList.findAlbumById(+req.params.albumId);
 
 		if (err || !user) {
@@ -37,7 +37,7 @@ router.post("/:albumId/addUser", (req, res, next) => {
 			res.send({ error: "User with id " + userToAdd.id + " already is the album" });
 		} else {
 			userToAdd.albums.push({ id: album.id, name: album.name });
-			album.users.push({ id: userToAdd.id, username: userToAdd.username, link: "" });
+			album.users.push({ id: userToAdd.id, link: "" });
 			albumList.saveToFile();
 			userList.saveToFile();
 			res.end();
@@ -77,7 +77,7 @@ router.get("/:albumId", (req, res, next) => {
 });
 
 // checks if user belongs to album
-function userIsInAlbum(userId: number, album: Album): boolean {
+function userIsInAlbum(userId: string, album: Album): boolean {
 	for (const user of album.users) {
 		console.log("userAlbumId: " + album.id);
 		if (user.id === userId) {

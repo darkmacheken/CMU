@@ -58,7 +58,7 @@ router.post("/:id/albums", (req, res, next) => {
 			res.send({ error: "Wrong parameters" });
 		} else {
 			const album = new Album(albumList.counter, req.body.name);
-			album.users.push({ id: user.id, username: user.username, link: "" });
+			album.users.push({ id: user.id, link: "" });
 			albumList.addAlbum(album);
 			user.albums.push({ id: album.id, name: album.name });
 			console.log("userList: " + userList);

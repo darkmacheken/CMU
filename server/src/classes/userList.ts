@@ -30,7 +30,7 @@ export class UserList {
 
 	public findUserByName(name: string, done?: (err: any, user?: User) => void) {
 		for (const user of this.list) {
-			if (user.username === name) {
+			if (user.name === name) {
 				if (done) {
 					return done(null, user);
 				} else {
@@ -45,30 +45,27 @@ export class UserList {
 		}
 	}
 
-	public findUserById(id: number): User | undefined {
+	public findUserById(id: string, done?: (err: any, user?: User) => void): User | undefined | void {
 		for (const user of this.list) {
 			if (user.id === id) {
-				return user;
+				if (done) {
+					return done(null, user);
+				} else {
+					return user;
+				}
 			}
 		}
-		return undefined;
+		if (done) {
+			return done(new Error(`User with id ${id} not found!`));
+		} else {
+			return undefined;
+		}
 	}
 
 	private readFromFile() {
 		this.list = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
-		this.counter = this.updateCounter();
+
 		console.log("Users List");
 		console.log(this.list);
-		console.log("Counter > " + this.counter);
-	}
-
-	private updateCounter() {
-		let aux = 0;
-		for (const user of this.list) {
-			if (user.id > aux) {
-				aux = user.id;
-			}
-		}
-		return aux + 1;
 	}
 }

@@ -22,9 +22,9 @@ import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 public class AlbumMenuActivity extends AppCompatActivity {
 
     private static final int ADD_ALBUM_REQUEST = 1;
+    public static File mediaStorageDir;
     private AlbumMenuAdapter albumMenuAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    public static File mediaStorageDir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

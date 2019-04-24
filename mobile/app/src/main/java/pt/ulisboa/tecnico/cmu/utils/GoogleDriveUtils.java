@@ -21,6 +21,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public final class GoogleDriveUtils {
+
     public static String TYPE_AUDIO = "application/vnd.google-apps.audio";
     public static String TYPE_GOOGLE_DOCS = "application/vnd.google-apps.document";
     public static String TYPE_GOOGLE_DRAWING = "application/vnd.google-apps.drawing";
@@ -36,9 +37,8 @@ public final class GoogleDriveUtils {
     public static String TYPE_UNKNOWN = "application/vnd.google-apps.unknown";
     public static String TYPE_VIDEO = "application/vnd.google-apps.video";
     public static String TYPE_3_RD_PARTY_SHORTCUT = "application/vnd.google-apps.drive-sdk";
-
-    private final Executor executor = Executors.newSingleThreadExecutor();
     private static Drive driveService;
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     private GoogleDriveUtils() {
     }

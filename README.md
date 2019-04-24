@@ -14,6 +14,7 @@ Necessary node packages :
 - Passport 0.4.0+
 - Passport-jwt 4.0.0+
 - Passport-local 1.0.0+
+- Google-Auth-Library 3.1.2+
 
 Also check if JAVA_HOME is set properly
 
@@ -94,12 +95,14 @@ And to install the types for the typescript, run the command:
     npm install @types/passport-local -s
 ```
 
+### Install Google-Auth-Library
+To install Google-Auth-Library go to the folder **/server/** and run the command:
+
+```
+    npm install google-auth-library -s
+```
+
 ## How to Compile and Run
-### Mobile Application
-If you have Android Studio, just build inside the IDE. If not, you can build the project usiong the terminal, check this [guide](https://developer.android.com/studio/build/building-cmdline) how to use gradle to build an android project.
-
-To run, you should use the android emulator or deploy in an android device.
-
 ### Server
 The code of the server runs in nodejs and node can't run typescript, so it's needed to transpile the _ts_ code to _js_ code. To do that, you can must be in the folder **/server/** and run the command.
 
@@ -121,3 +124,15 @@ There is a configurated script that compiles and runs the server (previous 2 ste
 The server is, by default, running in port **8443**.
 
 Note: It uses HTTPS, so in the browser you **MUST** put the protocol https (e.g. **https**://localhost:8443/users) otherwise it won't work.
+
+### Mobile Application
+#### Change IP
+The mobile application, for cloud storage, has to connect to the server. As the server is usually running in you computer, you need to change the URL in the file strings under **mobile/app/src/main/res/values/strings.xml** the value **server_url**:
+
+```xml
+    <string name="server_url">https://192.168.1.67:8443</string>
+```
+
+After that, you can build the application. If you have Android Studio, just build it inside the IDE. If not, you can build the project using the terminal, check this [guide](https://developer.android.com/studio/build/building-cmdline) how to use gradle to build an android project.
+
+To run, you should use the android emulator or deploy in an android device.

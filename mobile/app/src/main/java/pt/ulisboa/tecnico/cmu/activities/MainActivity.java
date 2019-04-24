@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -14,25 +15,23 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Builder;
 import com.google.api.services.drive.DriveScopes;
-import java.io.IOException;
+import dmax.dialog.SpotsDialog;
 import java.util.Arrays;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.LoginTask;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
-import pt.ulisboa.tecnico.cmu.utils.HttpUtils;
 
 public class MainActivity extends AppCompatActivity {
+
     private static final String TAG = "LoginActivity";
 
-    // UI references.
-    private View mProgressView;
+    private LoginTask loginTask;
+
+    // UI components
+    private AlertDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +43,12 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        new LoginTask(this).execute();
 
-        mProgressView = findViewById(R.id.login_progress);
+        progress = new SpotsDialog.Builder().setContext(this)
+            .setMessage("Logging in.")
+            .setCancelable(false)
+            .setTheme(R.style.ProgressBar)
+            .build();
     }
 
     @Override
@@ -55,13 +57,15 @@ public class MainActivity extends AppCompatActivity {
             .addOnSuccessListener(googleAccount -> {
                 Log.d(TAG, "Signed in as " + googleAccount.getEmail());
 
+                new LoginTask(this, googleAccount).execute();
+
                 // Use the authenticated account to sign in to the Drive service.
                 GoogleAccountCredential credential =
                     GoogleAccountCredential.usingOAuth2(
                         this, Arrays.asList(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA));
                 credential.setSelectedAccount(googleAccount.getAccount());
                 Drive googleDriveService =
-                    new Drive.Builder(
+                    new Builder(
                         AndroidHttp.newCompatibleTransport(),
                         new GsonFactory(),
                         credential)
@@ -75,9 +79,9 @@ public class MainActivity extends AppCompatActivity {
             .addOnFailureListener(exception -> {
                 Log.e(TAG, "Unable to sign in.", exception);
                 AlertUtils.alert("Unable to sign in.", this);
-                showProgress(false);
             });
 
+        showProgress(true);
         super.onActivityResult(requestCode, resultCode, resultData);
     }
 
@@ -104,13 +108,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startLoginActivity(View view) {
         requestGdriveSignIn();
-        showProgress(true);
+        showProgress(false);
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    private void showProgress(final boolean show) {
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+    private void showProgress(boolean show) {
+        if (show) {
+            progress.show();
+        } else {
+            progress.dismiss();
+        }
     }
 }

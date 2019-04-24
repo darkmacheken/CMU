@@ -1,39 +1,65 @@
 package pt.ulisboa.tecnico.cmu.tasks;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import java.io.IOException;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import pt.ulisboa.tecnico.cmu.R;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity;
+import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
 import pt.ulisboa.tecnico.cmu.utils.HttpUtils;
 
-public class LoginTask extends AsyncTask<Void, Void, Void> {
+public class LoginTask extends AsyncTask<Void, Void, Boolean> {
+
+    private static final String TAG = "LoginTask";
+
+    private final GoogleSignInAccount googleAccount;
+
     private final Context context;
 
-    public LoginTask(Context context) {
+    public LoginTask(Context context, GoogleSignInAccount googleAccount) {
         this.context = context;
+        this.googleAccount = googleAccount;
     }
 
-    protected Void doInBackground(Void... urls) {
-        OkHttpClient client = HttpUtils.getHttpClient(context);
-
-        RequestBody body = RequestBody.create(HttpUtils.JSON, "{\"username\": \"pedro.daniel10@hotmail.com\"}");
-        Request request = new Request.Builder()
-            .url(context.getResources().getString(R.string.server_url) + "/login")
-            .post(body)
-            .build();
-
+    protected Boolean doInBackground(Void... urls) {
+        String token = null;
         try {
-            Response response = client.newCall(request).execute();
-            response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
+            token = HttpUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
+        } catch (UserNotFoundException e) {
+            boolean success = HttpUtils.register(context, googleAccount.getId(), googleAccount.getDisplayName(),
+                googleAccount.getEmail());
+
+            // try login again
+            if (success) {
+                try {
+                    token = HttpUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
+                } catch (UserNotFoundException e1) {
+                    return false;
+                }
+            }
         }
-        return null;
+
+        if (token != null) {
+            SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
+            SharedPreferences.Editor ed = sp.edit();
+            ed.putString("token", token);
+            ed.apply();
+            return true;
+        }
+
+        return false;
     }
 
+    @Override
+    protected void onPostExecute(Boolean success) {
+        if (success) {
+            Intent launchNextActivity;
+            launchNextActivity = new Intent(context, AlbumMenuActivity.class);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            context.startActivity(launchNextActivity);
+        }
+    }
 }

@@ -55,9 +55,9 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/add_user"
         android:onClick="startAddUserActivity"
-        app:srcCompat="@drawable/ic_person_add_green_24dp"
         app:layout_constraintBottom_toTopOf="@+id/user_list"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_person_add_green_24dp"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/user_list"
