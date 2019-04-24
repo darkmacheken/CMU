@@ -28,7 +28,7 @@ router.post("/login", (req, res) => {
 
 			// modify secret
 			console.log("Signing token for login request.");
-			const token = jwt.sign({ id: user.id }, app.get("jwt-secret"), { expiresIn: "5h" });
+			const token = jwt.sign({ id: user.id }, app.get("jwt-secret"), { expiresIn: "24h" });
 			return res.json({ token });
 		});
 		return false;

@@ -30,9 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     private LoginTask loginTask;
 
-    // UI components
-    private AlertDialog progress;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,21 +41,15 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        progress = new SpotsDialog.Builder().setContext(this)
-            .setMessage("Logging in.")
-            .setCancelable(false)
-            .setTheme(R.style.ProgressBar)
-            .build();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+
         GoogleSignIn.getSignedInAccountFromIntent(resultData)
             .addOnSuccessListener(googleAccount -> {
                 Log.d(TAG, "Signed in as " + googleAccount.getEmail());
-
-                new LoginTask(this, googleAccount).execute();
-
+                new LoginTask(this, googleAccount).execute(false);
                 // Use the authenticated account to sign in to the Drive service.
                 GoogleAccountCredential credential =
                     GoogleAccountCredential.usingOAuth2(
@@ -78,10 +69,9 @@ public class MainActivity extends AppCompatActivity {
             })
             .addOnFailureListener(exception -> {
                 Log.e(TAG, "Unable to sign in.", exception);
-                AlertUtils.alert("Unable to sign in.", this);
+                new LoginTask(this, null).execute(false);
             });
 
-        showProgress(true);
         super.onActivityResult(requestCode, resultCode, resultData);
     }
 
@@ -108,14 +98,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startLoginActivity(View view) {
         requestGdriveSignIn();
-        showProgress(false);
     }
 
-    private void showProgress(boolean show) {
-        if (show) {
-            progress.show();
-        } else {
-            progress.dismiss();
-        }
-    }
 }

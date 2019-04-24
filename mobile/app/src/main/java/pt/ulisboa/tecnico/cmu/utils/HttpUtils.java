@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -26,11 +27,14 @@ import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
 
 public final class HttpUtils {
 
-    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
     private static final String TAG = "HttpUtils";
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String REGISTER_ENDPOINT = "/register";
+
     private static OkHttpClient httpClient;
+    private static String token;
 
     private HttpUtils() {
     }
@@ -79,6 +83,16 @@ public final class HttpUtils {
         return httpClient;
     }
 
+    public static String getToken(Context context) {
+        if (token != null) {
+            return token;
+        }
+
+        SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
+        token = sp.getString("token", null);
+        return token;
+    }
+
     /**
      * Tries to login the user into the server.
      *
@@ -88,7 +102,8 @@ public final class HttpUtils {
      * @return a session token if login is successful and null otherwise.
      * @throws UserNotFoundException if the user is not registered.
      */
-    public static String login(Context context, String userId, String oauthToken) throws UserNotFoundException {
+    public static String login(Context context, String userId, String oauthToken)
+        throws UserNotFoundException, IOException {
         OkHttpClient client = getHttpClient(context);
 
         if (client == null) {
@@ -103,30 +118,37 @@ public final class HttpUtils {
             .post(body)
             .build();
 
-        try {
-            Response response = client.newCall(request).execute();
+        Response response = client.newCall(request).execute();
 
-            if (response.body() == null) {
-                Log.e(TAG, "Response Body is Empty.");
-            }
-
-            // User not found
-            if (response.code() == 404) {
-                throw new UserNotFoundException(response.body().string());
-            }
-
-            if (response.code() != 200) {
-                Log.e(TAG, response.body().string());
-                return null;
-            }
-
-            String jsonResponse = response.body().string();
-            final ObjectNode node = new ObjectMapper().readValue(jsonResponse, ObjectNode.class);
-            return node.get("token").asText();
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to POST request /login.", e);
+        if (response.body() == null) {
+            Log.e(TAG, "Response Body is Empty.");
         }
-        return null;
+
+        // User not found
+        if (response.code() == 404) {
+            throw new UserNotFoundException(response.body().string());
+        }
+
+        if (response.code() != 200) {
+            Log.e(TAG, response.body().string());
+            return null;
+        }
+
+        String jsonResponse = response.body().string();
+        final ObjectNode node = new ObjectMapper().readValue(jsonResponse, ObjectNode.class);
+
+        String tokenLogin = node.get("token").asText();
+
+        // Save token.
+        if (tokenLogin != null) {
+            token = tokenLogin;
+            SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
+            SharedPreferences.Editor ed = sp.edit();
+            ed.putString("token", tokenLogin);
+            ed.apply();
+        }
+
+        return token;
     }
 
     /**
@@ -168,7 +190,8 @@ public final class HttpUtils {
             }
             return true;
         } catch (IOException e) {
-            Log.e(TAG, "Unable to POST request /login.", e);
+            AlertUtils.alert("Unable to sign in.", context);
+            Log.e(TAG, "Unable to POST request /register.", e);
         }
         return false;
     }

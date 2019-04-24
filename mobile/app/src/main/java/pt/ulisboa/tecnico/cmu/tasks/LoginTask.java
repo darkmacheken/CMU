@@ -1,17 +1,26 @@
 package pt.ulisboa.tecnico.cmu.tasks;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import dmax.dialog.SpotsDialog;
+import java.io.IOException;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity;
 import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
+import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.HttpUtils;
 
-public class LoginTask extends AsyncTask<Void, Void, Boolean> {
+public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
 
     private static final String TAG = "LoginTask";
+
+
+    // UI components
+    private AlertDialog progress;
 
     private final GoogleSignInAccount googleAccount;
 
@@ -22,8 +31,27 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
         this.googleAccount = googleAccount;
     }
 
-    protected Boolean doInBackground(Void... urls) {
+    @Override
+    protected void onPreExecute() {
+        progress = new SpotsDialog.Builder().setContext(context)
+            .setMessage("Logging in.")
+            .setCancelable(false)
+            .setTheme(R.style.ProgressBar)
+            .build();
+        showProgress(true);
+    }
+
+    @Override
+    protected Boolean doInBackground(Boolean... forceLogin) {
         String token = null;
+        if (forceLogin.length == 1 && !forceLogin[0] || googleAccount == null) {
+            token = HttpUtils.getToken(context);
+            // login from last time
+            if (token != null) {
+                return true;
+            }
+        }
+
         try {
             token = HttpUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
         } catch (UserNotFoundException e) {
@@ -36,19 +64,18 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
                     token = HttpUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
                 } catch (UserNotFoundException e1) {
                     return false;
+                } catch (IOException e1) {
+                    AlertUtils.alert("Unable to sign in.", context);
+                    Log.e(TAG, "Unable to POST request /login.", e1);
                 }
             }
+        } catch (IOException e) {
+            showProgress(false);
+            AlertUtils.alert("Unable to sign in.", context);
+            Log.e(TAG, "Unable to POST request /login.", e);
         }
 
-        if (token != null) {
-            SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
-            SharedPreferences.Editor ed = sp.edit();
-            ed.putString("token", token);
-            ed.apply();
-            return true;
-        }
-
-        return false;
+        return token != null;
     }
 
     @Override
@@ -60,6 +87,15 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             context.startActivity(launchNextActivity);
+        }
+        showProgress(false);
+    }
+
+    private void showProgress(boolean show) {
+        if (show) {
+            progress.show();
+        } else {
+            progress.dismiss();
         }
     }
 }
