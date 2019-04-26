@@ -1,10 +1,16 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
+import android.Manifest.permission;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,14 +24,19 @@ import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.AlbumMenuAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
+import pt.ulisboa.tecnico.cmu.tasks.GetAlbumsTask;
 
+@TargetApi(VERSION_CODES.JELLY_BEAN)
 public class AlbumMenuActivity extends AppCompatActivity {
 
+    private static final String TAG = "AlbumMenuActivity";
     private static final int ADD_ALBUM_REQUEST = 1;
-    public static File mediaStorageDir;
+
+    private static final String[] permissions = { permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE};
     private AlbumMenuAdapter albumMenuAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
+    @TargetApi(VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,17 +48,23 @@ public class AlbumMenuActivity extends AppCompatActivity {
 
         layoutManager = new LinearLayoutManager(AlbumMenuActivity.this);
         recyclerView.setLayoutManager(layoutManager);
-        List<Album> albumList = getAlbums();
-        albumMenuAdapter = new AlbumMenuAdapter(albumList, AlbumMenuActivity.this);
+
+        albumMenuAdapter = new AlbumMenuAdapter(new ArrayList<>(), AlbumMenuActivity.this);
         recyclerView.setAdapter(albumMenuAdapter);
 
-        mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "P2Photo Albums");
+        if (!arePermissionsEnabled()) {
+            requestMultiplePermissions();
+        }
+
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "P2Photo");
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d("App", "failed to create albums directory");
+                Log.d(TAG, "failed to create albums directory");
             }
         }
+
+        new GetAlbumsTask(this, albumMenuAdapter).execute();
     }
 
     private void setupActionBar() {
@@ -59,14 +76,6 @@ public class AlbumMenuActivity extends AppCompatActivity {
         }
     }
 
-    private List<Album> getAlbums() {
-        List<Album> albums = new ArrayList<>();
-        albums.add(new Album(1, "Hardware"));
-        albums.add(new Album(2, "Destiny Game"));
-        albums.add(new Album(3, "Trains"));
-        albums.add(new Album(4, "Xenomorphs"));
-        return albums;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -116,5 +125,25 @@ public class AlbumMenuActivity extends AppCompatActivity {
             default:
                 return (super.onOptionsItemSelected(item));
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean arePermissionsEnabled(){
+        for(String permission : permissions){
+            if(checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
+                return false;
+        }
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestMultiplePermissions(){
+        List<String> remainingPermissions = new ArrayList<>();
+        for (String permission : permissions) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                remainingPermissions.add(permission);
+            }
+        }
+        requestPermissions(remainingPermissions.toArray(new String[remainingPermissions.size()]), 101);
     }
 }

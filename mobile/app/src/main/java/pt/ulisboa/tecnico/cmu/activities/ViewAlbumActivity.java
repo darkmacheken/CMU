@@ -1,11 +1,10 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
-import static pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity.mediaStorageDir;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +45,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
     }
 
     private List<String> getPhotos() {
-
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "P2Photo");
         File albumFolder = new File(mediaStorageDir, this.albumName);
 
         if (!albumFolder.exists()) {

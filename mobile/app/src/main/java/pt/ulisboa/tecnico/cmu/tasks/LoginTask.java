@@ -12,7 +12,8 @@ import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity;
 import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
-import pt.ulisboa.tecnico.cmu.utils.HttpUtils;
+import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
+import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
 
@@ -45,7 +46,7 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
     protected Boolean doInBackground(Boolean... forceLogin) {
         String token = null;
         if (forceLogin.length == 1 && !forceLogin[0] || googleAccount == null) {
-            token = HttpUtils.getToken(context);
+            token = RequestsUtils.getToken(context);
             // login from last time
             if (token != null) {
                 return true;
@@ -53,15 +54,15 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
         }
 
         try {
-            token = HttpUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
+            token = RequestsUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
         } catch (UserNotFoundException e) {
-            boolean success = HttpUtils.register(context, googleAccount.getId(), googleAccount.getDisplayName(),
+            boolean success = RequestsUtils.register(context, googleAccount.getId(), googleAccount.getDisplayName(),
                 googleAccount.getEmail());
 
             // try login again
             if (success) {
                 try {
-                    token = HttpUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
+                    token = RequestsUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
                 } catch (UserNotFoundException e1) {
                     return false;
                 } catch (IOException e1) {

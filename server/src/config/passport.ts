@@ -38,13 +38,12 @@ passport.use(
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			secretOrKey: "thisisasecret"
 		},
-		(request: any, payload: any, done: any) => {
-			const id = request.params.id;
+		(_request: any, payload: any, done: any) => {
 			const user = userList.findUserById(payload.id);
-			if ((user && id == payload.id) || (id === undefined && user)) {
+			if (user) {
 				return done(null, user);
 			} else {
-				return done(new Error("Users do not match or invalid"));
+				return done(new Error("User not found."));
 			}
 		}
 	)

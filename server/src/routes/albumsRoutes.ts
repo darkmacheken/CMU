@@ -47,13 +47,41 @@ router.post("/:albumId/addUser", (req, res, next) => {
 
 // List all albums
 router.get("/", (req, res, next) => {
-	console.log("GET /albums");
 	passport.authenticate("jwt", { session: false }, (err: Error, user: User) => {
-		if (err || !user) {
+		console.log("GET /albums", user);
+		if (err) {
 			res.status(403);
 			res.send({ error: err.message });
+		} else if (!user) {
+			res.status(403);
+			res.send({ error: "User not found." });
 		} else {
 			res.send(user.albums);
+		}
+	})(req, res, next);
+});
+
+// Create a new album
+router.post("/", (req, res, next) => {
+	passport.authenticate("jwt", { session: false }, (err: Error, user: User) => {
+		console.log("POST /albums", user, req.body.name);
+		if (err) {
+			res.status(403);
+			res.send({ error: err.message });
+		} else if (!user) {
+			res.status(403);
+			res.send({ error: "User not found." });
+		} else if (!req.body.name) {
+			res.status(400);
+			res.send({ error: "Wrong parameters" });
+		} else {
+			const album = new Album(albumList.counter, req.body.name);
+			album.users.push({ id: user.id, link: "" });
+			albumList.addAlbum(album);
+			user.albums.push({ id: album.id, name: album.name });
+			console.log("userList: " + userList);
+			userList.saveToFile();
+			res.end(JSON.stringify(user));
 		}
 	})(req, res, next);
 });
@@ -61,10 +89,9 @@ router.get("/", (req, res, next) => {
 // Get a specific album
 router.get("/:albumId", (req, res, next) => {
 	console.log("GET /albums/" + req.params.albumId);
-	passport.authenticate("jwt", { session: false }, (err: Error, user: User) => {
-		// verificar se user pertence ao album?
+	passport.authenticate("jwt", { session: false }, (err: Error) => {
 		const album = albumList.findAlbumById(+req.params.albumId);
-		if (err || !user) {
+		if (err) {
 			res.status(403);
 			res.send({ error: err.message });
 		} else if (album === undefined) {

@@ -45,6 +45,11 @@ public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.Albu
         notifyItemInserted(0);
     }
 
+    public void addAlbums(List<Album> albums) {
+        albumList.addAll(albums);
+        notifyDataSetChanged();
+    }
+
     class AlbumViewHolder extends RecyclerView.ViewHolder {
 
         private Button album;

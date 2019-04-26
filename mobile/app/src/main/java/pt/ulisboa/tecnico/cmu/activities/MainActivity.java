@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -17,16 +16,17 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.Drive.Builder;
 import com.google.api.services.drive.DriveScopes;
-import dmax.dialog.SpotsDialog;
 import java.util.Arrays;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.LoginTask;
-import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
+
+    private static final int NOT_FORCE_LOGIN = 0;
+    private static final int FORCE_LOGIN = 1;
 
     private LoginTask loginTask;
 
@@ -41,15 +41,20 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null && bundle.getBoolean("startLogin")) {
+            requestGdriveSignIn(FORCE_LOGIN);
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        final boolean forceLogin = (requestCode == FORCE_LOGIN);
 
         GoogleSignIn.getSignedInAccountFromIntent(resultData)
             .addOnSuccessListener(googleAccount -> {
                 Log.d(TAG, "Signed in as " + googleAccount.getEmail());
-                new LoginTask(this, googleAccount).execute(false);
+                new LoginTask(this, googleAccount).execute(forceLogin);
                 // Use the authenticated account to sign in to the Drive service.
                 GoogleAccountCredential credential =
                     GoogleAccountCredential.usingOAuth2(
@@ -78,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Starts a G drive sign-in activity .
      */
-    private void requestGdriveSignIn() {
+    private void requestGdriveSignIn(int forceLogin) {
         Log.d(TAG, "Requesting sign-in");
 
         GoogleSignInOptions signInOptions =
@@ -90,14 +95,14 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInClient client = GoogleSignIn.getClient(this, signInOptions);
 
         // The result of the sign-in Intent is handled in onActivityResult.
-        startActivityForResult(client.getSignInIntent(), 0);
+        startActivityForResult(client.getSignInIntent(), forceLogin);
     }
 
     /**
      * Called when the user taps the Cloud Storage button
      */
     public void startLoginActivity(View view) {
-        requestGdriveSignIn();
+        requestGdriveSignIn(NOT_FORCE_LOGIN);
     }
 
 }

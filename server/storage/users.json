@@ -1,1 +1,13 @@
-[]
+[
+	{
+		"id": "101950179988252694041",
+		"name": "Pedro Daniel",
+		"email": "pedrodaniel200@gmail.com",
+		"albums": [
+			{
+				"id": 1,
+				"name": "Album Test"
+			}
+		]
+	}
+]
