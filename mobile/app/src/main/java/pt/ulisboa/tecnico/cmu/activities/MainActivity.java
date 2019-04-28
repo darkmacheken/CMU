@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.LoginTask;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
+import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,10 +53,16 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         final boolean forceLogin = (requestCode == FORCE_LOGIN);
 
+        final Context thisContext = this;
         GoogleSignIn.getSignedInAccountFromIntent(resultData)
             .addOnSuccessListener(googleAccount -> {
                 Log.d(TAG, "Signed in as " + googleAccount.getEmail());
-                new LoginTask(this, googleAccount).execute(forceLogin);
+
+                if(googleAccount.getId().equals(SharedPropertiesUtils.getLastLoginId(thisContext))){
+                    new LoginTask(this, googleAccount).execute(forceLogin);
+                } else {
+                    new LoginTask(this, googleAccount).execute(true);
+                }
                 // Use the authenticated account to sign in to the Drive service.
                 GoogleAccountCredential credential =
                     GoogleAccountCredential.usingOAuth2(
@@ -68,9 +76,13 @@ public class MainActivity extends AppCompatActivity {
                         .setApplicationName("P2Photo")
                         .build();
 
+                // Save last login id
+                SharedPropertiesUtils.saveLastLoginId(thisContext, googleAccount.getId());
+
                 // The GoogleDriveUtils encapsulates all REST API and SAF functionality.
                 // Its instantiation is required before handling any onClick actions.
                 GoogleDriveUtils.setGoogleDriveService(googleDriveService);
+
             })
             .addOnFailureListener(exception -> {
                 Log.e(TAG, "Unable to sign in.", exception);
@@ -94,6 +106,9 @@ public class MainActivity extends AppCompatActivity {
                 .requestScopes(new Scope(DriveScopes.DRIVE_FILE), new Scope(DriveScopes.DRIVE_APPDATA))
                 .build();
         GoogleSignInClient client = GoogleSignIn.getClient(this, signInOptions);
+
+        // Sign out in case it's logged on. Force prompt choose account.
+        client.signOut();
 
         // The result of the sign-in Intent is handled in onActivityResult.
         startActivityForResult(client.getSignInIntent(), forceLogin);

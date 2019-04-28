@@ -1,1 +1,13 @@
-[]
+[
+	{
+		"id": "b133e759-6de8-47c8-a35e-2a8c54bfdee4",
+		"name": "Album Test",
+		"users": [
+			{
+				"userId": "101950179988252694041",
+				"folderId": "17W6n14lHT8oWj6BOkhJcZZ3U83dMMNL8",
+				"fileId": "1ueenteWZKKQ5VyE5td7tIyq0mXhKR36c"
+			}
+		]
+	}
+]

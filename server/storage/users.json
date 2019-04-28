@@ -1,1 +1,39 @@
-[]
+[
+	{
+		"id": "101950179988252694041",
+		"name": "Pedro Daniel",
+		"email": "pedrodaniel200@gmail.com",
+		"accessToken": "4/OwEMmvVJEOUSB8iTKdFFrtQtFZwd-PrJZIjv6UeSKlhlMkJrQ-Dgz0zDYDolbpU-_r4gDnxdpFAywFx_M_0K90g",
+		"albums": [
+			{
+				"id": "b133e759-6de8-47c8-a35e-2a8c54bfdee4",
+				"name": "Album Test"
+			}
+		],
+		"token": {
+			"access_token": "ya29.Glv6BrrA0ckJc_IyZpU9SRjvH6IunA_9d4hMIuTXZ4ZPas4heinC8DCUv7X1eeey1d81aQs31YoZmt3nBYo8YMI37-FBM_rpmML4mT7thJBQTdhO6pOPPD225eh7",
+			"refresh_token": "1/d9qg08PLvCNCnAKadlwg0NYiB6lfW4tpNUsgf39zRqw",
+			"scope": "https://www.googleapis.com/auth/drive.appdata openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.file",
+			"token_type": "Bearer",
+			"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkODg3ZjI2Y2UzMjU3N2M0YjVhOGExZTFhNTJlMTlkMzAxZjgxODEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDE5NTAxNzk5ODgyNTI2OTQwNDEiLCJlbWFpbCI6InBlZHJvZGFuaWVsMjAwQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoieFdmZDM1WXdzMTVRME9mUXlNb2ZpZyIsIm5hbWUiOiJQZWRybyBEYW5pZWwiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1sLUduSGx4V1ZGay9BQUFBQUFBQUFBSS9BQUFBQUFBQUFBQS9BQ0hpM3JmajQ4M3k1bnYzT3NMV1VndldIZTU3WEI5NGlBL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJQZWRybyIsImZhbWlseV9uYW1lIjoiRGFuaWVsIiwibG9jYWxlIjoiZW4tR0IiLCJpYXQiOjE1NTY0ODg3MTYsImV4cCI6MTU1NjQ5MjMxNn0.ehG35sy_UqJz_kTgDGGzNwicNvD1EL7OXuSX43szny67z5Bjm8ZfGMefKIZkEUPFdnRNemCW3czy8dVmbbLqHnSCgsgGrHPJK2igq7YPkW7E7kyzMtHr_XSVz4RrmA8d8HllpusQ4pqCrgDAPDrxCbx3GSQOu-kSN65iwiN8GmfPcsn2YatTg6YjhGm9WzE3bqGAkwGBPogjbIoVoOvCHOBhKp9ZTL-wNSGgAHwZxZo7L7VjS6JGS7JoJoqPxbgJdqtkfRf82OX_oyheX55rUEgJqTHUvcQDeoeNjMOWiJIj9cVrabK7H256Y-k2dq5L1khaKSZ2KfMX9o7Sy3Pd9A",
+			"expiry_date": 1556492316295
+		},
+		"folderId": "1eKoP-2DigtDKU8RQ0SQufEk2oK55bc3o"
+	},
+	{
+		"id": "109591878950041647523",
+		"name": "Pedro Daniel Rogeiro Lopes",
+		"email": "pdrl@edu.ulisboa.pt",
+		"accessToken": "4/OwEZctNuOqXPG8oS7PMGR9S1KjzpCOgCxGCiKNWngXGBuCo5ZTIW1CGFMMip6if1hFwcwUNfd90eUnm0cHHesNY",
+		"albums": [],
+		"token": {
+			"access_token": "ya29.Glv6BonHv3aJX6qD5ZwhMvhYWYzpdXlspY1238J61SWXwrH11MXrUirRKGPleE2LrGMuARyEoIGa6QU2y-RZOCTYejAd8EzjZWiVh75rHvuiJgIya1BOeRQvwl8a",
+			"refresh_token": "1/S-_YgnYyrkXHMwgMilDSishhy7ysMI9tZ5wku79dvVg",
+			"scope": "openid https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.file",
+			"token_type": "Bearer",
+			"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkODg3ZjI2Y2UzMjU3N2M0YjVhOGExZTFhNTJlMTlkMzAxZjgxODEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDk1OTE4Nzg5NTAwNDE2NDc1MjMiLCJoZCI6ImVkdS51bGlzYm9hLnB0IiwiZW1haWwiOiJwZHJsQGVkdS51bGlzYm9hLnB0IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJlUURScWMyVkZtNTB5b29vR29VS25BIiwibmFtZSI6IlBlZHJvIERhbmllbCBSb2dlaXJvIExvcGVzIiwicGljdHVyZSI6Imh0dHBzOi8vbGg2Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tRzFhWWZNdVkwNjQvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQUEvQUNIaTNyZEtZVEhPZ2ZQbVRuZjRXRVhWVGJNVWVIbVY5US9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiUGVkcm8gRGFuaWVsIFJvZ2Vpcm8iLCJmYW1pbHlfbmFtZSI6IkxvcGVzIiwibG9jYWxlIjoicHQtUFQiLCJpYXQiOjE1NTY0ODg3NTAsImV4cCI6MTU1NjQ5MjM1MH0.amGoEk8hRUYfUyb4oI7Ob-TyUUHyqepKK_evWABEjdHCB_1SGvBJ6NEgZz0d0DEiH9AHI18Su44xhgAJ8esfD5IOGDOw_K00pZ2Gxb-Ie16TPMmCeIjGcBWavb1C5KdHyXNsH7-zAyFpIv4BGUgwO8U3UfUu5EcymXNn03vEgAfrKj23bd2x0JfsGz7VSBOX_jEfQeU-vVzhpr8ZH5d0NXb-xOeMxkKDk46crMqWJoGNNKMYH_i47ojDdFezwlvQQ7CjKN5v5UYjEj7CO8tawACvfDS8TcPUDpGmiLGpqMpc-OzbyI_p-Dd4WhOzpx5OaV8V_QuzMVDvsw0tu5ptvg",
+			"expiry_date": 1556492350796
+		},
+		"folderId": "1CJKoRMud-ii6yoMof1eZpcCK-3joOk6A"
+	}
+]

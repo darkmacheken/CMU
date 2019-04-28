@@ -23,7 +23,6 @@
 		"express": "^4.16.4",
 		"google-auth-library": "^3.1.2",
 		"googleapis": "^39.2.0",
-		"hashmap": "^2.3.0",
 		"https": "^1.0.0",
 		"passport": "^0.4.0",
 		"passport-jwt": "^4.0.0",

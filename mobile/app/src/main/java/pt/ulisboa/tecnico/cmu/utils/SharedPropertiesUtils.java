@@ -32,4 +32,16 @@ public final class SharedPropertiesUtils {
         ed.putString("albums", albumsJson);
         ed.apply();
     }
+
+    public static String getLastLoginId(Context context) {
+        SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
+        return sp.getString("userId", "");
+    }
+
+    public static void saveLastLoginId(Context context, String userId) {
+        SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString("userId", userId);
+        ed.apply();
+    }
 }
