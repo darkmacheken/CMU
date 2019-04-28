@@ -3,7 +3,7 @@ import passportLocal from "passport-local";
 import passportJWT, { ExtractJwt } from "passport-jwt";
 import { userList } from "../main";
 import { User } from "../classes/user";
-const { OAuth2Client } = require("google-auth-library");
+import * as googleAuthApi from "google-auth-library";
 
 const localStrategy = passportLocal.Strategy;
 const jwtStrategy = passportJWT.Strategy;
@@ -49,7 +49,7 @@ passport.use(
 	)
 );
 const CLIENT_ID = "949378650699-kg0f2lpje8lbq25v5b55ueien1dneeoa.apps.googleusercontent.com";
-const client = new OAuth2Client(CLIENT_ID);
+const client = new googleAuthApi.OAuth2Client(CLIENT_ID);
 async function verify(token: string, user: User): Promise<boolean> {
 	let ticket;
 	try {

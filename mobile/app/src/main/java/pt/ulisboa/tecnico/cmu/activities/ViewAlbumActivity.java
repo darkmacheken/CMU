@@ -22,16 +22,21 @@ import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
 
 public class ViewAlbumActivity extends AppCompatActivity {
 
+    private static final String TAG = "ViewAlbumActivity";
+
     private static final int GALLERY = 1;
     private ViewAlbumAdapter viewAlbumAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private String albumName;
+    private String albumId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_album);
         this.albumName = getIntent().getBundleExtra("album").getString("name");
+        this.albumId = getIntent().getBundleExtra("album").getString("id");
+
         setTitle(this.albumName);
         setupActionBar();
 
@@ -46,16 +51,17 @@ public class ViewAlbumActivity extends AppCompatActivity {
 
     private List<String> getPhotos() {
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "P2Photo");
-        File albumFolder = new File(mediaStorageDir, this.albumName);
+        File albumFolder = new File(mediaStorageDir, this.albumId);
 
         if (!albumFolder.exists()) {
             if (!albumFolder.mkdirs()) {
-                Log.d("App", "failed to create " + this.albumName + " directory");
+                Log.d(TAG, "failed to create " + this.albumName + " directory");
             }
         }
 
         File[] files = albumFolder.listFiles();
         List<String> photos = new ArrayList<>();
+
         for (File file : files) {
             photos.add(file.getAbsolutePath());
         }

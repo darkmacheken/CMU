@@ -15,8 +15,8 @@ const options = {
 
 export const app = express();
 
-export let userList = new UserList(0);
-export let albumList = new AlbumList(0);
+export let userList = new UserList();
+export let albumList = new AlbumList();
 
 app.set("jwt-secret", "thisisasecret");
 app.use(express.json());

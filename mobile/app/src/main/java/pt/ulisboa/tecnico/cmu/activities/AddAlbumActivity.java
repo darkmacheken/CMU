@@ -6,19 +6,24 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.UserListAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
+import pt.ulisboa.tecnico.cmu.tasks.CreateAlbumsTask;
+import pt.ulisboa.tecnico.cmu.tasks.CreateAlbumsTask.State;
 
 public class AddAlbumActivity extends AppCompatActivity {
+
+    private static final String TAG = "AddAlbumActivity";
 
     private static final int ADD_USER_REQUEST = 1;
     private UserListAdapter userListAdapter;
@@ -41,33 +46,37 @@ public class AddAlbumActivity extends AppCompatActivity {
         recyclerView.setAdapter(userListAdapter);
 
         nameOfAlbumView = findViewById(R.id.name_of_album);
-        nameOfAlbumView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptCreate();
-                    return true;
-                }
-                return false;
+        nameOfAlbumView.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                attemptCreate();
+                return true;
             }
+            return false;
         });
 
         Button addAlbumButton = findViewById(R.id.add_album_button);
-        addAlbumButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptCreate();
-            }
-        });
+        addAlbumButton.setOnClickListener(view -> attemptCreate());
     }
 
     private void attemptCreate() {
-        Bundle albumBundle = new Bundle();
-        albumBundle.putInt("id", 0);
-        albumBundle.putString("name", nameOfAlbumView.getText().toString());
-        Intent data = new Intent();
-        data.putExtra("album", albumBundle);
-        setResult(RESULT_OK, data);
+        String name = nameOfAlbumView.getText().toString();
+
+        if (TextUtils.isEmpty(name)) {
+            return;
+        }
+        try {
+            State state = new CreateAlbumsTask(this, name).execute().get();
+
+            if (state == State.SUCCESS) {
+                setResult(RESULT_OK);
+            } else {
+                setResult(RESULT_CANCELED);
+            }
+            finish();
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, "Unable to Get Result.", e);
+        }
+        setResult(RESULT_CANCELED);
         finish();
     }
 

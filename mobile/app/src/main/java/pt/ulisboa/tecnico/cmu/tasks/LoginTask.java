@@ -18,14 +18,10 @@ import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
 
     private static final String TAG = "LoginTask";
-
-
+    private final GoogleSignInAccount googleAccount;
+    private final Context context;
     // UI components
     private AlertDialog progress;
-
-    private final GoogleSignInAccount googleAccount;
-
-    private final Context context;
 
     public LoginTask(Context context, GoogleSignInAccount googleAccount) {
         this.context = context;
@@ -47,6 +43,7 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
         String token = null;
         if (forceLogin.length == 1 && !forceLogin[0] || googleAccount == null) {
             token = RequestsUtils.getToken(context);
+
             // login from last time
             if (token != null) {
                 return true;
@@ -57,7 +54,7 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
             token = RequestsUtils.login(context, googleAccount.getId(), googleAccount.getIdToken());
         } catch (UserNotFoundException e) {
             boolean success = RequestsUtils.register(context, googleAccount.getId(), googleAccount.getDisplayName(),
-                googleAccount.getEmail());
+                googleAccount.getEmail(), googleAccount.getServerAuthCode());
 
             // try login again
             if (success) {

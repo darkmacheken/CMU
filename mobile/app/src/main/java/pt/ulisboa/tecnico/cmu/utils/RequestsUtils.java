@@ -33,7 +33,7 @@ public final class RequestsUtils {
     private static final String TAG = "RequestsUtils";
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String REGISTER_ENDPOINT = "/register";
-    private static final String GET_ALBUMS_ENDPOINT = "/albums";
+    private static final String ALBUMS_ENDPOINT = "/albums";
 
     private static OkHttpClient httpClient;
     private static String token;
@@ -108,7 +108,7 @@ public final class RequestsUtils {
      * @param email   the email of the Google's account.
      * @return true if successful and false otherwise.
      */
-    public static boolean register(Context context, String userId, String name, String email) {
+    public static boolean register(Context context, String userId, String name, String email, String accessToken) {
         OkHttpClient client = getHttpClient(context);
 
         if (client == null) {
@@ -118,7 +118,8 @@ public final class RequestsUtils {
         RequestBody body = RequestBody.create(RequestsUtils.JSON,
             "{\"userid\": \"" + userId + "\", "
                 + "\"name\" : \"" + name + "\","
-                + "\"email\" : \"" + email + "\"}");
+                + "\"email\" : \"" + email + "\","
+                + "\"accessToken\" : \"" + accessToken + "\" }");
         Request request = new Request.Builder()
             .url(context.getResources().getString(R.string.server_url) + REGISTER_ENDPOINT)
             .post(body)
@@ -152,7 +153,7 @@ public final class RequestsUtils {
         }
 
         Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
-            .url(context.getResources().getString(R.string.server_url) + GET_ALBUMS_ENDPOINT)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT)
             .get()
             .build();
 
@@ -181,6 +182,42 @@ public final class RequestsUtils {
             Log.e(TAG, "Unable to GET request /albums.", e);
         }
         return "[]";
+    }
+
+    public static boolean createAlbum(Context context, String name) throws UnauthorizedException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            return false;
+        }
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON, "{\"name\": \"" + name + "\"}");
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT)
+            .post(body)
+            .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == 401 || response.code() == 403) {
+                throw new UnauthorizedException();
+            }
+
+            if (response.body() == null) {
+                Log.e(TAG, "Response Body is Empty.");
+                return false;
+            }
+
+            if (response.code() == 200) {
+                return true;
+            }
+        } catch (IOException e) {
+            AlertUtils.alert("Unable to create album.", context);
+            Log.e(TAG, "Unable to POST request /albums.", e);
+        }
+        return false;
     }
 
     /**

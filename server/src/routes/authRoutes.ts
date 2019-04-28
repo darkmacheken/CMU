@@ -3,6 +3,8 @@ import { passport } from "../config/passport";
 import { app, userList } from "../main";
 import jwt from "jsonwebtoken";
 import { User } from "../classes/user";
+import * as googleAuth from "../google/googleAuthClient";
+import * as googleapis from "googleapis";
 
 export const router = express.Router();
 
@@ -39,20 +41,41 @@ router.post("/login", (req, res) => {
 router.post("/register", (req, res) => {
 	console.log("POST /users", req.body);
 
-	if (!req.body.name || !req.body.userid || !req.body.email) {
+	if (!req.body.name || !req.body.userid || !req.body.email || !req.body.accessToken) {
 		res.status(400);
 		res.send({ error: "Wrong parameters" });
 	}
 
-	let user = userList.findUserById(req.body.userid);
+	const user = userList.findUserById(req.body.userid);
 
 	if (user) {
 		res.status(409);
 		res.send({ error: "User already exists" });
 	} else {
-		user = new User(req.body.userid, req.body.name, req.body.email);
-		userList.addUser(user);
-		console.log(userList);
-		res.end(JSON.stringify(user));
+		let newUser = new User(req.body.userid, req.body.name, req.body.email, req.body.accessToken);
+		userList.addUser(newUser);
+		// Create Folder
+		googleAuth.authorize(newUser, (client) => {
+			googleapis.google
+				.drive({ version: "v3", auth: client })
+				.files.create({
+					requestBody: {
+						name: "P2Photo",
+						mimeType: googleAuth.TYPE_GOOGLE_FOLDER
+					}
+				})
+				.then((folder) => {
+					if (folder.data.id) {
+						console.log("Created folder Id: ", folder.data.id);
+						newUser.setFolderId(folder.data.id);
+						res.end(JSON.stringify({ folderId: folder.data.id }));
+					}
+				})
+				.catch((err) => {
+					console.error(err);
+					res.status(400);
+					res.send({ error: "Error creating file." });
+				});
+		});
 	}
 });

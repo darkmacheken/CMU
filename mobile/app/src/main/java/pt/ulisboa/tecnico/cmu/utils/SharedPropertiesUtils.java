@@ -32,5 +32,4 @@ public final class SharedPropertiesUtils {
         ed.putString("albums", albumsJson);
         ed.apply();
     }
-
 }

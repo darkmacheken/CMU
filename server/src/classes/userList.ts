@@ -4,32 +4,29 @@ import fs from "fs";
 const usersPath = "./storage/users.json";
 
 export class UserList {
-	public list: User[];
-	public counter: number;
+	public users: User[];
 
-	constructor(counter: number) {
-		this.list = [];
-		this.counter = counter;
+	constructor() {
+		this.users = [];
 		this.readFromFile();
 	}
 
 	public addUser(user: User) {
-		this.list.push(user);
-		this.counter++;
+		this.users.push(user);
 		this.saveToFile();
 	}
 
 	public saveToFile() {
-		fs.writeFile(usersPath, JSON.stringify(this.list, null, "\t"), (err) => {
+		fs.writeFile(usersPath, JSON.stringify(this.users, null, "\t"), (err) => {
 			if (err) {
 				return console.log(err);
 			}
-			console.log("The file was saved!");
+			console.log("The file users.json was saved!");
 		});
 	}
 
 	public findUserByName(name: string, done?: (err: any, user?: User) => void) {
-		for (const user of this.list) {
+		for (const user of this.users) {
 			if (user.name === name) {
 				if (done) {
 					return done(null, user);
@@ -46,7 +43,7 @@ export class UserList {
 	}
 
 	public findUserById(id: string, done?: (err: any, user?: User) => void): User | undefined | void {
-		for (const user of this.list) {
+		for (const user of this.users) {
 			if (user.id === id) {
 				if (done) {
 					return done(null, user);
@@ -55,6 +52,7 @@ export class UserList {
 				}
 			}
 		}
+
 		if (done) {
 			return done(new Error(`User with id ${id} not found!`));
 		} else {
@@ -63,9 +61,9 @@ export class UserList {
 	}
 
 	private readFromFile() {
-		this.list = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
+		this.users = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
 
 		console.log("Users List");
-		console.log(this.list);
+		console.log(this.users);
 	}
 }

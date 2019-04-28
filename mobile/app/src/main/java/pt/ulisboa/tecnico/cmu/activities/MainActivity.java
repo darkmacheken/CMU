@@ -23,7 +23,7 @@ import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "MainActivity";
 
     private static final int NOT_FORCE_LOGIN = 0;
     private static final int FORCE_LOGIN = 1;
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInOptions signInOptions =
             new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getResources().getString(R.string.server_id))
+                .requestServerAuthCode(getResources().getString(R.string.server_id))
                 .requestEmail()
                 .requestScopes(new Scope(DriveScopes.DRIVE_FILE), new Scope(DriveScopes.DRIVE_APPDATA))
                 .build();

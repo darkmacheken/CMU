@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.cmu.activities;
 import android.Manifest.permission;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -11,6 +11,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.AlbumMenuAdapter;
-import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 import pt.ulisboa.tecnico.cmu.tasks.GetAlbumsTask;
+import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 
 @TargetApi(VERSION_CODES.JELLY_BEAN)
 public class AlbumMenuActivity extends AppCompatActivity {
@@ -32,7 +33,7 @@ public class AlbumMenuActivity extends AppCompatActivity {
     private static final String TAG = "AlbumMenuActivity";
     private static final int ADD_ALBUM_REQUEST = 1;
 
-    private static final String[] permissions = { permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE};
+    private static final String[] permissions = {permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE};
     private AlbumMenuAdapter albumMenuAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
@@ -64,7 +65,16 @@ public class AlbumMenuActivity extends AppCompatActivity {
             }
         }
 
+        GoogleDriveUtils.queryFiles();
+
         new GetAlbumsTask(this, albumMenuAdapter).execute();
+        Context thisContext = this;
+        SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
+        pullToRefresh.setOnRefreshListener(() -> {
+            new GetAlbumsTask(thisContext, albumMenuAdapter).execute();
+            pullToRefresh.setRefreshing(false);
+        });
+
     }
 
     private void setupActionBar() {
@@ -82,9 +92,7 @@ public class AlbumMenuActivity extends AppCompatActivity {
         // Check which request we're responding to
         // Make sure the request was successful
         if (requestCode == ADD_ALBUM_REQUEST && resultCode == RESULT_OK) {
-            Bundle albumBundle = data.getBundleExtra("album");
-            albumMenuAdapter.addAlbum(new Album(albumBundle.getInt("id"), albumBundle.getString("name")));
-            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+            new GetAlbumsTask(this, albumMenuAdapter).execute();
         }
     }
 
@@ -107,19 +115,13 @@ public class AlbumMenuActivity extends AppCompatActivity {
                 alertDialog.setTitle("Alert");
                 alertDialog.setMessage("Are you sure you want to logout?");
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(AlbumMenuActivity.this, MainActivity.class);
-                            finish();
-                            startActivity(intent);
-                        }
+                    (dialog, which) -> {
+                        Intent intent1 = new Intent(AlbumMenuActivity.this, MainActivity.class);
+                        finish();
+                        startActivity(intent1);
                     });
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                    (dialog, which) -> dialog.dismiss());
                 alertDialog.show();
                 return (true);
             default:
@@ -128,16 +130,17 @@ public class AlbumMenuActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean arePermissionsEnabled(){
-        for(String permission : permissions){
-            if(checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
+    private boolean arePermissionsEnabled() {
+        for (String permission : permissions) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;
+            }
         }
         return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void requestMultiplePermissions(){
+    private void requestMultiplePermissions() {
         List<String> remainingPermissions = new ArrayList<>();
         for (String permission : permissions) {
             if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
