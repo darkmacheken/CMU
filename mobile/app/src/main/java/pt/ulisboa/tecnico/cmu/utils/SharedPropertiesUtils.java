@@ -9,39 +9,27 @@ public final class SharedPropertiesUtils {
     }
 
 
-    public static String getToken(Context context) {
+    public static String getToken(Context context, String userId) {
         SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
-        return sp.getString("token", "");
+        return sp.getString("token_" + userId, "");
     }
 
-    public static void saveToken(Context context, String tokenLogin) {
+    public static void saveToken(Context context, String userId, String tokenLogin) {
         SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
-        ed.putString("token", tokenLogin);
+        ed.putString("token_" + userId, tokenLogin);
         ed.apply();
     }
 
-    public static String getAlbums(Context context) {
+    public static String getAlbums(Context context, String userId) {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
-        return sp.getString("albums", "[]");
+        return sp.getString("albums_" + userId, "[]");
     }
 
-    public static void saveAlbums(Context context, String albumsJson) {
+    public static void saveAlbums(Context context, String userId, String albumsJson) {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
-        ed.putString("albums", albumsJson);
-        ed.apply();
-    }
-
-    public static String getLastLoginId(Context context) {
-        SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
-        return sp.getString("userId", "");
-    }
-
-    public static void saveLastLoginId(Context context, String userId) {
-        SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = sp.edit();
-        ed.putString("userId", userId);
+        ed.putString("albums_" + userId, albumsJson);
         ed.apply();
     }
 }

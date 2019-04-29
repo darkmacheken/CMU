@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -37,6 +38,7 @@ public final class RequestsUtils {
 
     private static OkHttpClient httpClient;
     private static String token;
+    private static String userId;
 
     private RequestsUtils() {
     }
@@ -91,7 +93,8 @@ public final class RequestsUtils {
         // Save token.
         if (tokenLogin != null) {
             token = tokenLogin;
-            SharedPropertiesUtils.saveToken(context, tokenLogin);
+            RequestsUtils.userId = userId;
+            SharedPropertiesUtils.saveToken(context, userId, tokenLogin);
         } else {
             return "";
         }
@@ -171,12 +174,12 @@ public final class RequestsUtils {
 
             if (response.code() == 200) {
                 String albumsJson = response.body().string();
-                SharedPropertiesUtils.saveAlbums(context, albumsJson);
+                SharedPropertiesUtils.saveAlbums(context, userId, albumsJson);
                 return albumsJson;
             }
         } catch (SocketTimeoutException e) {
             Log.e(TAG, "Timeout to GET request /albums.", e);
-            return SharedPropertiesUtils.getAlbums(context);
+            return SharedPropertiesUtils.getAlbums(context, userId);
         } catch (IOException e) {
             AlertUtils.alert("Unable to retrieve albums.", context);
             Log.e(TAG, "Unable to GET request /albums.", e);
@@ -264,9 +267,10 @@ public final class RequestsUtils {
         return httpClient;
     }
 
-    public static String getToken(Context context) {
-        if (token == null) {
-            token = SharedPropertiesUtils.getToken(context);
+    public static String getToken(Context context, String userId) {
+        if (token == null || !TextUtils.equals(RequestsUtils.userId, userId)) {
+            token = SharedPropertiesUtils.getToken(context, userId);
+            RequestsUtils.userId = userId;
         }
         return token;
     }

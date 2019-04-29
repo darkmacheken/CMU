@@ -21,7 +21,6 @@ import java.util.Arrays;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.LoginTask;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
-import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,11 +57,8 @@ public class MainActivity extends AppCompatActivity {
             .addOnSuccessListener(googleAccount -> {
                 Log.d(TAG, "Signed in as " + googleAccount.getEmail());
 
-                if(googleAccount.getId().equals(SharedPropertiesUtils.getLastLoginId(thisContext))){
-                    new LoginTask(this, googleAccount).execute(forceLogin);
-                } else {
-                    new LoginTask(this, googleAccount).execute(true);
-                }
+                new LoginTask(this, googleAccount).execute(forceLogin);
+
                 // Use the authenticated account to sign in to the Drive service.
                 GoogleAccountCredential credential =
                     GoogleAccountCredential.usingOAuth2(
@@ -75,9 +71,6 @@ public class MainActivity extends AppCompatActivity {
                         credential)
                         .setApplicationName("P2Photo")
                         .build();
-
-                // Save last login id
-                SharedPropertiesUtils.saveLastLoginId(thisContext, googleAccount.getId());
 
                 // The GoogleDriveUtils encapsulates all REST API and SAF functionality.
                 // Its instantiation is required before handling any onClick actions.
