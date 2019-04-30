@@ -35,7 +35,7 @@ public class UserButtonListAdapter
     @Override
     public void onBindViewHolder(pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder userViewHolder,
         int i) {
-        userViewHolder.user.setText(userList.get(i).getUsername());
+        userViewHolder.user.setText(userList.get(i).getName() + " (" + userList.get(i).getEmail() + ")");
         userViewHolder.user.setOnClickListener(new UserButtonListAdapter.UserOnClickListener(userList.get(i)));
     }
 
@@ -71,7 +71,7 @@ public class UserButtonListAdapter
         public void onClick(View v) {
             Bundle userBundle = new Bundle();
             userBundle.putString("id", user.getId());
-            userBundle.putString("username", user.getUsername());
+            //userBundle.putString("username", user.getUsername());
             Intent data = new Intent();
             data.putExtra("user", userBundle);
             activity.setResult(RESULT_OK, data);

@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmu.tasks;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,7 +8,6 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import com.google.android.gms.tasks.Tasks;
 import com.google.gson.Gson;
-import dmax.dialog.SpotsDialog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
@@ -31,8 +28,7 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
     private static final String TAG = "GetAlbumPhotosTask";
     private final Context context;
     private final ViewAlbumAdapter viewAlbumAdapter;
-    // UI components
-    private AlertDialog progress;
+    ;
     private Album album;
 
 
@@ -44,14 +40,7 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
 
     @Override
     protected void onPreExecute() {
-        progress = new SpotsDialog.Builder().setContext(context)
-            .setMessage("Retrieving album's metadata.")
-            .setCancelable(false)
-            .setTheme(R.style.ProgressBar)
-            .build();
-
         GoogleDriveUtils.connectDriveService(context);
-        showProgress(true);
     }
 
     @RequiresApi(api = VERSION_CODES.N)
@@ -62,8 +51,7 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
         File[] filesArray = albumFolder.listFiles();
         filesArray = Optional.ofNullable(filesArray).orElseGet(() -> new File[]{});
 
-        Map<String, File> files = Arrays.stream(filesArray).collect(
-            Collectors.toMap(File::getName, f -> f));
+        Map<String, File> files = Arrays.stream(filesArray).collect(Collectors.toMap(File::getName, f -> f));
 
         List<String> imagesList = new ArrayList<>();
 
@@ -72,12 +60,9 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
         this.album.getUsers()
             .forEach(link -> {
                 try {
-                    Tasks.await(GoogleDriveUtils.readFile(link.getFileId()).addOnCompleteListener(metaDataFile -> {
-                        if (metaDataFile.isSuccessful()) {
-                            String[] images = new Gson().fromJson(metaDataFile.getResult(), String[].class);
-                            finalImagesList.addAll(Arrays.asList(images));
-                        }
-                    }).addOnFailureListener(e -> Log.e(TAG, "Unable to download metadata file.", e)));
+                    String metaDataFile = Tasks.await(GoogleDriveUtils.readFile(link.getFileId()));
+                    String[] images = new Gson().fromJson(metaDataFile, String[].class);
+                    finalImagesList.addAll(Arrays.asList(images));
                 } catch (ExecutionException | InterruptedException e) {
                     Log.e(TAG, "Error waiting for tasks.", e);
                 }
@@ -89,30 +74,18 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
             imagesList = Arrays.asList(
                 new Gson().fromJson(SharedPropertiesUtils.getAlbumMetadata(context, album.getId()), String[].class));
         }
-        publishProgress(false);
 
         imagesList.forEach(image -> {
             if (!files.containsKey(image)) {
-                try {
-                    Tasks.await(GoogleDriveUtils.downloadFile(image,
-                        new File(context.getCacheDir(), this.album.getId()))
-                        .addOnCompleteListener(file -> {
-                            if (file.isSuccessful()) {
-                                viewAlbumAdapter.addPhoto(file.getResult().getAbsolutePath());
-                            }
-                        })
-                        .addOnFailureListener(e -> Log.e(TAG, "Unable to download image file.", e)));
-                } catch (ExecutionException | InterruptedException e) {
-                    Log.e(TAG, "Error wating for tasks.", e);
-                }
+                GoogleDriveUtils.downloadFile(image, new File(context.getCacheDir(), this.album.getId()))
+                    .addOnCompleteListener((fileResult) -> {
+                        if (fileResult.isSuccessful()) {
+                            viewAlbumAdapter.addPhoto(fileResult.getResult().getAbsolutePath());
+                        }
+                    });
             }
         });
         return State.SUCCESS;
-    }
-
-    @Override
-    protected void onProgressUpdate(Boolean... values) {
-        showProgress(values[0]);
     }
 
     @Override
@@ -132,15 +105,6 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
                 context.startActivity(launchNextActivity);
                 break;
             default:
-        }
-        showProgress(false);
-    }
-
-    private void showProgress(boolean show) {
-        if (show) {
-            progress.show();
-        } else {
-            progress.dismiss();
         }
     }
 }

@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
@@ -27,7 +29,7 @@ public class UserListAdapter
 
     @Override
     public void onBindViewHolder(pt.ulisboa.tecnico.cmu.adapters.UserListAdapter.UserViewHolder userViewHolder, int i) {
-        userViewHolder.user.setText(userList.get(i).getUsername());
+        userViewHolder.user.setText(userList.get(i).getName() + " (" + userList.get(i).getEmail() + ") ");
     }
 
     @Override
@@ -38,6 +40,11 @@ public class UserListAdapter
     public void addUser(User user) {
         userList.add(0, user);
         notifyItemInserted(0);
+    }
+
+    public void addUser(User[] users) {
+        userList.addAll(Arrays.asList(users));
+        notifyAll();
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {

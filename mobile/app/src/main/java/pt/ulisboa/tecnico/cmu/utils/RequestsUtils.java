@@ -22,6 +22,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.exceptions.UnauthorizedException;
 import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
 
@@ -32,6 +33,7 @@ public final class RequestsUtils {
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String REGISTER_ENDPOINT = "/register";
     private static final String ALBUMS_ENDPOINT = "/albums";
+    private static final String USERS_ENDPOINT = "/users";
     private static OkHttpClient httpClient;
     private static String token;
     private static String userId;
@@ -213,6 +215,43 @@ public final class RequestsUtils {
             Log.e(TAG, "Unable to POST request /albums.", e);
         }
         return false;
+    }
+
+    public static User[] getUsers(Context context, String q) throws UnauthorizedException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            return new User[]{};
+        }
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON, "{\"q\": \"" + q + "\"}");
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + USERS_ENDPOINT)
+            .post(body)
+            .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == 401 || response.code() == 403) {
+                throw new UnauthorizedException();
+            }
+
+            if (response.body() == null) {
+                Log.e(TAG, "Response Body is Empty.");
+                return new User[]{};
+            }
+
+            if (response.code() == 200) {
+                String jsonResponse = response.body().string();
+                return new Gson().fromJson(jsonResponse, User[].class);
+            }
+        } catch (IOException e) {
+            AlertUtils.alert("Unable to get users.", context);
+            Log.e(TAG, "Unable to GET request /users.", e);
+        }
+        return new User[]{};
     }
 
     /**

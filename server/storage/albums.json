@@ -9,5 +9,16 @@
 				"fileId": "1ueenteWZKKQ5VyE5td7tIyq0mXhKR36c"
 			}
 		]
+	},
+	{
+		"id": "151a333f-0f2b-4e9d-8511-424fc5901c13",
+		"name": "Album Test 2",
+		"users": [
+			{
+				"userId": "101950179988252694041",
+				"folderId": "1jh5Edat3dAmAUL3_b6d8os321bflWe57",
+				"fileId": "100mK8Fmpvbu5Frm3iOv_KcPJ-MpKzuUp"
+			}
+		]
 	}
 ]

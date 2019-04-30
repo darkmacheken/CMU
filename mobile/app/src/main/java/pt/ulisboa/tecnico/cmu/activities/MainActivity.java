@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
@@ -128,25 +130,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean arePermissionsEnabled() {
         for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
+            if (VERSION.SDK_INT >= VERSION_CODES.M) {
+                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
         }
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestMultiplePermissions() {
         List<String> remainingPermissions = new ArrayList<>();
         for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                remainingPermissions.add(permission);
+            if (VERSION.SDK_INT >= VERSION_CODES.M) {
+                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    remainingPermissions.add(permission);
+                }
             }
         }
-        requestPermissions(remainingPermissions.toArray(new String[remainingPermissions.size()]), 101);
+        if (VERSION.SDK_INT >= VERSION_CODES.M) {
+            requestPermissions(remainingPermissions.toArray(new String[remainingPermissions.size()]), 101);
+        }
     }
 
 }

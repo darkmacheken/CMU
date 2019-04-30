@@ -35,7 +35,7 @@ public final class GoogleDriveUtils {
     private static final String TAG = "GoogleDriveUtils";
     private static final Executor executor = Executors.newSingleThreadExecutor();
 
-    public static String TYPE_GOOGLE_FOLDER = "application/vnd.google-apps.folder";
+    private static final String TYPE_GOOGLE_FOLDER = "application/vnd.google-apps.folder";
 
     private static Drive driveService;
 

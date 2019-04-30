@@ -5,32 +5,35 @@ import { userList } from "../main";
 
 export const router = express.Router();
 
-// Get all users according with parameter
-router.get("/", (req, res, next) => {
-	console.log("GET /users");
-	passport.authenticate("jwt", { session: false }, (err, userRequest: User) => {
-		if (err || !userRequest) {
+router.post("/", (req, res, next) => {
+	passport.authenticate("jwt", { session: false }, (err: Error, user?: User) => {
+		if (!user) {
+			console.log(`POST /users { null }`, req.body);
+			res.status(403);
+			res.send({ error: "User not found." });
+			return;
+		}
+		console.log(`POST /users { id: "${user.id}", name: "${user.name}, email: "${user.email}" }`, req.body);
+
+		if (err) {
 			res.status(403);
 			res.send({ error: err.message });
-		} else if (!req.body.q || /^\s*$/.test(req.body.q)) {
-			const responseArray: IUser[] = [];
-			for (const user of userList.users) {
-				responseArray.push(user.getJson());
-			}
-			res.send(JSON.stringify(responseArray));
+		} else if (!req.body.q) {
+			res.status(400);
+			res.send({ error: "Wrong parameters" });
 		} else {
 			const responseArray: IUser[] = [];
-			for (const user of userList.users) {
-				let q = req.body.q.toUpperCase();
+			for (const userQ of userList.users) {
+				const q = req.body.q.toUpperCase();
 				if (
-					user.id.toUpperCase().includes(q) ||
-					user.name.toUpperCase().includes(q) ||
-					user.email.toUpperCase().includes(q)
+					userQ.id.toUpperCase().includes(q) ||
+					userQ.name.toUpperCase().includes(q) ||
+					userQ.email.toUpperCase().includes(q)
 				) {
-					responseArray.push(user.getJson());
+					responseArray.push(userQ.getJson());
 				}
 			}
-			res.send(JSON.stringify(responseArray));
+			res.end(JSON.stringify(responseArray));
 		}
 	})(req, res, next);
 });

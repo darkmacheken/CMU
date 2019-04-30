@@ -9,22 +9,32 @@ import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Tasks;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
+import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
 
 public class AddUserActivity extends AppCompatActivity {
 
     private UserButtonListAdapter userButtonListAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private GoogleSignInAccount googleAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_user);
         setupActionBar();
+
+        this.googleAccount = GoogleSignIn.getLastSignedInAccount(this);
 
         RecyclerView recyclerView = findViewById(R.id.user_list);
         recyclerView.setHasFixedSize(true);
@@ -38,30 +48,29 @@ public class AddUserActivity extends AppCompatActivity {
         EditText nameOfUserView = findViewById(R.id.name_of_user);
         nameOfUserView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                search();
+                search(textView.getText().toString());
                 return true;
             }
             return false;
         });
 
         Button searchUserButton = findViewById(R.id.search_user_button);
-        searchUserButton.setOnClickListener(view -> search());
+        searchUserButton.setOnClickListener(view -> search(nameOfUserView.getText().toString()));
     }
 
-    private void search() {
-        List<User> users = searchUser();
-        userButtonListAdapter.setUserList(users);
-        ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+    private void search(String q) {
+        Tasks.call(Executors.newSingleThreadExecutor(), () -> {
+            User[] users = RequestsUtils.getUsers(this, q);
+
+            List<User> usersList = Arrays.asList(users).stream().filter(
+                user -> !user.getId().equals(googleAccount.getId())).collect(
+                Collectors.toList());
+
+            userButtonListAdapter.setUserList(usersList);
+            return null;
+        });
     }
 
-    private List<User> searchUser() {
-        List<User> users = new ArrayList<>();
-        users.add(new User("1", "Dennis"));
-        users.add(new User("2", "Eleanor"));
-        users.add(new User("3", "Farrow"));
-        users.add(new User("4", "Gavin"));
-        return users;
-    }
 
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();

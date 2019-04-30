@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -157,7 +158,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
             showProgress(true);
             GoogleDriveUtils.createFile(new File(getRealPathFromURI(contentURI)), userLink.getFolderId())
                 .addOnCompleteListener(result -> {
-                    if (result.isSuccessful()) {
+                    if (result.isSuccessful() && !TextUtils.isEmpty(result.getResult())) {
                         String[] imagesArray = new Gson().fromJson(
                             SharedPropertiesUtils.getAlbumMetadata(this, album.getId()), String[].class);
 
