@@ -21,6 +21,19 @@ public final class SharedPropertiesUtils {
         ed.apply();
     }
 
+    public static void saveLastLoginId(Context context, String userId) {
+        SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString("lastLogin", userId);
+        ed.apply();
+    }
+
+    public static String getLastLoginId(Context context) {
+        SharedPreferences sp = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
+        return sp.getString("lastLogin", null);
+    }
+
+
     public static String getAlbums(Context context, String userId) {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
         return sp.getString("albums_" + userId, "[]");
@@ -30,6 +43,18 @@ public final class SharedPropertiesUtils {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
         ed.putString("albums_" + userId, albumsJson);
+        ed.apply();
+    }
+
+    public static String getAlbumMetadata(Context context, String albumId) {
+        SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
+        return sp.getString("album_" + albumId, "[]");
+    }
+
+    public static void saveAlbumMetadata(Context context, String albumId, String metadata) {
+        SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString("album_" + albumId, metadata);
         ed.apply();
     }
 }

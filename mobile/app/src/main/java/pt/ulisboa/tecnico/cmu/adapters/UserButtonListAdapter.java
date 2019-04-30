@@ -70,7 +70,7 @@ public class UserButtonListAdapter
         @Override
         public void onClick(View v) {
             Bundle userBundle = new Bundle();
-            userBundle.putInt("id", user.getId());
+            userBundle.putString("id", user.getId());
             userBundle.putString("username", user.getUsername());
             Intent data = new Intent();
             data.putExtra("user", userBundle);

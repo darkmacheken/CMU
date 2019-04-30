@@ -5,13 +5,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
@@ -39,24 +36,16 @@ public class AddUserActivity extends AppCompatActivity {
         recyclerView.setAdapter(userButtonListAdapter);
 
         EditText nameOfUserView = findViewById(R.id.name_of_user);
-        nameOfUserView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    search();
-                    return true;
-                }
-                return false;
+        nameOfUserView.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                search();
+                return true;
             }
+            return false;
         });
 
         Button searchUserButton = findViewById(R.id.search_user_button);
-        searchUserButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                search();
-            }
-        });
+        searchUserButton.setOnClickListener(view -> search());
     }
 
     private void search() {
@@ -67,10 +56,10 @@ public class AddUserActivity extends AppCompatActivity {
 
     private List<User> searchUser() {
         List<User> users = new ArrayList<>();
-        users.add(new User(1, "Dennis"));
-        users.add(new User(2, "Eleanor"));
-        users.add(new User(3, "Farrow"));
-        users.add(new User(4, "Gavin"));
+        users.add(new User("1", "Dennis"));
+        users.add(new User("2", "Eleanor"));
+        users.add(new User("3", "Farrow"));
+        users.add(new User("4", "Gavin"));
         return users;
     }
 

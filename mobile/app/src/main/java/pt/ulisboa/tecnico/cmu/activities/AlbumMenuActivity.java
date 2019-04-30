@@ -1,31 +1,25 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
-import android.Manifest.permission;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import java.io.File;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import java.util.ArrayList;
-import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.AlbumMenuAdapter;
 import pt.ulisboa.tecnico.cmu.tasks.GetAlbumsTask;
-import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
+import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 @TargetApi(VERSION_CODES.JELLY_BEAN)
 public class AlbumMenuActivity extends AppCompatActivity {
@@ -33,7 +27,6 @@ public class AlbumMenuActivity extends AppCompatActivity {
     private static final String TAG = "AlbumMenuActivity";
     private static final int ADD_ALBUM_REQUEST = 1;
 
-    private static final String[] permissions = {permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE};
     private AlbumMenuAdapter albumMenuAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
@@ -52,20 +45,6 @@ public class AlbumMenuActivity extends AppCompatActivity {
 
         albumMenuAdapter = new AlbumMenuAdapter(new ArrayList<>(), AlbumMenuActivity.this);
         recyclerView.setAdapter(albumMenuAdapter);
-
-        if (!arePermissionsEnabled()) {
-            requestMultiplePermissions();
-        }
-
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "P2Photo");
-
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d(TAG, "failed to create albums directory");
-            }
-        }
-
-        GoogleDriveUtils.queryFiles();
 
         new GetAlbumsTask(this, albumMenuAdapter).execute();
         Context thisContext = this;
@@ -113,9 +92,17 @@ public class AlbumMenuActivity extends AppCompatActivity {
             case R.id.logout:
                 AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                 alertDialog.setTitle("Alert");
-                alertDialog.setMessage("Are you sure you want to logout?");
+                alertDialog.setMessage(
+                    "Are you sure you want to logout? If you lose internet connection, you won't be able to log in again.");
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
                     (dialog, which) -> {
+                        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestEmail()
+                            .build();
+
+                        GoogleSignIn.getClient(this, gso).signOut();
+                        SharedPropertiesUtils.saveLastLoginId(this, null);
+
                         Intent intent1 = new Intent(AlbumMenuActivity.this, MainActivity.class);
                         finish();
                         startActivity(intent1);
@@ -127,26 +114,5 @@ public class AlbumMenuActivity extends AppCompatActivity {
             default:
                 return (super.onOptionsItemSelected(item));
         }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean arePermissionsEnabled() {
-        for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void requestMultiplePermissions() {
-        List<String> remainingPermissions = new ArrayList<>();
-        for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                remainingPermissions.add(permission);
-            }
-        }
-        requestPermissions(remainingPermissions.toArray(new String[remainingPermissions.size()]), 101);
     }
 }

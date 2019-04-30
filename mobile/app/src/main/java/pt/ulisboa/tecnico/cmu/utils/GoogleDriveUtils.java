@@ -1,39 +1,42 @@
 package pt.ulisboa.tecnico.cmu.utils;
 
-import android.support.v4.util.Pair;
+import android.content.Context;
+import android.util.Log;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Builder;
+import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.GeneratedIds;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import org.apache.commons.io.FileUtils;
+import pt.ulisboa.tecnico.cmu.exceptions.DriveServiceNullException;
 
 public final class GoogleDriveUtils {
 
+    private static final String TAG = "GoogleDriveUtils";
     private static final Executor executor = Executors.newSingleThreadExecutor();
-    public static String TYPE_AUDIO = "application/vnd.google-apps.audio";
-    public static String TYPE_GOOGLE_DOCS = "application/vnd.google-apps.document";
-    public static String TYPE_GOOGLE_DRAWING = "application/vnd.google-apps.drawing";
-    public static String TYPE_GOOGLE_DRIVE_FILE = "application/vnd.google-apps.file";
-    public static String TYPE_GOOGLE_FORMS = "application/vnd.google-apps.form";
-    public static String TYPE_GOOGLE_FUSION_TABLES = "application/vnd.google-apps.fusiontable";
-    public static String TYPE_GOOGLE_MY_MAPS = "application/vnd.google-apps.map";
-    public static String TYPE_PHOTO = "application/vnd.google-apps.photo";
-    public static String TYPE_GOOGLE_SLIDES = "application/vnd.google-apps.presentation";
-    public static String TYPE_GOOGLE_APPS_SCRIPTS = "application/vnd.google-apps.script";
-    public static String TYPE_GOOGLE_SITES = "application/vnd.google-apps.site";
-    public static String TYPE_GOOGLE_SHEETS = "application/vnd.google-apps.spreadsheet";
+
     public static String TYPE_GOOGLE_FOLDER = "application/vnd.google-apps.folder";
-    public static String TYPE_UNKNOWN = "application/vnd.google-apps.unknown";
-    public static String TYPE_VIDEO = "application/vnd.google-apps.video";
-    public static String TYPE_3_RD_PARTY_SHORTCUT = "application/vnd.google-apps.drive-sdk";
+
     private static Drive driveService;
 
     private GoogleDriveUtils() {
@@ -44,13 +47,38 @@ public final class GoogleDriveUtils {
     }
 
     /**
+     * Tries to connect to the google account
+     *
+     * @param context the context of the activity.
+     */
+    public static void connectDriveService(Context context) {
+        if (driveService == null) {
+            GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(context);
+
+            GoogleAccountCredential credential =
+                GoogleAccountCredential.usingOAuth2(
+                    context, Arrays.asList(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA));
+            credential.setSelectedAccount(googleAccount.getAccount());
+
+            driveService = new Builder(
+                AndroidHttp.newCompatibleTransport(),
+                new GsonFactory(),
+                credential)
+                .setApplicationName("P2Photo")
+                .build();
+        }
+    }
+
+    /**
      * Creates a folder in the app's folder with the provided name.
      *
      * @param name of the folder.
-     * @return returns the id of the folder.
+     * @return the id of the folder.
      */
     public static Task<String> createFolder(String name) {
         return Tasks.call(executor, () -> {
+            checkDriveService();
+
             File metadata = new File()
                 .setMimeType(TYPE_GOOGLE_FOLDER)
                 .setName(name);
@@ -68,16 +96,26 @@ public final class GoogleDriveUtils {
     }
 
     /**
-     * Creates a text file in the user's My Drive folder and returns its file ID.
+     * Uploads a file in the user's My Drive folder and returns its file ID.
+     *
+     * @param filePath     the file to upload
+     * @param parentFolder the id of the parent folder where the image will be
+     * @return the id of the created file
      */
-    public static Task<String> createFile() {
+    public static Task<String> createFile(java.io.File filePath, String parentFolder) {
         return Tasks.call(executor, () -> {
-            File metadata = new File()
-                .setParents(Collections.singletonList("root"))
-                .setMimeType("text/plain")
-                .setName("Untitled file");
+            checkDriveService();
 
-            File googleFile = driveService.files().create(metadata).execute();
+            GeneratedIds ids = driveService.files().generateIds().setCount(1).execute();
+            if (ids == null) {
+                throw new IOException("Could not generate id.");
+            }
+
+            File metadata = new File()
+                .setParents(Collections.singletonList(parentFolder))
+                .setName(ids.getIds().get(0));
+
+            File googleFile = driveService.files().create(metadata, new FileContent(null, filePath)).execute();
             if (googleFile == null) {
                 throw new IOException("Null result when requesting file creation.");
             }
@@ -87,29 +125,36 @@ public final class GoogleDriveUtils {
     }
 
     /**
-     * Returns a {@link FileList} containing all the visible files in the user's My Drive.
+     * Updates the content of a file.
      *
-     * <p>The returned list will only contain files visible to this app, i.e. those which were
-     * created by this app. To perform operations on files not created by the app, the project must request Drive Full
-     * Scope in the <a href="https://play.google.com/apps/publish">Google Developer's Console</a> and be submitted to
-     * Google for verification.</p>
+     * @param fileId  the id of the file to update.
+     * @param content the new content
+     * @return the id of the file updated.
      */
-    public static Task<FileList> queryFiles() {
+    public static Task<String> updateFile(String fileId, String content) {
         return Tasks.call(executor, () -> {
-            //File execute = driveService.files().get("1GE0DL_-yAf-nfWRkw1Bu1JBXfKFuEEUg").execute();
-            //FileList fileList = driveService.files().list().setSpaces("drive").execute();
-            return null;
+            checkDriveService();
+
+            File googleFile = driveService.files().update(fileId, null,
+                ByteArrayContent.fromString("application/json", content)).execute();
+
+            if (googleFile == null) {
+                throw new IOException("Null result when requesting file update.");
+            }
+
+            return googleFile.getId();
         });
     }
 
     /**
-     * Opens the file identified by {@code fileId} and returns a {@link Pair} of its name and contents.
+     * Opens the file identified by {@code fileId} and returns its content in a string.
+     *
+     * @param fileId the if of the file to read.
+     * @return the content encoded as a utf8 string.
      */
-    public Task<Pair<String, String>> readFile(String fileId) {
+    public static Task<String> readFile(String fileId) {
         return Tasks.call(executor, () -> {
-            // Retrieve the metadata as a File object.
-            File metadata = driveService.files().get(fileId).execute();
-            String name = metadata.getName();
+            checkDriveService();
 
             // Stream the file contents to a String.
             try (InputStream is = driveService.files().get(fileId).executeMediaAsInputStream();
@@ -120,28 +165,54 @@ public final class GoogleDriveUtils {
                 while ((line = reader.readLine()) != null) {
                     stringBuilder.append(line);
                 }
-                String contents = stringBuilder.toString();
-
-                return Pair.create(name, contents);
+                return stringBuilder.toString();
             }
         });
     }
 
     /**
-     * Updates the file identified by {@code fileId} with the given {@code name} and {@code content}.
+     * Downloads the file identified by {@code fileId} to the {@code folderPath} with the name of the file's id.
+     *
+     * @param fileId     the id of the file.
+     * @param folderPath the path where the image will be downloaded.
+     * @return the file pointer to the new downloaded file.
      */
-    public Task<Void> saveFile(String fileId, String name, String content) {
+    public static Task<java.io.File> downloadFile(String fileId, java.io.File folderPath) {
         return Tasks.call(executor, () -> {
-            // Create a File containing any metadata changes.
-            File metadata = new File().setName(name);
+            checkDriveService();
 
-            // Convert content to an AbstractInputStreamContent instance.
-            ByteArrayContent contentStream = ByteArrayContent.fromString("text/plain", content);
-
-            // Update the metadata and contents.
-            driveService.files().update(fileId, metadata, contentStream).execute();
-            return null;
+            java.io.File file = new java.io.File(folderPath, fileId);
+            // Stream the file contents to a File.
+            try (InputStream is = driveService.files().get(fileId).executeMediaAsInputStream()) {
+                FileUtils.copyInputStreamToFile(is, file);
+                return file;
+            }
         });
     }
 
+    /**
+     * Copies the content from the src to the dst.
+     *
+     * @param src source file
+     * @param dst destination file
+     */
+    public static void copy(java.io.File src, java.io.File dst) {
+        try {
+            FileInputStream inStream = new FileInputStream(src);
+            FileOutputStream outStream = new FileOutputStream(dst);
+            FileChannel inChannel = inStream.getChannel();
+            FileChannel outChannel = outStream.getChannel();
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+            inStream.close();
+            outStream.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Unable update metadata file.", e);
+        }
+    }
+
+    private static void checkDriveService() throws DriveServiceNullException {
+        if (driveService == null) {
+            throw new DriveServiceNullException("Drive service is not initialized.");
+        }
+    }
 }

@@ -1,13 +1,10 @@
 package pt.ulisboa.tecnico.cmu.utils;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -16,6 +13,7 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.util.Properties;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import okhttp3.MediaType;
@@ -30,19 +28,15 @@ import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
 public final class RequestsUtils {
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
     private static final String TAG = "RequestsUtils";
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String REGISTER_ENDPOINT = "/register";
     private static final String ALBUMS_ENDPOINT = "/albums";
-
     private static OkHttpClient httpClient;
     private static String token;
     private static String userId;
-
     private RequestsUtils() {
     }
-
 
     /**
      * Tries to login the user into the server.
@@ -86,9 +80,9 @@ public final class RequestsUtils {
         }
 
         String jsonResponse = response.body().string();
-        final ObjectNode node = new ObjectMapper().readValue(jsonResponse, ObjectNode.class);
+        final Properties node = new Gson().fromJson(jsonResponse, Properties.class);
 
-        String tokenLogin = node.get("token").asText();
+        String tokenLogin = node.getProperty("token");
 
         // Save token.
         if (tokenLogin != null) {
@@ -177,13 +171,11 @@ public final class RequestsUtils {
                 SharedPropertiesUtils.saveAlbums(context, userId, albumsJson);
                 return albumsJson;
             }
-        } catch (SocketTimeoutException e) {
+        } catch (IOException e) {
             Log.e(TAG, "Timeout to GET request /albums.", e);
             return SharedPropertiesUtils.getAlbums(context, userId);
-        } catch (IOException e) {
-            AlertUtils.alert("Unable to retrieve albums.", context);
-            Log.e(TAG, "Unable to GET request /albums.", e);
         }
+
         return "[]";
     }
 
@@ -268,10 +260,11 @@ public final class RequestsUtils {
     }
 
     public static String getToken(Context context, String userId) {
-        if (token == null || !TextUtils.equals(RequestsUtils.userId, userId)) {
-            token = SharedPropertiesUtils.getToken(context, userId);
-            RequestsUtils.userId = userId;
-        }
+        token = SharedPropertiesUtils.getToken(context, userId);
+        RequestsUtils.userId = userId;
+
         return token;
     }
+
+    public enum State {UNAUTHORIZED_REQUEST, SUCCESS, NOT_SUCCESS}
 }

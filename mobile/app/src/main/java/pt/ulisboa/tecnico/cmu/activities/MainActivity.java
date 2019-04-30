@@ -2,7 +2,10 @@ package pt.ulisboa.tecnico.cmu.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,15 +20,21 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.Drive.Builder;
 import com.google.api.services.drive.DriveScopes;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.LoginTask;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
+import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    private static final String[] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_INTERNAL_STORAGE",
+        "android.permission.READ_INTERNAL_STORAGE"};
     private static final int NOT_FORCE_LOGIN = 0;
     private static final int FORCE_LOGIN = 1;
 
@@ -46,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
         if (bundle != null && bundle.getBoolean("startLogin")) {
             requestGdriveSignIn(FORCE_LOGIN);
         }
+
+        if (!arePermissionsEnabled()) {
+            requestMultiplePermissions();
+        }
+
     }
 
     @Override
@@ -57,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             .addOnSuccessListener(googleAccount -> {
                 Log.d(TAG, "Signed in as " + googleAccount.getEmail());
 
+                SharedPropertiesUtils.saveLastLoginId(thisContext, googleAccount.getId());
                 new LoginTask(this, googleAccount).execute(forceLogin);
 
                 // Use the authenticated account to sign in to the Drive service.
@@ -64,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                     GoogleAccountCredential.usingOAuth2(
                         this, Arrays.asList(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA));
                 credential.setSelectedAccount(googleAccount.getAccount());
+
                 Drive googleDriveService =
                     new Builder(
                         AndroidHttp.newCompatibleTransport(),
@@ -100,9 +116,6 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         GoogleSignInClient client = GoogleSignIn.getClient(this, signInOptions);
 
-        // Sign out in case it's logged on. Force prompt choose account.
-        client.signOut();
-
         // The result of the sign-in Intent is handled in onActivityResult.
         startActivityForResult(client.getSignInIntent(), forceLogin);
     }
@@ -112,6 +125,28 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startLoginActivity(View view) {
         requestGdriveSignIn(NOT_FORCE_LOGIN);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean arePermissionsEnabled() {
+        for (String permission : permissions) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestMultiplePermissions() {
+        List<String> remainingPermissions = new ArrayList<>();
+        for (String permission : permissions) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                remainingPermissions.add(permission);
+            }
+        }
+        requestPermissions(remainingPermissions.toArray(new String[remainingPermissions.size()]), 101);
     }
 
 }

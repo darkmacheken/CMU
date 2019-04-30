@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity;
 import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
+import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
 
@@ -40,12 +41,25 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Boolean... forceLogin) {
         String token = null;
+
         if (forceLogin.length == 1 && !forceLogin[0] || googleAccount == null) {
-            token = RequestsUtils.getToken(context, googleAccount.getId());
+            if (googleAccount == null) {
+                String lastLogin = SharedPropertiesUtils.getLastLoginId(context);
+
+                if (lastLogin == null) {
+                    return false;
+                }
+                token = RequestsUtils.getToken(context, lastLogin);
+
+            } else {
+                token = RequestsUtils.getToken(context, googleAccount.getId());
+            }
 
             // login from last time
             if (token != null) {
                 return true;
+            } else if (googleAccount == null) {
+                return false;
             }
         }
 
@@ -67,8 +81,6 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
                 }
             }
         } catch (IOException e) {
-            showProgress(false);
-            AlertUtils.alert("Unable to sign in.", context);
             Log.e(TAG, "Unable to POST request /login.", e);
         }
 
@@ -84,6 +96,8 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             context.startActivity(launchNextActivity);
+        } else {
+            AlertUtils.alert("Unable to sign in.", context);
         }
         showProgress(false);
     }

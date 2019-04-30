@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Log;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import dmax.dialog.SpotsDialog;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
@@ -15,6 +13,7 @@ import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.adapters.AlbumMenuAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 import pt.ulisboa.tecnico.cmu.exceptions.UnauthorizedException;
+import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
 
 public class GetAlbumsTask extends AsyncTask<Void, Void, Boolean> {
@@ -41,6 +40,7 @@ public class GetAlbumsTask extends AsyncTask<Void, Void, Boolean> {
             .setCancelable(false)
             .setTheme(R.style.ProgressBar)
             .build();
+        GoogleDriveUtils.connectDriveService(context);
         showProgress(true);
     }
 
@@ -49,16 +49,13 @@ public class GetAlbumsTask extends AsyncTask<Void, Void, Boolean> {
         try {
             String albumsJson = RequestsUtils.getAlbums(context);
 
-            ObjectMapper mapper = new ObjectMapper();
-            Album[] albumsFromJson = mapper.readValue(albumsJson, Album[].class);
+            Gson gson = new Gson();
+            Album[] albumsFromJson = gson.fromJson(albumsJson, Album[].class);
 
             this.albums = Arrays.asList(albumsFromJson);
             return true;
         } catch (UnauthorizedException e) {
             return false;
-        } catch (IOException e) {
-            Log.e(TAG, "Unable parse JSON of albums.", e);
-            return true;
         }
     }
 

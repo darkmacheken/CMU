@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,8 @@ import pt.ulisboa.tecnico.cmu.activities.ViewPhotoActivity;
 
 public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.PhotoViewHolder> {
 
+    private static final int IMAGE_HEIGHT = 150;
+    private static final int IMAGE_WIDTH = 120;
     private List<String> photoList;
     private Context context;
 
@@ -36,7 +40,23 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.Phot
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 8;
         Bitmap bmp = BitmapFactory.decodeFile(photoList.get(i), options);
-        photoViewHolder.photo.setImageBitmap(bmp);
+        bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() / 2, bmp.getHeight() / 2, false);
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        float scaleWidth = ((float) IMAGE_WIDTH) / width;
+        float scaleHeight = ((float) IMAGE_HEIGHT) / height;
+
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(Math.min(scaleWidth, scaleHeight), Math.min(scaleWidth, scaleHeight));
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap outputImage = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
+        Canvas can = new Canvas(outputImage);
+        can.drawBitmap(bmp, (IMAGE_WIDTH - bmp.getWidth()) / 2, (IMAGE_HEIGHT - bmp.getHeight()) / 2, null);
+
+        photoViewHolder.photo.setImageBitmap(outputImage);
         photoViewHolder.photo.setOnClickListener(new PhotoOnClickListener(photoList.get(i)));
     }
 

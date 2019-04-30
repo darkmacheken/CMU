@@ -4,8 +4,8 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "pt.ulisboa.tecnico.cmu"
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion 24
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -46,7 +46,9 @@ dependencies {
     }
     implementation 'com.squareup.okhttp3:okhttp:3.14.1'
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
+
 
 }

@@ -19,7 +19,7 @@ import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.UserListAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.tasks.CreateAlbumsTask;
-import pt.ulisboa.tecnico.cmu.tasks.CreateAlbumsTask.State;
+import pt.ulisboa.tecnico.cmu.utils.RequestsUtils.State;
 
 public class AddAlbumActivity extends AppCompatActivity {
 
@@ -91,7 +91,7 @@ public class AddAlbumActivity extends AppCompatActivity {
 
     private List<User> getUsers() {
         List<User> users = new ArrayList<>();
-        users.add(new User(1, "(me)"));
+        users.add(new User("1", "(me)"));
         return users;
     }
 
@@ -106,7 +106,7 @@ public class AddAlbumActivity extends AppCompatActivity {
         // Make sure the request was successful
         if (requestCode == ADD_USER_REQUEST && resultCode == RESULT_OK) {
             Bundle userBundle = data.getBundleExtra("user");
-            userListAdapter.addUser(new User(userBundle.getInt("id"), userBundle.getString("username")));
+            userListAdapter.addUser(new User(userBundle.getString("id"), userBundle.getString("username")));
             ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
         }
     }

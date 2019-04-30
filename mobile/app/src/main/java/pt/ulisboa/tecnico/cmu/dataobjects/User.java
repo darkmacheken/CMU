@@ -2,22 +2,22 @@ package pt.ulisboa.tecnico.cmu.dataobjects;
 
 public class User {
 
-    private int id;
+    private String id;
     private String username;
 
     public User() {
     }
 
-    public User(int id, String username) {
+    public User(String id, String username) {
         this.id = id;
         this.username = username;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -8,12 +8,11 @@ import dmax.dialog.SpotsDialog;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.exceptions.UnauthorizedException;
-import pt.ulisboa.tecnico.cmu.tasks.CreateAlbumsTask.State;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
+import pt.ulisboa.tecnico.cmu.utils.RequestsUtils.State;
 
 public class CreateAlbumsTask extends AsyncTask<Void, Void, State> {
 
-    private static final String TAG = "CreateAlbumsTask";
     private final Context context;
     private final String name;
     // UI components
@@ -65,5 +64,4 @@ public class CreateAlbumsTask extends AsyncTask<Void, Void, State> {
         }
     }
 
-    public enum State {UNAUTHORIZED_REQUEST, SUCCESS, NOT_SUCCESS}
 }
