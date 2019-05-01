@@ -49,6 +49,10 @@ public class UserListAdapter
         }
     }
 
+    public User[] getUsers() {
+        return userList.toArray(new User[]{});
+    }
+
     class UserViewHolder extends RecyclerView.ViewHolder {
 
         private TextView user;

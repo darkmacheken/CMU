@@ -1,26 +1,33 @@
 package pt.ulisboa.tecnico.cmu.tasks;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import dmax.dialog.SpotsDialog;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.activities.MainActivity;
+import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.exceptions.UnauthorizedException;
+import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils.State;
 
 public class CreateAlbumsTask extends AsyncTask<Void, Void, State> {
 
-    private final Context context;
+    private final Activity context;
     private final String name;
+    private final User[] users;
     // UI components
     private AlertDialog progress;
 
-    public CreateAlbumsTask(Context context, String name) {
+    public CreateAlbumsTask(Activity context, String name, User[] users) {
         this.context = context;
         this.name = name;
+        this.users = users;
     }
 
     @Override
@@ -36,7 +43,7 @@ public class CreateAlbumsTask extends AsyncTask<Void, Void, State> {
     @Override
     protected State doInBackground(Void... noParams) {
         try {
-            return RequestsUtils.createAlbum(context, name) ? State.SUCCESS : State.NOT_SUCCESS;
+            return RequestsUtils.createAlbum(context, name, users) ? State.SUCCESS : State.NOT_SUCCESS;
         } catch (UnauthorizedException e) {
             return State.UNAUTHORIZED_REQUEST;
         }
@@ -52,8 +59,15 @@ public class CreateAlbumsTask extends AsyncTask<Void, Void, State> {
             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             context.startActivity(launchNextActivity);
+        } else if (state == State.NOT_SUCCESS) {
+            showProgress(false);
+            AlertUtils.alert("There was an error creating album.", context);
+            context.setResult(RESULT_CANCELED);
+        } else {
+            context.setResult(RESULT_OK);
         }
-        showProgress(false);
+
+        context.finish();
     }
 
     private void showProgress(boolean show) {

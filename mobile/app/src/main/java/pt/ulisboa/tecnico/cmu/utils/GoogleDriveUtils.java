@@ -35,8 +35,6 @@ public final class GoogleDriveUtils {
     private static final String TAG = "GoogleDriveUtils";
     private static final Executor executor = Executors.newSingleThreadExecutor();
 
-    private static final String TYPE_GOOGLE_FOLDER = "application/vnd.google-apps.folder";
-
     private static Drive driveService;
 
     private GoogleDriveUtils() {
@@ -68,32 +66,6 @@ public final class GoogleDriveUtils {
                 .setApplicationName("P2Photo")
                 .build();
         }
-    }
-
-    /**
-     * Creates a folder in the app's folder with the provided name.
-     *
-     * @param name of the folder.
-     * @return the id of the folder.
-     */
-    public static Task<String> createFolder(String name) {
-        return Tasks.call(executor, () -> {
-            checkDriveService();
-
-            File metadata = new File()
-                .setMimeType(TYPE_GOOGLE_FOLDER)
-                .setName(name);
-
-            File googleFile = driveService.files().create(metadata)
-                .setFields("id")
-                .execute();
-
-            if (googleFile == null) {
-                throw new IOException("Null result when requesting file creation.");
-            }
-
-            return googleFile.getId();
-        });
     }
 
     /**

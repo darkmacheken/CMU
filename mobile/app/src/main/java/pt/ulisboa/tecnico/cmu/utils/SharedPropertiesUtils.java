@@ -54,6 +54,18 @@ public final class SharedPropertiesUtils {
         ed.apply();
     }
 
+    public static String getAlbumUserMetadata(Context context, String userId, String albumId) {
+        SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
+        return sp.getString("album_" + albumId + userId, "[]");
+    }
+
+    public static void saveAlbumUserMetadata(Context context, String userId, String albumId, String metadata) {
+        SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString("album_" + albumId + userId, metadata);
+        ed.apply();
+    }
+
     public static String getAlbumMetadata(Context context, String albumId) {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
         return sp.getString("album_" + albumId, "[]");

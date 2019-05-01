@@ -3,50 +3,32 @@
 		"id": "101950179988252694041",
 		"name": "Pedro Daniel",
 		"email": "pedrodaniel200@gmail.com",
-		"accessToken": "4/PQH6rhVL_s20lG67S5AltqemaVBcWbIdqD4oEE4KmAa8Njy3es6AmOEr1yRcSCOTdvm1xbqp-s4BTjd54A85ECo",
-		"albums": [
-			{
-				"id": "b133e759-6de8-47c8-a35e-2a8c54bfdee4",
-				"name": "Album Test"
-			},
-			{
-				"id": "151a333f-0f2b-4e9d-8511-424fc5901c13",
-				"name": "Album Test 2"
-			}
-		],
+		"accessToken": "4/PQGTRSB7z8cE5SRN4q9mmrBXTvOeByWVzzqJjSA52kESYAkGZRHF70p_PkexBH0i0av2NDl1vQTJQ-qdAI0NaxU",
+		"albums": [],
 		"token": {
-			"access_token": "ya29.Glv8Bq4Z3DBCpoB-mzzFAImo917WoYogMsNC6eADCCnQZPgrRhPIHza3FnVrV9YwwHc91aUD5YzwWLgdrG-PmsB1qbmeTPdKoZZX27PGnpjllSqENwDfcLKE8AfA",
-			"refresh_token": "1/rmdbdytSO1wKpNIHSL07GXNTWQs7AbRCgcDMbtychgZlYOmVziaxWOMu705xDeXK",
-			"scope": "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/userinfo.email",
+			"access_token": "ya29.Glv8Bn9j_-yhSET9c-2fVJevWKMkM7qBsxVa8zZpzFSUEwrmHssmKO86Zam54Hat9nT4AUGBZGAWK6vnOMY7Hq2HovfdFccQ3GceMfeSJBB57c3Zky913kl_BNwd",
+			"refresh_token": "1/ExqS7nLAuJqSl-kTjCf1nMOpVsZRVoNzlxwXi3-aSC0",
+			"scope": "openid https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.file",
 			"token_type": "Bearer",
-			"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkODg3ZjI2Y2UzMjU3N2M0YjVhOGExZTFhNTJlMTlkMzAxZjgxODEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDE5NTAxNzk5ODgyNTI2OTQwNDEiLCJlbWFpbCI6InBlZHJvZGFuaWVsMjAwQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoieXJUVkFETU5wSkZUZzBxVERrdGRQUSIsIm5hbWUiOiJQZWRybyBEYW5pZWwiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1sLUduSGx4V1ZGay9BQUFBQUFBQUFBSS9BQUFBQUFBQUFBQS9BQ0hpM3JmajQ4M3k1bnYzT3NMV1VndldIZTU3WEI5NGlBL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJQZWRybyIsImZhbWlseV9uYW1lIjoiRGFuaWVsIiwibG9jYWxlIjoiZW4tR0IiLCJpYXQiOjE1NTY3MjYwNDUsImV4cCI6MTU1NjcyOTY0NX0.oeCvNlZwkv5teOnEnFlFxredNGl-16I56m1pshrLkKI37TmpPnosmX_rQ82hWb8XWrD8sXvPtQSoiaiV5CarAgis0GrgL6sL6EVNtTQOhf2j85su7V7fl76kZztv97ESiRJXuIiL3EH4iXCH0A0abcUMBv3OoqCgMx_HhZzz6OMVh23AFbUcCn6ZfB7j7B5QLQHVRNVFIm9DhYBoYT6bqrcaHN7Of-pVDhFgoCKEihqHY90-sJkCFSrAiMZNYdqJ9Amr08TpAoUBjsdRoys8727Fwr38QKEXnB2zb-3IY9rSlH09nQ8okTpcR6_VvzxdtvSvgoLxHJqitloFxH_5QQ",
-			"expiry_date": 1556729644186
+			"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkODg3ZjI2Y2UzMjU3N2M0YjVhOGExZTFhNTJlMTlkMzAxZjgxODEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDE5NTAxNzk5ODgyNTI2OTQwNDEiLCJlbWFpbCI6InBlZHJvZGFuaWVsMjAwQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiUmRmZTNSMUdBVzFBbWZSR253MEl3QSIsIm5hbWUiOiJQZWRybyBEYW5pZWwiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1sLUduSGx4V1ZGay9BQUFBQUFBQUFBSS9BQUFBQUFBQUFBQS9BQ0hpM3JmajQ4M3k1bnYzT3NMV1VndldIZTU3WEI5NGlBL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJQZWRybyIsImZhbWlseV9uYW1lIjoiRGFuaWVsIiwibG9jYWxlIjoiZW4tR0IiLCJpYXQiOjE1NTY3NDEyNzIsImV4cCI6MTU1Njc0NDg3Mn0.jZ2OXS5OanMA1-QRhsTgmirEQedQS9-Xgd8EnsR-KcFdfkTk55P0MM2r29MjbGh38SV-ijm5XvGFTnwAn3etPeXPGhF5LLBM3dwPT9iuXoBt61juVBpUimqskDySHSAtO8Za5zTJ4pF_HfB4fQdjCz_QS6O8Yc0dwcT-5qnMgKB4i6cXmZg45-zCSnEm3tltV0_ZLzLFe2dpMrnEyMYfv6AZqClyWPHc9vmzYeBJMFaKommPb6rntEADSXj-97OXWRNPhkMYXiqHNQxQ_xR3LVdIQUoeoMW1hNx5ZX_ChOXX9IQ9J69BxrYPVIFsqpsXeb6TLa52GsaEkgoHwbStRw",
+			"expiry_date": 1556744870917
 		},
-		"folderId": "1TiOaxC4gZt3eKsZLoJy87rfOyt9EjEPS"
+		"folderId": "1LZkGn7SZNODA_2jl2OCPCPFiKNzxr6ZQ"
 	},
 	{
 		"id": "109591878950041647523",
 		"name": "Pedro Daniel Rogeiro Lopes",
 		"email": "pdrl@edu.ulisboa.pt",
-		"accessToken": "4/PQHNKsDJpMdKIbiweov7qxeMK5d80N4-Se6s9fDTd0gnIunX-jljcuvBlwhGh9RYPHLaAxnapywgYPaxHmJt3Gc",
-		"albums": [
-			{
-				"id": "fe4c05fc-b1a1-4b96-984c-faefd4b8b3af",
-				"name": "Album Test 3"
-			},
-			{
-				"id": "151a333f-0f2b-4e9d-8511-424fc5901c13",
-				"name": "Album Test 2"
-			}
-		],
+		"accessToken": "4/PQHtRj-Y2-zZ0veV8eRc8P6BtHFxZFhyUT7gHDtfX0jcJjsUZh1CRHAKJYt6xTccAVLbfSMWe-SF-rvqehMXohY",
+		"albums": [],
 		"token": {
-			"access_token": "ya29.Glv8BtZXoQ-k4dLPATv19LYDmfD4fzSO1ZvWUflDLFJX9qWH00rjvndx3rfMm_4GV-lxwmzbyjvIbbfEkRf9ZGE0aRwZcP9rEcwy11QgmFOjunkl3jMaL9P4HfVq",
-			"refresh_token": "1/hz2w7pWSMI8pG6Nv_Nnym84_fOzXG2LYseQuINHmDPE",
-			"scope": "https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file openid https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email",
+			"access_token": "ya29.Glv8BiSr3UIxR9eP1hh1S-bCuToMDV1VOAgM48WiqGzkL_EF2W_xQsW9ta4J42_D8BVaWTjWWEr_DcgKKc_gafMVnudzvGzoRgG4kuhNLZ7PeHKIcH07ALMyeVZR",
+			"refresh_token": "1/VIBy36XfiwGuiZsLnsXPNYjpe3xcUBHDehNq3P4EMJIFK8DGZHEQSu7y8y7q89pY",
+			"scope": "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.appdata",
 			"token_type": "Bearer",
-			"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkODg3ZjI2Y2UzMjU3N2M0YjVhOGExZTFhNTJlMTlkMzAxZjgxODEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDk1OTE4Nzg5NTAwNDE2NDc1MjMiLCJoZCI6ImVkdS51bGlzYm9hLnB0IiwiZW1haWwiOiJwZHJsQGVkdS51bGlzYm9hLnB0IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJqTXFYS1BuN2JNeTQ5SkhRTVQxaTVRIiwibmFtZSI6IlBlZHJvIERhbmllbCBSb2dlaXJvIExvcGVzIiwicGljdHVyZSI6Imh0dHBzOi8vbGg2Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tRzFhWWZNdVkwNjQvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQUEvQUNIaTNyZEtZVEhPZ2ZQbVRuZjRXRVhWVGJNVWVIbVY5US9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiUGVkcm8gRGFuaWVsIFJvZ2Vpcm8iLCJmYW1pbHlfbmFtZSI6IkxvcGVzIiwibG9jYWxlIjoicHQtUFQiLCJpYXQiOjE1NTY3MjYxMDMsImV4cCI6MTU1NjcyOTcwM30.HglOjoeoJoot0oMwSoXsFc_2pGyHj8WQ1e4gJO0GukgTMJ1mgHKbJfvCDOC1v6bok4xoftQzYiiH54KgGY7-Gfl1zkxw65I3kDappvtU748R2mapxyuafbl9kNng7dqjqS-gld5eNOV_V1p8dTWaN-3yYbvqr7tE_9BP2HzaLNsRbqnoGDxoN-nMFfvHtn70sqRM9qu4JFEQDwekg2sBakcgu0l93VC0YAtUjKLT8qBKQnkn7E_PuPtKSwQFCwtgTSv6fPeow-NCL_-fpLqSdzgjVk1l-oA_x4xQ5a_3DGuNw5uM24CFU8-f5UDmZdSpqyZf3BeZ6jalQJDxh6mtUQ",
-			"expiry_date": 1556729701568
+			"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkODg3ZjI2Y2UzMjU3N2M0YjVhOGExZTFhNTJlMTlkMzAxZjgxODEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDk1OTE4Nzg5NTAwNDE2NDc1MjMiLCJoZCI6ImVkdS51bGlzYm9hLnB0IiwiZW1haWwiOiJwZHJsQGVkdS51bGlzYm9hLnB0IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJLU2RYMHM4Z2lKRUIzYm5GZkRCQllBIiwibmFtZSI6IlBlZHJvIERhbmllbCBSb2dlaXJvIExvcGVzIiwicGljdHVyZSI6Imh0dHBzOi8vbGg2Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tRzFhWWZNdVkwNjQvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQUEvQUNIaTNyZEtZVEhPZ2ZQbVRuZjRXRVhWVGJNVWVIbVY5US9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiUGVkcm8gRGFuaWVsIFJvZ2Vpcm8iLCJmYW1pbHlfbmFtZSI6IkxvcGVzIiwibG9jYWxlIjoicHQtUFQiLCJpYXQiOjE1NTY3NDEyOTUsImV4cCI6MTU1Njc0NDg5NX0.MlkO0efBZUzECiBv_xGjM8b4yeQjW5619Ha-uHtLPYoqygCsxY5l174uHh4YdZQADCzkfIoDa_2dViZC-4duNqN-8ROO-SPAKv7oUPV-EAmN9T4Plfq1QoUvTPby_p7h9AI5VfKS6wKLfZhjiQvFpRu-Kfsh4JMWK6WCWbQ2mvoLxC2CAFCRQqw-MtD1y9j9QeW_GOcgsHfuEstcdRLHfa-t7d9EP2H3i9UTZFY5wAAkSDSNzcJnptEYB2bfnSqLq9pkxXPxz9MTTjv6Wn8SlncRdQInkyrumePlc1YluMHh765EKPxm3LMcy5NDhPTYjU1icWd73CkvkLIDqgo9Wg",
+			"expiry_date": 1556744893524
 		},
-		"folderId": "1Kg6ROx7tYjUQ7eiWcx3kfD2Fnze6uv6Y"
+		"folderId": "1EgIqKhKI8ILrmZ3NQpl_4--hj3DITYZh"
 	}
 ]

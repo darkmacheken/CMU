@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Tasks;
 import com.google.gson.Gson;
 import java.io.File;
@@ -26,7 +28,7 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
     private static final String TAG = "GetAlbumPhotosTask";
     private final Context context;
     private final ViewAlbumAdapter viewAlbumAdapter;
-    ;
+    private final GoogleSignInAccount googleAccount;
     private Album album;
 
 
@@ -34,6 +36,7 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
         this.context = context;
         this.viewAlbumAdapter = viewAlbumAdapter;
         this.album = album;
+        this.googleAccount = GoogleSignIn.getLastSignedInAccount(context);
     }
 
     @Override
@@ -64,6 +67,9 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
         for (Link link : this.album.getUsers()) {
             try {
                 String metaDataFile = Tasks.await(GoogleDriveUtils.readFile(link.getFileId()));
+                if(link.getUserId().equals(this.googleAccount.getId())){
+                    SharedPropertiesUtils.saveAlbumUserMetadata(context, googleAccount.getId(), album.getId(), metaDataFile);
+                }
                 String[] images = new Gson().fromJson(metaDataFile, String[].class);
                 finalImagesList.addAll(Arrays.asList(images));
             } catch (ExecutionException | InterruptedException e) {

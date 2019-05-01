@@ -34,6 +34,7 @@ public final class RequestsUtils {
     private static final String REGISTER_ENDPOINT = "/register";
     private static final String ALBUMS_ENDPOINT = "/albums";
     private static final String USERS_ENDPOINT = "/users";
+    private static final String ALBUMS_ADD_USER_ENDPOINT = "/addUser";
     private static OkHttpClient httpClient;
     private static String token;
     private static String userId;
@@ -146,6 +147,13 @@ public final class RequestsUtils {
         return false;
     }
 
+    /**
+     * Requests the user's albums.
+     *
+     * @param context the activity context.
+     * @return the string representing a list of albums in json.
+     * @throws UnauthorizedException if the token is invalid.
+     */
     public static String getAlbums(Context context) throws UnauthorizedException {
         OkHttpClient client = getHttpClient(context);
 
@@ -183,14 +191,27 @@ public final class RequestsUtils {
         return "[]";
     }
 
-    public static boolean createAlbum(Context context, String name) throws UnauthorizedException {
+    /**
+     * Creates an album.
+     *
+     * @param context the activity context.
+     * @param name    the name of the album.
+     * @param users   the users in the album.
+     * @return true if created with success and false otherwise.
+     * @throws UnauthorizedException if the token is invalid.
+     */
+    public static boolean createAlbum(Context context, String name, User[] users) throws UnauthorizedException {
         OkHttpClient client = getHttpClient(context);
 
         if (client == null) {
             return false;
         }
 
-        RequestBody body = RequestBody.create(RequestsUtils.JSON, "{\"name\": \"" + name + "\"}");
+        String usersJson = new Gson().toJson(users);
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON,
+            "{\"name\": \"" + name + "\","
+                + "\"users\":" + usersJson + "}");
 
         Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
             .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT)
@@ -218,6 +239,15 @@ public final class RequestsUtils {
         return false;
     }
 
+    /**
+     * Requests all users (at maximum of 100) which name, id or email contains the sub-string in q.
+     *
+     * @param context the activity context.
+     * @param userId  the user ID that requests.
+     * @param q       the string to match.
+     * @return an array of users.
+     * @throws UnauthorizedException if the token is invalid.
+     */
     public static User[] getUsers(Context context, String userId, String q) throws UnauthorizedException {
         OkHttpClient client = getHttpClient(context);
 
@@ -256,6 +286,43 @@ public final class RequestsUtils {
         }
         return new User[]{};
     }
+
+    /**
+     * Adds an user to the given album.
+     *
+     * @param context     the activity context.
+     * @param albumId     the ID of the album.
+     * @param userIdToAdd the ID of the user to add.
+     * @throws UnauthorizedException if the token is invalid.
+     * @throws IOException           if an error occur while requesting.
+     */
+    public static void addUserToAlbum(Context context, String albumId, String userIdToAdd)
+        throws UnauthorizedException, IOException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            throw new IOException("Couldn't get http client.");
+        }
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON, "{\"id\": \"" + userIdToAdd + "\"}");
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT + "/" + albumId
+                + ALBUMS_ADD_USER_ENDPOINT)
+            .post(body)
+            .build();
+
+        Response response = client.newCall(request).execute();
+
+        if (response.code() == 401 || response.code() == 403) {
+            throw new UnauthorizedException();
+        }
+
+        if (response.code() != 200) {
+            throw new IOException("The request has not code status 200.");
+        }
+    }
+
 
     /**
      * Creates an HTTPS client that accepts the server's certificate in the resources. It accepts any domain.
@@ -301,6 +368,13 @@ public final class RequestsUtils {
         return httpClient;
     }
 
+    /**
+     * Returns the saved token of the given user ID.
+     *
+     * @param context the activity Context.
+     * @param userId  the user ID.
+     * @return the token if exists and null/empty string otherwise.
+     */
     public static String getToken(Context context, String userId) {
         token = SharedPropertiesUtils.getToken(context, userId);
         RequestsUtils.userId = userId;

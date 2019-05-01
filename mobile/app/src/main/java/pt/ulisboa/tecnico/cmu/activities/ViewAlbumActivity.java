@@ -118,7 +118,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 return (true);
             case R.id.add_user:
                 Intent intent = new Intent(this, AddUserActivity.class);
-                intent.putExtra("viewAlbum", true);
+                intent.putExtra("viewAlbum", album.getId());
                 startActivity(intent);
                 return (true);
             default:
@@ -162,7 +162,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 .addOnCompleteListener(result -> {
                     if (result.isSuccessful() && !TextUtils.isEmpty(result.getResult())) {
                         String[] imagesArray = new Gson().fromJson(
-                            SharedPropertiesUtils.getAlbumMetadata(this, album.getId()), String[].class);
+                            SharedPropertiesUtils.getAlbumUserMetadata(this, userLink.getUserId(), album.getId()), String[].class);
 
                         List<String> imagesList = new ArrayList<>();
                         if (imagesArray != null && imagesArray.length != 0) {
@@ -173,9 +173,8 @@ public class ViewAlbumActivity extends AppCompatActivity {
 
                         String metadata = new Gson().toJson(imagesList);
 
-                        GoogleDriveUtils.updateFile(userLink.getFileId(), metadata).addOnCompleteListener(result2 -> {
-                            SharedPropertiesUtils.saveAlbumMetadata(this, album.getId(), metadata);
-                        }).addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));
+                        GoogleDriveUtils.updateFile(userLink.getFileId(), metadata)
+                            .addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));
 
                         File pathAlbum = new File(getCacheDir(), album.getId());
                         File photo = new File(pathAlbum, result.getResult());

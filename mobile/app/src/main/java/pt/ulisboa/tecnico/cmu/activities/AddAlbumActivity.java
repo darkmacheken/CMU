@@ -7,18 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.UserListAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.tasks.CreateAlbumsTask;
-import pt.ulisboa.tecnico.cmu.utils.RequestsUtils.State;
+import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 
 public class AddAlbumActivity extends AppCompatActivity {
 
@@ -61,22 +59,11 @@ public class AddAlbumActivity extends AppCompatActivity {
         String name = nameOfAlbumView.getText().toString();
 
         if (TextUtils.isEmpty(name)) {
+            AlertUtils.alert("The name of the album cannot be empty.", this);
             return;
         }
-        try {
-            State state = new CreateAlbumsTask(this, name).execute().get();
 
-            if (state == State.SUCCESS) {
-                setResult(RESULT_OK);
-            } else {
-                setResult(RESULT_CANCELED);
-            }
-            finish();
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e(TAG, "Unable to Get Result.", e);
-        }
-        setResult(RESULT_CANCELED);
-        finish();
+        new CreateAlbumsTask(this, name, userListAdapter.getUsers()).execute();
     }
 
     private void setupActionBar() {
