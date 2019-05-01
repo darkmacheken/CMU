@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.UserListAdapter;
+import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.tasks.CreateAlbumsTask;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils.State;
 
@@ -97,6 +98,9 @@ public class AddAlbumActivity extends AppCompatActivity {
         // Check which request we're responding to
         // Make sure the request was successful
         if (requestCode == ADD_USER_REQUEST && resultCode == RESULT_OK) {
+            Bundle userBundle = data.getBundleExtra("user");
+            userListAdapter.addUser(
+                new User(userBundle.getString("id"), userBundle.getString("name"), userBundle.getString("email")));
             ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
         }
     }

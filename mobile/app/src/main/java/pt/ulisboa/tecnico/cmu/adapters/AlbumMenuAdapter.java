@@ -1,18 +1,17 @@
 package pt.ulisboa.tecnico.cmu.adapters;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.activities.ViewAlbumActivity;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
@@ -49,15 +48,19 @@ public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.Albu
         notifyItemInserted(0);
     }
 
-    @TargetApi(VERSION_CODES.N)
     public void addAlbums(List<Album> albums) {
-        Set<String> albumsSet = this.albumList.stream()
-            .map(Album::getId)
-            .collect(Collectors.toSet());
+        Set<String> albumsSet = new HashSet<>();
+        for (Album album : this.albumList) {
+            String id = album.getId();
+            albumsSet.add(id);
+        }
 
-        List<Album> filteredAlbums = albums.stream()
-            .filter(album -> !albumsSet.contains(album.getId()))
-            .collect(Collectors.toList());
+        List<Album> filteredAlbums = new ArrayList<>();
+        for (Album album : albums) {
+            if (!albumsSet.contains(album.getId())) {
+                filteredAlbums.add(album);
+            }
+        }
 
         albumList.addAll(filteredAlbums);
         notifyDataSetChanged();

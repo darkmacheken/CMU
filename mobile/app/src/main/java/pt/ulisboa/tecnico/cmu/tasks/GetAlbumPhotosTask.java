@@ -3,22 +3,20 @@ package pt.ulisboa.tecnico.cmu.tasks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build.VERSION_CODES;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import com.google.android.gms.tasks.Tasks;
 import com.google.gson.Gson;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
+import pt.ulisboa.tecnico.cmu.dataobjects.Link;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils.State;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
@@ -43,30 +41,35 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
         GoogleDriveUtils.connectDriveService(context);
     }
 
-    @RequiresApi(api = VERSION_CODES.N)
     @Override
     protected State doInBackground(Void... noParams) {
         File mediaStorageDir = context.getCacheDir();
         File albumFolder = new File(mediaStorageDir, this.album.getId());
         File[] filesArray = albumFolder.listFiles();
-        filesArray = Optional.ofNullable(filesArray).orElseGet(() -> new File[]{});
+        if (filesArray == null) {
+            filesArray = new File[]{};
+        }
 
-        Map<String, File> files = Arrays.stream(filesArray).collect(Collectors.toMap(File::getName, f -> f));
+        Map<String, File> files = new HashMap<>();
+        for (File f : filesArray) {
+            if (files.put(f.getName(), f) != null) {
+                throw new IllegalStateException("Duplicate key");
+            }
+        }
 
         List<String> imagesList = new ArrayList<>();
 
         // Retrieving metadata
         List<String> finalImagesList = imagesList;
-        this.album.getUsers()
-            .forEach(link -> {
-                try {
-                    String metaDataFile = Tasks.await(GoogleDriveUtils.readFile(link.getFileId()));
-                    String[] images = new Gson().fromJson(metaDataFile, String[].class);
-                    finalImagesList.addAll(Arrays.asList(images));
-                } catch (ExecutionException | InterruptedException e) {
-                    Log.e(TAG, "Error waiting for tasks.", e);
-                }
-            });
+        for (Link link : this.album.getUsers()) {
+            try {
+                String metaDataFile = Tasks.await(GoogleDriveUtils.readFile(link.getFileId()));
+                String[] images = new Gson().fromJson(metaDataFile, String[].class);
+                finalImagesList.addAll(Arrays.asList(images));
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e(TAG, "Error waiting for tasks.", e);
+            }
+        }
 
         if (!imagesList.isEmpty()) {
             SharedPropertiesUtils.saveAlbumMetadata(context, album.getId(), new Gson().toJson(imagesList));
@@ -75,16 +78,16 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, Boolean, State> {
                 new Gson().fromJson(SharedPropertiesUtils.getAlbumMetadata(context, album.getId()), String[].class));
         }
 
-        imagesList.forEach(image -> {
+        for (String image : imagesList) {
             if (!files.containsKey(image)) {
                 GoogleDriveUtils.downloadFile(image, new File(context.getCacheDir(), this.album.getId()))
-                    .addOnCompleteListener((fileResult) -> {
+                    .addOnCompleteListener(fileResult -> {
                         if (fileResult.isSuccessful()) {
                             viewAlbumAdapter.addPhoto(fileResult.getResult().getAbsolutePath());
                         }
                     });
             }
-        });
+        }
         return State.SUCCESS;
     }
 

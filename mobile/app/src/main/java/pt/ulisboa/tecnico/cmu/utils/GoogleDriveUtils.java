@@ -57,7 +57,8 @@ public final class GoogleDriveUtils {
 
             GoogleAccountCredential credential =
                 GoogleAccountCredential.usingOAuth2(
-                    context, Arrays.asList(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA));
+                    context,
+                    Arrays.asList(DriveScopes.DRIVE_READONLY, DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA));
             credential.setSelectedAccount(googleAccount.getAccount());
 
             driveService = new Builder(

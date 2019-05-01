@@ -37,6 +37,7 @@ public final class RequestsUtils {
     private static OkHttpClient httpClient;
     private static String token;
     private static String userId;
+
     private RequestsUtils() {
     }
 
@@ -69,6 +70,7 @@ public final class RequestsUtils {
 
         if (response.body() == null) {
             Log.e(TAG, "Response Body is Empty.");
+            return null;
         }
 
         // User not found
@@ -211,13 +213,12 @@ public final class RequestsUtils {
                 return true;
             }
         } catch (IOException e) {
-            AlertUtils.alert("Unable to create album.", context);
             Log.e(TAG, "Unable to POST request /albums.", e);
         }
         return false;
     }
 
-    public static User[] getUsers(Context context, String q) throws UnauthorizedException {
+    public static User[] getUsers(Context context, String userId, String q) throws UnauthorizedException {
         OkHttpClient client = getHttpClient(context);
 
         if (client == null) {
@@ -245,11 +246,13 @@ public final class RequestsUtils {
 
             if (response.code() == 200) {
                 String jsonResponse = response.body().string();
-                return new Gson().fromJson(jsonResponse, User[].class);
+                User[] users = new Gson().fromJson(jsonResponse, User[].class);
+                SharedPropertiesUtils.saveUsers(context, users);
+                return users;
             }
         } catch (IOException e) {
-            AlertUtils.alert("Unable to get users.", context);
             Log.e(TAG, "Unable to GET request /users.", e);
+            return SharedPropertiesUtils.getUsers(context, userId, q);
         }
         return new User[]{};
     }

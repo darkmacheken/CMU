@@ -46,8 +46,4 @@ export class User implements IUser {
 		this.folderId = id;
 		userList.saveToFile();
 	}
-
-	public getJson(): IUser {
-		return { id: this.id, name: this.name, email: this.email };
-	}
 }

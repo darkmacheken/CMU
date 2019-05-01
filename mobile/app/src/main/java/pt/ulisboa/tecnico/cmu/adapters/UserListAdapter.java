@@ -5,8 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
@@ -38,13 +36,17 @@ public class UserListAdapter
     }
 
     public void addUser(User user) {
-        userList.add(0, user);
-        notifyItemInserted(0);
-    }
-
-    public void addUser(User[] users) {
-        userList.addAll(Arrays.asList(users));
-        notifyAll();
+        User first = null;
+        for (User u : userList) {
+            if (u.getId().equals(user.getId())) {
+                first = u;
+                break;
+            }
+        }
+        if (first == null) {
+            userList.add(0, user);
+            notifyItemInserted(0);
+        }
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {

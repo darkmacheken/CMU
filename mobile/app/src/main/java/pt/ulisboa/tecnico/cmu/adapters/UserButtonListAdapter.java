@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +27,16 @@ public class UserButtonListAdapter
     }
 
     @Override
-    public pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder onCreateViewHolder(ViewGroup viewGroup,
+    public pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder onCreateViewHolder(
+        @NonNull ViewGroup viewGroup,
         int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_button, viewGroup, false);
         return new pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder userViewHolder,
+    public void onBindViewHolder(
+        @NonNull pt.ulisboa.tecnico.cmu.adapters.UserButtonListAdapter.UserViewHolder userViewHolder,
         int i) {
         userViewHolder.user.setText(userList.get(i).getName() + " (" + userList.get(i).getEmail() + ")");
         userViewHolder.user.setOnClickListener(new UserButtonListAdapter.UserOnClickListener(userList.get(i)));
@@ -69,12 +72,18 @@ public class UserButtonListAdapter
 
         @Override
         public void onClick(View v) {
-            Bundle userBundle = new Bundle();
-            userBundle.putString("id", user.getId());
-            //userBundle.putString("username", user.getUsername());
-            Intent data = new Intent();
-            data.putExtra("user", userBundle);
-            activity.setResult(RESULT_OK, data);
+            Bundle extras = activity.getIntent().getExtras();
+            if (extras != null && extras.getBoolean("viewAlbum", false)) {
+
+            } else {
+                Bundle userBundle = new Bundle();
+                userBundle.putString("id", user.getId());
+                userBundle.putString("name", user.getName());
+                userBundle.putString("email", user.getEmail());
+                Intent data = new Intent();
+                data.putExtra("user", userBundle);
+                activity.setResult(RESULT_OK, data);
+            }
             activity.finish();
         }
     }

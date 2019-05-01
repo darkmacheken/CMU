@@ -1,10 +1,8 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -21,16 +19,13 @@ import pt.ulisboa.tecnico.cmu.adapters.AlbumMenuAdapter;
 import pt.ulisboa.tecnico.cmu.tasks.GetAlbumsTask;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
-@TargetApi(VERSION_CODES.JELLY_BEAN)
 public class AlbumMenuActivity extends AppCompatActivity {
 
     private static final String TAG = "AlbumMenuActivity";
     private static final int ADD_ALBUM_REQUEST = 1;
 
     private AlbumMenuAdapter albumMenuAdapter;
-    private RecyclerView.LayoutManager layoutManager;
 
-    @TargetApi(VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +35,7 @@ public class AlbumMenuActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.album_list);
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(AlbumMenuActivity.this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(AlbumMenuActivity.this);
         recyclerView.setLayoutManager(layoutManager);
 
         albumMenuAdapter = new AlbumMenuAdapter(new ArrayList<>(), AlbumMenuActivity.this);
@@ -92,8 +87,7 @@ public class AlbumMenuActivity extends AppCompatActivity {
             case R.id.logout:
                 AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                 alertDialog.setTitle("Alert");
-                alertDialog.setMessage(
-                    "Are you sure you want to logout? If you lose internet connection, you won't be able to log in again.");
+                alertDialog.setMessage("Are you sure you want to logout?");
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
                     (dialog, which) -> {
                         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

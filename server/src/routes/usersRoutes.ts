@@ -18,9 +18,16 @@ router.post("/", (req, res, next) => {
 		if (err) {
 			res.status(403);
 			res.send({ error: err.message });
-		} else if (!req.body.q) {
-			res.status(400);
-			res.send({ error: "Wrong parameters" });
+		} else if (!req.body.q || req.body.q === "") {
+			const responseArray: IUser[] = [];
+			for (const userQ of userList.users) {
+				responseArray.push({ id: userQ.id, name: userQ.name, email: userQ.email });
+			}
+			if (responseArray.length > 100) {
+				res.end(JSON.stringify(responseArray.slice(0, 99)));
+			} else {
+				res.end(JSON.stringify(responseArray));
+			}
 		} else {
 			const responseArray: IUser[] = [];
 			for (const userQ of userList.users) {
@@ -30,7 +37,7 @@ router.post("/", (req, res, next) => {
 					userQ.name.toUpperCase().includes(q) ||
 					userQ.email.toUpperCase().includes(q)
 				) {
-					responseArray.push(userQ.getJson());
+					responseArray.push({ id: userQ.id, name: userQ.name, email: userQ.email });
 				}
 			}
 			res.end(JSON.stringify(responseArray));

@@ -2,6 +2,14 @@ package pt.ulisboa.tecnico.cmu.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import pt.ulisboa.tecnico.cmu.dataobjects.User;
 
 public final class SharedPropertiesUtils {
 
@@ -55,6 +63,57 @@ public final class SharedPropertiesUtils {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
         ed.putString("album_" + albumId, metadata);
+        ed.apply();
+    }
+
+    public static User[] getUsers(Context context, String userId, String q) {
+        SharedPreferences sp = context.getSharedPreferences("Users", Context.MODE_PRIVATE);
+        User[] savedUsers = new Gson().fromJson(sp.getString("users", "[]"), User[].class);
+
+        if (userId == null) {
+            return savedUsers;
+        } else if (TextUtils.isEmpty(q)) {
+            List<User> list = new ArrayList<>();
+            for (User user : savedUsers) {
+                if (!user.getId().equals(userId)) {
+                    list.add(user);
+                }
+            }
+            return list.toArray(new User[0]);
+        } else {
+            List<User> list = new ArrayList<>();
+            for (User user : savedUsers) {
+                if (!user.getId().equals(userId) && (user.getId().contains(q)
+                    || user.getName().contains(q) || user.getEmail().contains(q))) {
+                    list.add(user);
+                }
+            }
+            return list.toArray(new User[0]);
+        }
+    }
+
+    public static void saveUsers(Context context, User[] users) {
+        List<User> savedUsersList = new ArrayList<>(Arrays.asList(getUsers(context, null, "")));
+        Set<String> usersSet = new HashSet<>();
+
+        for (User user : savedUsersList) {
+            String id = user.getId();
+            usersSet.add(id);
+        }
+
+        List<User> list = new ArrayList<>();
+        for (User user : users) {
+            if (!usersSet.contains(user.getId())) {
+                list.add(user);
+            }
+        }
+        savedUsersList.addAll(list);
+
+        String usersJson = new Gson().toJson(savedUsersList);
+
+        SharedPreferences sp = context.getSharedPreferences("Users", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString("users", usersJson);
         ed.apply();
     }
 }

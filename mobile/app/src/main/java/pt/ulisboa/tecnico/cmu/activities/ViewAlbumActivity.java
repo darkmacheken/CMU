@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
@@ -48,7 +45,6 @@ public class ViewAlbumActivity extends AppCompatActivity {
     private Album album;
     private Link userLink;
 
-    @RequiresApi(api = VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +58,13 @@ public class ViewAlbumActivity extends AppCompatActivity {
         // get user's Link
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         String userId = account.getId();
-        Optional<Link> linkOp = album.getUsers().stream().filter(link -> userId.equals(link.getUserId())).findFirst();
-        this.userLink = linkOp.orElseGet(Link::new);
+
+        for (Link link : album.getUsers()) {
+            if (TextUtils.equals(userId, link.getUserId())) {
+                this.userLink = link;
+                break;
+            }
+        }
 
         // progress bar
         progress = new SpotsDialog.Builder().setContext(this)
@@ -117,6 +118,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 return (true);
             case R.id.add_user:
                 Intent intent = new Intent(this, AddUserActivity.class);
+                intent.putExtra("viewAlbum", true);
                 startActivity(intent);
                 return (true);
             default:
@@ -184,7 +186,6 @@ public class ViewAlbumActivity extends AppCompatActivity {
 
                     showProgress(false);
                 }).addOnFailureListener(e -> AlertUtils.alert("Unable to upload the photo.", this));
-
         }
     }
 
