@@ -75,6 +75,15 @@ And check if the SHA1 fingerprint matches the following:
     4C:18:E7:30:9B:FF:1F:FF:98:75:B9:C1:90:85:76:93:9D:BF:9B:75
 ```
 
+The keystore configuration is as follows:
+```properties
+    keystore_name: "debug.keystore"
+    keystore_password: "android"
+    key_alias: "androiddebugkey"
+    key_password: "android"
+    cn: "CN=Android Debug,O=Android,C=US"
+```
+
 #### Change IP
 The mobile application, for cloud storage, has to connect to the server. As the server is usually running in your computer (with a dynamic IP address), you need to change the URL in the file strings under **/mobile/app/src/main/res/values/strings.xml** the value **server_url** to match with your IP:
 
