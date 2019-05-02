@@ -172,6 +172,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
                         imagesList.add(result.getResult());
 
                         String metadata = new Gson().toJson(imagesList);
+                        SharedPropertiesUtils.saveAlbumUserMetadata(this, userLink.getUserId(), album.getId(), metadata);
 
                         GoogleDriveUtils.updateFile(userLink.getFileId(), metadata)
                             .addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));

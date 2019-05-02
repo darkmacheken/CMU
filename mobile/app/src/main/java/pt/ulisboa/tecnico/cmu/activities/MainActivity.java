@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
                 new LoginTask(this, null).execute(false);
             });
 
-        super.onActivityResult(requestCode, resultCode, resultData);
     }
 
     /**

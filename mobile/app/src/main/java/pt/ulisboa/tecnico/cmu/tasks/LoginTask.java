@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import dmax.dialog.SpotsDialog;
@@ -56,7 +57,7 @@ public class LoginTask extends AsyncTask<Boolean, Void, Boolean> {
             }
 
             // login from last time
-            if (token != null) {
+            if (!TextUtils.isEmpty(token)) {
                 return true;
             } else if (googleAccount == null) {
                 return false;
