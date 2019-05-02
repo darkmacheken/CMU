@@ -62,6 +62,19 @@ The server is, by default, running in port **8443**.
 Note: It uses HTTPS, so you **MUST** specify the protocol when requesting the server (e.g. **https**://localhost:8443/users), otherwise it won't work.
 
 ### Mobile Application
+#### Configure debug keystore
+In order to use the Google Sign in services, you need to copy the files **debug.keystore** and **debug.keystore.lock** in **/mobile/resources** to your android's configuration folder. In GNU/Linux is usually at **~/.android** and in Windows is at **C:\Users\\\<your name>\\.android**. Then, in android studio, click **Build** > **Clean Project** and rebuild the project.
+
+Run the following command changing the <path-to-debug.keystore>:
+```
+    keytool -exportcert -keystore <path-to-debug.keystore> -list -v
+```
+
+And check if the SHA1 fingerprint matches the following:
+```
+    4C:18:E7:30:9B:FF:1F:FF:98:75:B9:C1:90:85:76:93:9D:BF:9B:75
+```
+
 #### Change IP
 The mobile application, for cloud storage, has to connect to the server. As the server is usually running in your computer (with a dynamic IP address), you need to change the URL in the file strings under **/mobile/app/src/main/res/values/strings.xml** the value **server_url** to match with your IP:
 
