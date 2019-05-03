@@ -20,8 +20,6 @@ import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 
 public class AddAlbumActivity extends AppCompatActivity {
 
-    private static final String TAG = "AddAlbumActivity";
-
     private static final int ADD_USER_REQUEST = 1;
     private UserListAdapter userListAdapter;
     private RecyclerView.LayoutManager layoutManager;

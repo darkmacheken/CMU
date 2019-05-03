@@ -41,11 +41,13 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.Phot
         options.inSampleSize = 8;
         Bitmap bmp = BitmapFactory.decodeFile(photoList.get(i), options);
         double scaleFactor = Math.ceil((float) IMAGE_HEIGHT / (float) bmp.getHeight());
-        bmp = Bitmap.createScaledBitmap(bmp, (int) (bmp.getWidth() * scaleFactor),(int) (bmp.getHeight() * scaleFactor), false);
+        bmp = Bitmap.createScaledBitmap(bmp, (int) (bmp.getWidth() * scaleFactor),
+            (int) (bmp.getHeight() * scaleFactor), false);
 
-        if(bmp.getWidth() < IMAGE_WIDTH) {
+        if (bmp.getWidth() < IMAGE_WIDTH) {
             scaleFactor = (int) Math.ceil((float) IMAGE_WIDTH / (float) bmp.getWidth());
-            bmp = Bitmap.createScaledBitmap(bmp, (int) (bmp.getWidth() * scaleFactor),(int) (bmp.getHeight() * scaleFactor), false);
+            bmp = Bitmap.createScaledBitmap(bmp, (int) (bmp.getWidth() * scaleFactor),
+                (int) (bmp.getHeight() * scaleFactor), false);
         }
 
         int width = bmp.getWidth();

@@ -323,6 +323,9 @@ public final class RequestsUtils {
         }
     }
 
+    public static String getUserId() {
+        return userId;
+    }
 
     /**
      * Creates an HTTPS client that accepts the server's certificate in the resources. It accepts any domain.

@@ -15,10 +15,10 @@ import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 import pt.ulisboa.tecnico.cmu.exceptions.UnauthorizedException;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
+import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
-public class GetAlbumsTask extends AsyncTask<Void, Void, Boolean> {
+public class GetAlbumsTask extends AsyncTask<Void, List<Album>, Boolean> {
 
-    private static final String TAG = "GetAlbumsTask";
     private final Context context;
 
     private final AlbumMenuAdapter adapter;
@@ -45,17 +45,28 @@ public class GetAlbumsTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(Void... noParams) {
+    protected synchronized Boolean doInBackground(Void... noParams) {
         try {
+            String albumsCache = SharedPropertiesUtils.getAlbums(context, RequestsUtils.getUserId());
+            Album[] albumsFromCache = new Gson().fromJson(albumsCache, Album[].class);
+            publishProgress(Arrays.asList(albumsFromCache));
+            showProgress(false);
+
             String albumsJson = RequestsUtils.getAlbums(context);
 
-            Gson gson = new Gson();
-            Album[] albumsFromJson = gson.fromJson(albumsJson, Album[].class);
+            Album[] albumsFromJson = new Gson().fromJson(albumsJson, Album[].class);
 
             this.albums = Arrays.asList(albumsFromJson);
             return true;
         } catch (UnauthorizedException e) {
             return false;
+        }
+    }
+
+    @Override
+    protected void onProgressUpdate(List<Album>... values) {
+        if (values.length == 1) {
+            adapter.addAlbums(values[0]);
         }
     }
 

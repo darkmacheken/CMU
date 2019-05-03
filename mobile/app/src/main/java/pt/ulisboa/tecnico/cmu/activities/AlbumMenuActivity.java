@@ -21,7 +21,6 @@ import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 public class AlbumMenuActivity extends AppCompatActivity {
 
-    private static final String TAG = "AlbumMenuActivity";
     private static final int ADD_ALBUM_REQUEST = 1;
 
     private AlbumMenuAdapter albumMenuAdapter;

@@ -13,10 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.gson.Gson;
@@ -44,6 +48,9 @@ public class ViewAlbumActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private Album album;
     private Link userLink;
+    private Toolbar toolbar;
+    private ProgressBar progressBar;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +91,17 @@ public class ViewAlbumActivity extends AppCompatActivity {
         viewAlbumAdapter = new ViewAlbumAdapter(getPhotos(), ViewAlbumActivity.this);
         recyclerView.setAdapter(viewAlbumAdapter);
 
-        new GetAlbumPhotosTask(this, viewAlbumAdapter, album).execute();
+        this.toolbar = findViewById(R.id.toolbar);
+        this.progressBar = findViewById(R.id.progressBar);
+        this.textView = findViewById(R.id.textView);
+        hideInfo();
+
+        new GetAlbumPhotosTask(this, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
 
         Context thisContext = this;
         SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
         pullToRefresh.setOnRefreshListener(() -> {
-            new GetAlbumPhotosTask(thisContext, viewAlbumAdapter, album).execute();
+            new GetAlbumPhotosTask(thisContext, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
             pullToRefresh.setRefreshing(false);
         });
     }
@@ -129,10 +141,8 @@ public class ViewAlbumActivity extends AppCompatActivity {
     private List<String> getPhotos() {
         File albumFolder = new File(this.getCacheDir(), this.album.getId());
 
-        if (!albumFolder.exists()) {
-            if (!albumFolder.mkdirs()) {
-                Log.d(TAG, "failed to create " + this.album.getId() + " directory");
-            }
+        if (!albumFolder.exists() && !albumFolder.mkdirs()) {
+            Log.d(TAG, "failed to create " + this.album.getId() + " directory");
         }
 
         File[] files = albumFolder.listFiles();
@@ -162,7 +172,8 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 .addOnCompleteListener(result -> {
                     if (result.isSuccessful() && !TextUtils.isEmpty(result.getResult())) {
                         String[] imagesArray = new Gson().fromJson(
-                            SharedPropertiesUtils.getAlbumUserMetadata(this, userLink.getUserId(), album.getId()), String[].class);
+                            SharedPropertiesUtils.getAlbumUserMetadata(this, userLink.getUserId(), album.getId()),
+                            String[].class);
 
                         List<String> imagesList = new ArrayList<>();
                         if (imagesArray != null && imagesArray.length != 0) {
@@ -172,7 +183,8 @@ public class ViewAlbumActivity extends AppCompatActivity {
                         imagesList.add(result.getResult());
 
                         String metadata = new Gson().toJson(imagesList);
-                        SharedPropertiesUtils.saveAlbumUserMetadata(this, userLink.getUserId(), album.getId(), metadata);
+                        SharedPropertiesUtils.saveAlbumUserMetadata(this, userLink.getUserId(), album.getId(),
+                            metadata);
 
                         GoogleDriveUtils.updateFile(userLink.getFileId(), metadata)
                             .addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));
@@ -210,4 +222,11 @@ public class ViewAlbumActivity extends AppCompatActivity {
             progress.dismiss();
         }
     }
+
+    private void hideInfo() {
+        this.progressBar.setVisibility(View.INVISIBLE);
+        this.textView.setVisibility(View.INVISIBLE);
+        this.toolbar.setVisibility(View.INVISIBLE);
+    }
+
 }

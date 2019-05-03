@@ -54,28 +54,29 @@ router.post("/register", (req, res) => {
 	} else {
 		let newUser = new User(req.body.userid, req.body.name, req.body.email, req.body.accessToken);
 		userList.addUser(newUser);
-		// Create Folder
-		googleAuth.authorize(newUser, (client) => {
-			googleapis.google
-				.drive({ version: "v3", auth: client })
-				.files.create({
+
+		googleAuth
+			.authorize(newUser)
+			.then((client) => {
+				// Create Folder
+				return googleapis.google.drive({ version: "v3", auth: client }).files.create({
 					requestBody: {
 						name: "P2Photo",
 						mimeType: googleAuth.TYPE_GOOGLE_FOLDER
 					}
-				})
-				.then((folder) => {
-					if (folder.data.id) {
-						console.log("Created folder Id: ", folder.data.id);
-						newUser.setFolderId(folder.data.id);
-						res.end(JSON.stringify({ folderId: folder.data.id }));
-					}
-				})
-				.catch((err) => {
-					console.error(err);
-					res.status(400);
-					res.send({ error: "Error creating file." });
 				});
-		});
+			})
+			.then((folder) => {
+				if (folder.data.id) {
+					console.log("Created folder Id: ", folder.data.id);
+					newUser.setFolderId(folder.data.id);
+					res.end(JSON.stringify({ folderId: folder.data.id }));
+				}
+			})
+			.catch((err) => {
+				console.error(err);
+				res.status(400);
+				res.send({ error: "Error creating file." });
+			});
 	}
 });

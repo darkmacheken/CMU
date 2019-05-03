@@ -10,25 +10,24 @@ export const TYPE_GOOGLE_FOLDER = "application/vnd.google-apps.folder";
  *
  * @param {Object} credentials The authorization client credentials.
  */
-export function authorize(user: User, callback?: (client: OAuth2Client) => void) {
+export async function authorize(user: User): Promise<OAuth2Client> {
 	// Load client secrets from a local file.
-	fs.readFile("./resources/credentials.json", "utf8", (err, content) => {
-		if (err) {
-			return console.error("Error loading client secret file", err);
-		}
-		const credentials = JSON.parse(content);
-		const { client_secret, client_id } = credentials.web;
-		const oauth2Client = new OAuth2Client(client_id, client_secret);
+	return new Promise((resolve, reject) => {
+		fs.readFile("./resources/credentials.json", "utf8", (err, content) => {
+			if (err) {
+				reject(err);
+			}
+			const credentials = JSON.parse(content);
+			const { client_secret, client_id } = credentials.web;
+			const oauth2Client = new OAuth2Client(client_id, client_secret);
 
-		if (!user.token) {
-			return getNewToken(oauth2Client, user, callback);
-		} else {
-			oauth2Client.credentials = user.token;
-		}
-
-		if (callback) {
-			callback(oauth2Client);
-		}
+			if (!user.token) {
+				resolve(getNewToken(oauth2Client, user));
+			} else {
+				oauth2Client.credentials = user.token;
+				resolve(oauth2Client);
+			}
+		});
 	});
 }
 
@@ -38,16 +37,15 @@ export function authorize(user: User, callback?: (client: OAuth2Client) => void)
  *
  * @param {OAuth2Client} oauth2Client The OAuth2 client to get token for.
  */
-function getNewToken(oauth2Client: OAuth2Client, user: User, callback?: (client: OAuth2Client) => void) {
-	oauth2Client.getToken(user.accessToken, (err: any, token: any) => {
-		if (err) {
-			return console.error("Error getting token.", err);
-		}
-		oauth2Client.credentials = token;
-		user.setToken(token);
-
-		if (callback) {
-			callback(oauth2Client);
-		}
-	});
+async function getNewToken(oauth2Client: OAuth2Client, user: User): Promise<OAuth2Client> {
+	return oauth2Client
+		.getToken(user.accessToken)
+		.then((token) => {
+			oauth2Client.credentials = token.tokens;
+			user.setToken(token.tokens);
+			return oauth2Client;
+		})
+		.catch((error) => {
+			return error;
+		});
 }

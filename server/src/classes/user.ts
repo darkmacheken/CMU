@@ -1,14 +1,6 @@
 import { userList } from "../main";
 import { IAlbum } from "./album";
-
-export interface IToken {
-	access_token: string;
-	refresh_token: string;
-	scope: string;
-	token_type: string;
-	id_token: string;
-	expiry_date: number;
-}
+import { Credentials } from "google-auth-library";
 
 export interface IUser {
 	id: string;
@@ -20,7 +12,7 @@ export class User implements IUser {
 	public id: string;
 	public name: string;
 	public email: string;
-	public token?: IToken;
+	public token?: Credentials;
 	public accessToken: string;
 	public folderId?: string;
 	public albums: IAlbum[];
@@ -37,7 +29,7 @@ export class User implements IUser {
 		this.albums.push(album);
 	}
 
-	public setToken(token: IToken) {
+	public setToken(token: Credentials) {
 		this.token = token;
 		userList.saveToFile();
 	}

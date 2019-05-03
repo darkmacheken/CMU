@@ -130,62 +130,28 @@ async function createAlbum(user: User, name: string, users?: IUser[]): Promise<I
 	albumList.addAlbum(album);
 	user.albums.push({ id: album.id, name: album.name });
 
-	// Create folder and
-	await googleAuth.authorize(user, (client) => {
-		if (user.folderId) {
-			googleapis.google
-				.drive({ version: "v3", auth: client })
-				.files.create({
-					requestBody: {
-						name: album.id,
-						mimeType: googleAuth.TYPE_GOOGLE_FOLDER,
-						parents: [ user.folderId ]
-					}
-				})
-				.then((res) => {
-					console.log("Album Folder created with success with id ", res.data.id);
-					if (res.data.id) {
-						googleapis.google
-							.drive({ version: "v3", auth: client })
-							.files.create({
-								requestBody: {
-									name: album.id + ".json",
-									mimeType: "application/json",
-									parents: [ res.data.id ]
-								},
-								media: {
-									body: "[]"
-								}
-							})
-							.then((response) => {
-								console.log("Metadata file created with success with id ", response.data.id);
-								if (res.data.id && response.data.id) {
-									album.users.push({
-										userId: user.id,
-										folderId: res.data.id,
-										fileId: response.data.id
-									});
-									console.log("userList: " + userList);
-									userList.saveToFile();
+	return createFilesGoogleDrive(user, album).then(([ _client, albumFolderRes, metadataRes ]) => {
+		// Add Album to state
+		console.log("Metadata file created with success with id ", metadataRes.data.id);
+		if (albumFolderRes.data.id && metadataRes.data.id) {
+			album.users.push({
+				userId: user.id,
+				folderId: albumFolderRes.data.id,
+				fileId: metadataRes.data.id
+			});
+			console.log("userList: " + userList);
+			userList.saveToFile();
 
-									if (users) {
-										addMultipleUsersToAlbum(users, album);
-									}
+			if (users) {
+				addMultipleUsersToAlbum(users, album);
+			}
 
-									albumList.saveToFile();
-								} else {
-									console.error("Couldn't get the id of the album's metadata file.");
-								}
-							})
-							.catch((err) => console.error(err));
-					} else {
-						console.error("Couldn't get the id of the album's folder.");
-					}
-				})
-				.catch((err) => console.error(err));
+			albumList.saveToFile();
+			return Promise.resolve(album.getJson());
+		} else {
+			throw new Error("Couldn't get the ID of the album's metadata file.");
 		}
 	});
-	return album.getJson();
 }
 
 async function addMultipleUsersToAlbum(users: IUser[], album: Album) {
@@ -199,84 +165,106 @@ async function addMultipleUsersToAlbum(users: IUser[], album: Album) {
 
 async function addUserToAlbum(user: User, album: Album) {
 	// First thing is create folder and metadata file in G Drive of user
-	await googleAuth.authorize(user, (client) => {
-		if (user.folderId) {
-			googleapis.google
-				.drive({ version: "v3", auth: client })
-				.files.create({
-					requestBody: {
-						name: album.id,
-						mimeType: googleAuth.TYPE_GOOGLE_FOLDER,
-						parents: [ user.folderId ]
-					}
-				})
-				.then((res) => {
-					console.log("Album Folder created with success with id ", res.data.id);
-					if (res.data.id) {
-						googleapis.google
-							.drive({ version: "v3", auth: client })
-							.files.create({
-								requestBody: {
-									name: album.id + ".json",
-									mimeType: "application/json",
-									parents: [ res.data.id ]
-								},
-								media: {
-									body: "[]"
-								}
-							})
-							.then((response) => {
-								console.log("Metadata file created with success with id ", response.data.id);
-								if (res.data.id && response.data.id) {
-									album.users.push({
-										userId: user.id,
-										folderId: res.data.id,
-										fileId: response.data.id
-									});
-
-									// Add permissions to the other users
-									for (const userLinks of album.users) {
-										const userObject = userList.findUserById(userLinks.userId);
-										if (userLinks.userId !== user.id && userObject) {
-											googleapis.google
-												.drive({ version: "v3", auth: client })
-												.permissions.create({
-													fileId: res.data.id,
-													requestBody: {
-														type: "user",
-														role: "reader",
-														emailAddress: userObject.email
-													}
-												});
-										}
-									}
-
-									// save state
-									user.albums.push({ id: album.id, name: album.name });
-									albumList.saveToFile();
-									userList.saveToFile();
-								}
-							});
-					}
+	createFilesGoogleDrive(user, album)
+		.then(([ client, albumFolderRes, metadataRes ]) => {
+			console.log("Metadata file created with success with id ", metadataRes.data.id);
+			if (albumFolderRes.data.id && metadataRes.data.id) {
+				album.users.push({
+					userId: user.id,
+					folderId: albumFolderRes.data.id,
+					fileId: metadataRes.data.id
 				});
-		}
-	});
+
+				// Add permissions to the other users
+				(async () => {
+					for (const userLinks of album.users) {
+						const userObject = userList.findUserById(userLinks.userId);
+						if (userLinks.userId !== user.id && userObject) {
+							await googleapis.google
+								.drive({ version: "v3", auth: client })
+								.permissions.create({
+									fileId: albumFolderRes.data.id,
+									requestBody: {
+										type: "user",
+										role: "reader",
+										emailAddress: userObject.email
+									}
+								})
+								.catch((error) => console.error(error));
+						}
+					}
+				})();
+
+				// save state
+				user.albums.push({ id: album.id, name: album.name });
+				albumList.saveToFile();
+				userList.saveToFile();
+			}
+		})
+		.catch((error) => console.error(error));
 
 	// Add permission to the user
 	for (const userLinks of album.users) {
 		const userObject = userList.findUserById(userLinks.userId);
 
 		if (userLinks.userId !== user.id && userObject) {
-			googleAuth.authorize(userObject, (client) => {
-				googleapis.google.drive({ version: "v3", auth: client }).permissions.create({
-					fileId: userLinks.folderId,
-					requestBody: {
-						type: "user",
-						role: "reader",
-						emailAddress: user.email
-					}
-				});
-			});
+			googleAuth
+				.authorize(userObject)
+				.then((client) => {
+					return googleapis.google.drive({ version: "v3", auth: client }).permissions.create({
+						fileId: userLinks.folderId,
+						requestBody: {
+							type: "user",
+							role: "reader",
+							emailAddress: user.email
+						}
+					});
+				})
+				.catch((error) => console.error(error));
 		}
 	}
+}
+
+async function createFilesGoogleDrive(user: User, album: Album) {
+	return googleAuth
+		.authorize(user)
+		.then((client) => {
+			// Create album folder
+			if (user.folderId) {
+				return Promise.all([
+					client,
+					googleapis.google.drive({ version: "v3", auth: client }).files.create({
+						requestBody: {
+							name: album.id,
+							mimeType: googleAuth.TYPE_GOOGLE_FOLDER,
+							parents: [ user.folderId ]
+						}
+					})
+				]);
+			} else {
+				throw new Error(`User with id ${user.id} doesn't have its folder ID initialized.`);
+			}
+		})
+		.then(([ client, albumFolderRes ]) => {
+			// Create album metadata
+			console.log("Album Folder created with success with id ", albumFolderRes.data.id);
+			if (albumFolderRes.data.id) {
+				return Promise.all([
+					client,
+					albumFolderRes,
+					googleapis.google.drive({ version: "v3", auth: client }).files.create({
+						requestBody: {
+							name: album.id + ".json",
+							mimeType: "application/json",
+							parents: [ albumFolderRes.data.id ]
+						},
+						media: {
+							body: "[]"
+						}
+					})
+				]);
+			} else {
+				throw new Error(`The response of the creation of the Album Folder didn't have the ID.`);
+			}
+		});
 }
