@@ -1,39 +1,86 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
-import static pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity.mediaStorageDir;
-
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.gson.Gson;
+import dmax.dialog.SpotsDialog;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
+import pt.ulisboa.tecnico.cmu.dataobjects.Album;
+import pt.ulisboa.tecnico.cmu.dataobjects.Link;
+import pt.ulisboa.tecnico.cmu.tasks.GetAlbumPhotosTask;
+import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
+import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
+import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
 public class ViewAlbumActivity extends AppCompatActivity {
 
+    private static final String TAG = "ViewAlbumActivity";
     private static final int GALLERY = 1;
+    // UI components
+    private AlertDialog progress;
     private ViewAlbumAdapter viewAlbumAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private String albumName;
+    private Album album;
+    private Link userLink;
+    private Toolbar toolbar;
+    private ProgressBar progressBar;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_album);
-        this.albumName = getIntent().getBundleExtra("album").getString("name");
-        setTitle(this.albumName);
+
+        // Get album
+        Gson gson = new Gson();
+        String albumDataObjectAsAString = getIntent().getStringExtra("album");
+        this.album = gson.fromJson(albumDataObjectAsAString, Album.class);
+
+        // get user's Link
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        String userId = account.getId();
+
+        for (Link link : album.getUsers()) {
+            if (TextUtils.equals(userId, link.getUserId())) {
+                this.userLink = link;
+                break;
+            }
+        }
+
+        // progress bar
+        progress = new SpotsDialog.Builder().setContext(this)
+            .setMessage("Uploading image.")
+            .setCancelable(false)
+            .setTheme(R.style.ProgressBar)
+            .build();
+
+        setTitle(this.album.getName());
         setupActionBar();
 
         RecyclerView recyclerView = findViewById(R.id.photo_list);
@@ -43,24 +90,20 @@ public class ViewAlbumActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         viewAlbumAdapter = new ViewAlbumAdapter(getPhotos(), ViewAlbumActivity.this);
         recyclerView.setAdapter(viewAlbumAdapter);
-    }
 
-    private List<String> getPhotos() {
+        this.toolbar = findViewById(R.id.toolbar);
+        this.progressBar = findViewById(R.id.progressBar);
+        this.textView = findViewById(R.id.textView);
+        hideInfo();
 
-        File albumFolder = new File(mediaStorageDir, this.albumName);
+        new GetAlbumPhotosTask(this, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
 
-        if (!albumFolder.exists()) {
-            if (!albumFolder.mkdirs()) {
-                Log.d("App", "failed to create " + this.albumName + " directory");
-            }
-        }
-
-        File[] files = albumFolder.listFiles();
-        List<String> photos = new ArrayList<>();
-        for (File file : files) {
-            photos.add(file.getAbsolutePath());
-        }
-        return photos;
+        Context thisContext = this;
+        SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
+        pullToRefresh.setOnRefreshListener(() -> {
+            new GetAlbumPhotosTask(thisContext, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
+            pullToRefresh.setRefreshing(false);
+        });
     }
 
     private void setupActionBar() {
@@ -87,11 +130,28 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 return (true);
             case R.id.add_user:
                 Intent intent = new Intent(this, AddUserActivity.class);
+                intent.putExtra("viewAlbum", album.getId());
                 startActivity(intent);
                 return (true);
             default:
                 return (super.onOptionsItemSelected(item));
         }
+    }
+
+    private List<String> getPhotos() {
+        File albumFolder = new File(this.getCacheDir(), this.album.getId());
+
+        if (!albumFolder.exists() && !albumFolder.mkdirs()) {
+            Log.d(TAG, "failed to create " + this.album.getId() + " directory");
+        }
+
+        File[] files = albumFolder.listFiles();
+        List<String> photos = new ArrayList<>();
+
+        for (File file : files) {
+            photos.add(file.getAbsolutePath());
+        }
+        return photos;
     }
 
     private void choosePhotoFromGallery() {
@@ -106,8 +166,38 @@ public class ViewAlbumActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_CANCELED && requestCode == GALLERY && data != null) {
             Uri contentURI = data.getData();
-            viewAlbumAdapter.addPhoto(getRealPathFromURI(contentURI));
-            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+
+            showProgress(true);
+            GoogleDriveUtils.createFile(new File(getRealPathFromURI(contentURI)), userLink.getFolderId())
+                .addOnCompleteListener(result -> {
+                    if (result.isSuccessful() && !TextUtils.isEmpty(result.getResult())) {
+                        String[] imagesArray = new Gson().fromJson(
+                            SharedPropertiesUtils.getAlbumUserMetadata(this, userLink.getUserId(), album.getId()),
+                            String[].class);
+
+                        List<String> imagesList = new ArrayList<>();
+                        if (imagesArray != null && imagesArray.length != 0) {
+                            imagesList = new ArrayList<>(Arrays.asList(imagesArray));
+                        }
+
+                        imagesList.add(result.getResult());
+
+                        String metadata = new Gson().toJson(imagesList);
+                        SharedPropertiesUtils.saveAlbumUserMetadata(this, userLink.getUserId(), album.getId(),
+                            metadata);
+
+                        GoogleDriveUtils.updateFile(userLink.getFileId(), metadata)
+                            .addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));
+
+                        File pathAlbum = new File(getCacheDir(), album.getId());
+                        File photo = new File(pathAlbum, result.getResult());
+                        GoogleDriveUtils.copy(new File(getRealPathFromURI(contentURI)), photo);
+                        viewAlbumAdapter.addPhoto(photo.getAbsolutePath());
+                        ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+                    }
+
+                    showProgress(false);
+                }).addOnFailureListener(e -> AlertUtils.alert("Unable to upload the photo.", this));
         }
     }
 
@@ -124,4 +214,19 @@ public class ViewAlbumActivity extends AppCompatActivity {
         }
         return result;
     }
+
+    private void showProgress(boolean show) {
+        if (show) {
+            progress.show();
+        } else {
+            progress.dismiss();
+        }
+    }
+
+    private void hideInfo() {
+        this.progressBar.setVisibility(View.INVISIBLE);
+        this.textView.setVisibility(View.INVISIBLE);
+        this.toolbar.setVisibility(View.INVISIBLE);
+    }
+
 }

@@ -1,15 +1,32 @@
-export class Album {
-	public id: number;
-	public name: string;
-	public users: Array<{ id: number; username: string; link: string }>;
+import uuidv4 from "uuid";
 
-	constructor(id: number, name: string) {
-		this.id = id;
+export interface IAlbum {
+	id: string;
+	name: string;
+}
+
+export interface ILink {
+	userId: string;
+	folderId: string;
+	fileId: string;
+}
+
+export class Album implements IAlbum {
+	public id: string;
+	public name: string;
+	public users: ILink[];
+
+	constructor(name: string) {
+		this.id = uuidv4();
 		this.name = name;
-		this.users = new Array<{ id: number; username: string; link: string }>();
+		this.users = [];
 	}
 
-	public addUser(user: { id: number; username: string; link: string }) {
+	public addUser(user: ILink) {
 		this.users.push(user);
+	}
+
+	public getJson(): IAlbum {
+		return { id: this.id, name: this.name };
 	}
 }

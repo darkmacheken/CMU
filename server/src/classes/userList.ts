@@ -4,54 +4,66 @@ import fs from "fs";
 const usersPath = "./storage/users.json";
 
 export class UserList {
-	public list: User[];
-	public counter: number;
+	public users: User[];
 
-	constructor(counter: number) {
-		this.list = [];
-		this.counter = counter;
+	constructor() {
+		this.users = [];
 		this.readFromFile();
 	}
 
 	public addUser(user: User) {
-		this.list.push(user);
-		this.counter++;
+		this.users.push(user);
 		this.saveToFile();
 	}
 
 	public saveToFile() {
-		fs.writeFile(usersPath, JSON.stringify(this.list, null, "\t"), (err) => {
+		fs.writeFile(usersPath, JSON.stringify(this.users, null, "\t"), (err) => {
 			if (err) {
 				return console.log(err);
 			}
-			console.log("The file was saved!");
+			console.log("The file users.json was saved!");
 		});
 	}
 
-	public findUserById(id: number) {
-		for (const user of this.list) {
-			if (user.id === id) {
-				return user;
+	public findUserByName(name: string, done?: (err: any, user?: User) => void) {
+		for (const user of this.users) {
+			if (user.name === name) {
+				if (done) {
+					return done(null, user);
+				} else {
+					return user;
+				}
 			}
 		}
-		return false;
+		if (done) {
+			return done(new Error("User not found!"));
+		} else {
+			return undefined;
+		}
+	}
+
+	public findUserById(id: string, done?: (err: any, user?: User) => void): User | undefined | void {
+		for (const user of this.users) {
+			if (user.id === id) {
+				if (done) {
+					return done(null, user);
+				} else {
+					return user;
+				}
+			}
+		}
+
+		if (done) {
+			return done(new Error(`User with id ${id} not found!`));
+		} else {
+			return undefined;
+		}
 	}
 
 	private readFromFile() {
-		this.list = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
-		this.counter = this.updateCounter();
-		console.log("Users List");
-		console.log(this.list);
-		console.log("Counter > " + this.counter);
-	}
+		this.users = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
 
-	private updateCounter() {
-		let aux = 0;
-		for (const user of this.list) {
-			if (user.id > aux) {
-				aux = user.id;
-			}
-		}
-		return aux + 1;
+		console.log("Users List");
+		console.log(this.users);
 	}
 }

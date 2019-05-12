@@ -2,13 +2,16 @@ package pt.ulisboa.tecnico.cmu.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.activities.ViewAlbumActivity;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
@@ -45,6 +48,28 @@ public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.Albu
         notifyItemInserted(0);
     }
 
+    public void addAlbums(List<Album> albums) {
+        Set<String> albumsSet = new HashSet<>();
+        for (Album album : this.albumList) {
+            String id = album.getId();
+            albumsSet.add(id);
+        }
+
+        List<Album> filteredAlbums = new ArrayList<>();
+        for (Album album : albums) {
+            if (!albumsSet.contains(album.getId())) {
+                filteredAlbums.add(album);
+            }
+        }
+
+        albumList.addAll(filteredAlbums);
+        notifyDataSetChanged();
+    }
+
+    public List<Album> getAlbumList() {
+        return albumList;
+    }
+
     class AlbumViewHolder extends RecyclerView.ViewHolder {
 
         private Button album;
@@ -67,10 +92,11 @@ public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.Albu
         public void onClick(View v) {
             Intent intent = new Intent(context, ViewAlbumActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            Bundle bundle = new Bundle();
-            bundle.putInt("id", this.album.getId());
-            bundle.putString("name", this.album.getName());
-            intent.putExtra("album", bundle);
+
+            Gson gson = new Gson();
+            String albumDataObjectAsAString = gson.toJson(this.album);
+            intent.putExtra("album", albumDataObjectAsAString);
+
             context.startActivity(intent);
         }
     }

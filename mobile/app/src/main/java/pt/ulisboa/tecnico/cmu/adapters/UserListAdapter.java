@@ -27,7 +27,7 @@ public class UserListAdapter
 
     @Override
     public void onBindViewHolder(pt.ulisboa.tecnico.cmu.adapters.UserListAdapter.UserViewHolder userViewHolder, int i) {
-        userViewHolder.user.setText(userList.get(i).getUsername());
+        userViewHolder.user.setText(userList.get(i).getName() + " (" + userList.get(i).getEmail() + ") ");
     }
 
     @Override
@@ -36,8 +36,21 @@ public class UserListAdapter
     }
 
     public void addUser(User user) {
-        userList.add(0, user);
-        notifyItemInserted(0);
+        User first = null;
+        for (User u : userList) {
+            if (u.getId().equals(user.getId())) {
+                first = u;
+                break;
+            }
+        }
+        if (first == null) {
+            userList.add(0, user);
+            notifyItemInserted(0);
+        }
+    }
+
+    public User[] getUsers() {
+        return userList.toArray(new User[]{});
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {

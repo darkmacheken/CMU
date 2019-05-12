@@ -8,8 +8,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -54,22 +54,6 @@
             android:label="@string/title_activity_album_menu"
             android:launchMode="singleTop"
             android:name=".activities.AlbumMenuActivity"
-            android:parentActivityName=".activities.LoginActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.activities.LoginActivity"/>
-        </activity>
-        <activity
-            android:label="@string/title_activity_sign_up"
-            android:name=".activities.SignUpActivity"
-            android:parentActivityName=".activities.LoginActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.activities.LoginActivity"/>
-        </activity>
-        <activity
-            android:label="@string/title_activity_login"
-            android:name=".activities.LoginActivity"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -80,21 +64,6 @@
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:configChanges="orientation|keyboard"
-            android:launchMode="singleTask"
-            android:name="com.dropbox.core.android.AuthActivity">
-            <intent-filter>
-
-                <!-- Insert your app key after “db-  ...” -->
-                <data android:scheme="db-4zsoe5fax200kn0"/>
-
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
     </application>
