@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmu.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import com.google.gson.Gson;
@@ -201,6 +202,45 @@ public final class RequestsUtils {
      * @throws UnauthorizedException if the token is invalid.
      */
     public static boolean createAlbum(Context context, String name, User[] users) throws UnauthorizedException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            return false;
+        }
+
+        String usersJson = new Gson().toJson(users);
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON,
+            "{\"name\": \"" + name + "\","
+                + "\"users\":" + usersJson + "}");
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT)
+            .post(body)
+            .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == 401 || response.code() == 403) {
+                throw new UnauthorizedException();
+            }
+
+            if (response.body() == null) {
+                Log.e(TAG, "Response Body is Empty.");
+                return false;
+            }
+
+            if (response.code() == 200) {
+                return true;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to POST request /albums.", e);
+        }
+        return false;
+    }
+
+    public static boolean createAlbumWifiDirect(Context context, String name, User[] users) {
         OkHttpClient client = getHttpClient(context);
 
         if (client == null) {
