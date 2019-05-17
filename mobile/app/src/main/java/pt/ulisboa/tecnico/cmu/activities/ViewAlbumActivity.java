@@ -208,6 +208,8 @@ public class ViewAlbumActivity extends AppCompatActivity {
                 viewAlbumAdapter.addPhoto(photo.getAbsolutePath());
                 ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
                 showProgress(false);
+                //TODO broadcast only the album catalog
+                WifiDirectConnectionManager.broadcastCatalogs(this);
 
             } else {
                 GoogleDriveUtils.createFile(new File(getRealPathFromURI(contentURI)), userLink.getFolderId())
