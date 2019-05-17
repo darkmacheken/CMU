@@ -77,9 +77,9 @@ public class AlbumMenuActivity extends AppCompatActivity implements PeerListList
             new GetAlbumsTask(thisContext, albumMenuAdapter).execute();
             pullToRefresh.setRefreshing(false);
         });
-
-        setupWifiDirect();
-
+        if (MainActivity.choseWifiDirect) {
+            setupWifiDirect();
+        }
     }
 
     private void setupWifiDirect() {
@@ -104,17 +104,16 @@ public class AlbumMenuActivity extends AppCompatActivity implements PeerListList
     @Override
     protected void onResume() {
         super.onResume();
-        if (alreadyRegistered) {
-            registerReceiver(mReceiver, intentFilter);
-            alreadyRegistered = true;
-        }
     }
 
     /* unregister the broadcast receiver */
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mReceiver);
+        if (alreadyRegistered) {
+            unregisterReceiver(mReceiver);
+            alreadyRegistered = false;
+        }
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -150,24 +149,14 @@ public class AlbumMenuActivity extends AppCompatActivity implements PeerListList
             // Perform any other updates needed based on the new list of
             // peers connected to the Wi-Fi P2P network.
         }
-
-        if (WifiDirectConnectionManager.peers.isEmpty()) {
-            Log.d(TAG, "No devices found");
-            return;
-        }
-
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : peerDeviceList.getDeviceList()) {
-            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
-            peersStr.append(devstr);
-        }
-        Log.d(TAG, peersStr.toString());
     }
 
     @Override
     public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
         List<SimWifiP2pDevice> refreshedNetworkPeers = new ArrayList<>();
 
+        SimWifiP2pSocketManager.getSockManager().handleActionDeviceInfoChanged(simWifiP2pDeviceList);
+        SimWifiP2pSocketManager.getSockManager().handleActionGroupMembershipChanged(simWifiP2pInfo);
         StringBuilder peersStr = new StringBuilder();
 
         WifiDirectConnectionManager.thisDevice = simWifiP2pDeviceList.getByName(simWifiP2pInfo.getDeviceName());
@@ -178,7 +167,7 @@ public class AlbumMenuActivity extends AppCompatActivity implements PeerListList
 
         // compile list of devices in range
         for (SimWifiP2pDevice device : refreshedNetworkPeers) {
-            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+            String devstr = "Group Info: " + device.deviceName + " (" + device.getVirtIp() + ")\n";
             peersStr.append(devstr);
         }
         Log.d(TAG, peersStr.toString());

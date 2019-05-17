@@ -57,4 +57,14 @@ public class Catalog {
         }
         return contentString;
     }
+
+    @Override
+    public String toString() {
+        return "Catalog{" +
+            "targetVirtIp='" + targetVirtIp + '\'' +
+            ", userName='" + userName + '\'' +
+            ", albumName='" + albumName + '\'' +
+            ", catalogLineList=" + getContentString() +
+            '}';
+    }
 }

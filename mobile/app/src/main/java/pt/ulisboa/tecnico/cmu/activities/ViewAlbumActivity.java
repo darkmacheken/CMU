@@ -49,7 +49,9 @@ import pt.ulisboa.tecnico.cmu.dataobjects.Link;
 import pt.ulisboa.tecnico.cmu.tasks.GetAlbumPhotosTask;
 import pt.ulisboa.tecnico.cmu.tasks.WifiDirectConnectionManager;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
+import pt.ulisboa.tecnico.cmu.utils.CryptoUtils;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
+import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 import pt.ulisboa.tecnico.cmu.utils.SimWifiP2pBroadcastReceiver;
 
@@ -230,7 +232,9 @@ public class ViewAlbumActivity extends AppCompatActivity {
                             SharedPropertiesUtils.saveAlbumUserMetadata(this, userLink.getUserId(), album.getId(),
                                 metadata);
 
-                            GoogleDriveUtils.updateFile(userLink.getFileId(), metadata)
+                            String metadataEncripted = CryptoUtils.asymCipher(metadata, RequestsUtils.getPrivateKey());
+
+                            GoogleDriveUtils.updateFile(userLink.getFileId(), metadataEncripted)
                                 .addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));
 
                             File pathAlbum = new File(getCacheDir(), album.getId());

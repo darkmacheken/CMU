@@ -37,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_INTERNAL_STORAGE",
-        "android.permission.READ_INTERNAL_STORAGE"
+        "android.permission.READ_INTERNAL_STORAGE",
+        "android.permission.INTERNET"
     };
     private static final int NOT_FORCE_LOGIN = 0;
     private static final int FORCE_LOGIN = 1;

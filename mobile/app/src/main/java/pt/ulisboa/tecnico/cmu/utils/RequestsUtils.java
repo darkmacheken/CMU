@@ -1,11 +1,14 @@
 package pt.ulisboa.tecnico.cmu.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Key;
+import java.security.KeyFactory;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -14,6 +17,11 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Properties;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -410,6 +418,29 @@ public final class RequestsUtils {
             Log.e(TAG, "Unable to create HTTPS client.", e);
         }
         return httpClient;
+    }
+
+    public static Key getPrivateKey() {
+        try {
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(Base64.decodeBase64("MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDmfqQf+/N+DKXHBNcR+xsbzrrPP8c9goA4R3MnD3gLDp5GUZGNnPTYAPAsWg1+dIaTYU3DGK05nYrd8avKRfWCCypiVQUp4Za+D05GOpmCCVNrMJxJh73AErX/7UojA2ZH4TJXLBCEcBR5Z4tFbQBZZLxEHvsroQ7Opys0NiXyTuzzNyIGSvxrRO700dyvCQpgR2B9A7GquuEWUT6xPY3M5vxmIFlWju/ab/lKQPWHUsgZlrBSQvsDd8ddwN5E5HL2qRhwN3tgV2x1GFQgBNAvv9EUBg5vCur7kTymsSAGjHIe7P+5HFAZxCb1ZQ2fgP9OEdB+ekaqgXfNiKU/Wy53AgMBAAECggEATHTXplBh3X7+gnzFho5f2KKDbvm98lZWh9STivJjpG9N6w9lk67rvLba9CtO7JJkjYCqVbvawhDTHnnqvSbloCRqA8Il+1V8NkFHep43i13ikNzICs//DjZmrqUcgW7AP7mghC/2rqeq8vZ4ySe2BPEYThRkxn0fN0dWWnRXs/7+7IWGwc9rabZ0ZUqsnJE/63lodym5GY84wDo52I7TTTCOifpZmIPKDhJXEbWW8NooXV0cpsKlZEY4v8NgfNMIPgiVAVBNIOSegwO6fBpunW9Ab3yM6bEpU55RgHcI4f/gfMVFpPLoMPpVzybhAIefQRiA7gKMu3P8sLdH+8lpAQKBgQD8vm/dqDhdf9Yiac8MvVUOoRet0EcTRp9uoSqLB7C4wrt6Rp2vBuYMHZmT+JV/LtcGpd9xOFRNG8crsvKlHwm0o/4w2qM6mif2MRhZ6GxIuaPSLRN2eBD7X4MyiVQ4lIl1RctAVudEEN8wlzQ/jx5X1AFiX1aPcFM806QJUENAgQKBgQDpdtM3a+5cELqrwuxGJkXoHo6ODmS+GcXa3umPQNRTjMSrytR6iYjaG0DckBxK/iLhDYd7iZ/3XXeHeK9j+Z4PgaH0UMGS6/dMEIMZG5figPTply071nMuo0ETWYVBr1smPsYf9+XsBFe1/oOEq7RS5ILMj0cC+5IN76jxfH7y9wKBgQC6E5LUhFcLL2T97RyM6o/Gt39xblgFrwcOMgXaWg0X2fahLYBGLjQMU3aQZIHcIyYYNOLuvmQCaSMX3yWZv+IrZllsqmtmZ7xoGvksqFugp1wfDyS3IeqOx2EWQdkJ1wHknz/m3JRjnnBTm97RtJLIYsOqIzrdW/tMWxz35mm9AQKBgQDJB3h4kId+3yjeHco13V70sNsvl1VIHAkynh+fKsOp7dyr0MuFeEhPBoijY7P5HzwJbgzrY2ZLKkBydokQHTDtSUKbja4hRO58oPtB83ClqUU6nuJkVBR6ZDj04HDOTqC+He+cN2nUASlFnRLCetebSQkX+4e6GcV6GpPu3LSzoQKBgQCEchb/koer5RM1BlGVrzQZCvQ14bdKCfo64BcKZl+RFaLQef6Mcv1LYrNtg/g3ao5llxZYS+gk2+rtKz9B7LgNVBMIbVGEFlPrF1l2tKFV33moi0pm0hqlyJwvVkVBHnl8SjEprTD8VwylTNAxIRkuo4pCNbgE3w2CYNODnRkCaw=="));
+            KeyFactory rsaFact = KeyFactory.getInstance("RSA");
+            return rsaFact.generatePrivate(spec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public static Key getPublicKey(String userId) {
+        try {
+            byte[] encoded = Base64.decodeBase64("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5n6kH/vzfgylxwTXEfsbG866zz/HPYKAOEdzJw94Cw6eRlGRjZz02ADwLFoNfnSGk2FNwxitOZ2K3fGrykX1ggsqYlUFKeGWvg9ORjqZgglTazCcSYe9wBK1/+1KIwNmR+EyVywQhHAUeWeLRW0AWWS8RB77K6EOzqcrNDYl8k7s8zciBkr8a0Tu9NHcrwkKYEdgfQOxqrrhFlE+sT2NzOb8ZiBZVo7v2m/5SkD1h1LIGZawUkL7A3fHXcDeRORy9qkYcDd7YFdsdRhUIATQL7/RFAYObwrq+5E8prEgBoxyHuz/uRxQGcQm9WUNn4D/ThHQfnpGqoF3zYilP1sudwIDAQAB");
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            return kf.generatePublic(new X509EncodedKeySpec(encoded));
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

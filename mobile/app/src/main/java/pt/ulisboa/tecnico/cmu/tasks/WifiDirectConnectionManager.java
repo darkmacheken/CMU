@@ -51,6 +51,7 @@ public class WifiDirectConnectionManager {
     }
 
     public static void broadcastCatalogs(Context context) {
+        Log.d(TAG, "Broadcasting all catalogs");
         for (SimWifiP2pDevice device : WifiDirectConnectionManager.networkPeers) {
             for (Catalog catalog : getAllMyCatalogs(context)) {
                 new SendCatalogTask(device.getVirtIp(), catalog).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -59,6 +60,7 @@ public class WifiDirectConnectionManager {
     }
 
     public static void broadcastAlbumCatalog(Context context, Album album) {
+        Log.d(TAG, "Broadcasting catalog for album " + album.getName());
         Catalog albumCatalog = getAlbumCatalog(context, album);
 
         for (SimWifiP2pDevice device : WifiDirectConnectionManager.networkPeers) {
@@ -181,7 +183,7 @@ public class WifiDirectConnectionManager {
                 e.printStackTrace();
             }
 
-            catalogs.add(new Catalog(null, userName, albumName, catalogLineList));
+            catalogs.add(new Catalog("", userName, albumName, catalogLineList));
         }
         return catalogs;
     }
@@ -258,9 +260,10 @@ public class WifiDirectConnectionManager {
         protected File doInBackground(Void... voids) {
             File file = null;
             try {
+                Log.d(TAG, "Asking for photo: " + photoUriString);
                 SimWifiP2pSocket clientSocket = new SimWifiP2pSocket(targetDeviceVirtIp, PORT);
                 clientSocket.getOutputStream().write(
-                    (ASK_FOR_PHOTO_MSG + "\n" + thisDevice.getVirtIp() + "\n" + photoUriString).getBytes());
+                    (ASK_FOR_PHOTO_MSG + "\n" + photoUriString + "\n").getBytes());
 
                 file = new java.io.File(folderPath, fileId);
                 // Stream the file contents to a File.
@@ -294,6 +297,7 @@ public class WifiDirectConnectionManager {
         protected Void doInBackground(Void... voids) {
             int len;
             byte buf[] = new byte[1024];
+            Log.d(TAG, "Sending photo: " + photoUriString);
             try {
                 InputStream inputStream = getInputStreamFromPhotoUri();
                 while ((len = inputStream.read(buf)) != -1) {
@@ -330,10 +334,12 @@ public class WifiDirectConnectionManager {
                 e.printStackTrace();
                 return null;
             }
+            Log.d(TAG, "ServerSocket listening on port " + PORT);
 
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     SimWifiP2pSocket socket = serverSocket.accept();
+                    Log.d(TAG, "Socket connection accepted");
                     try {
                         BufferedReader sockIn = new BufferedReader(
                             new InputStreamReader(socket.getInputStream()));
@@ -352,12 +358,13 @@ public class WifiDirectConnectionManager {
                                 }
                             }
                             Catalog catalog = new Catalog(targetVirtIp, userId, albumId, catalogLineList);
+                            Log.d(TAG, "Received catalog:\n" + catalog.toString());
                             peersCatalogs.remove(catalog);
                             peersCatalogs.add(new Catalog(targetVirtIp, userId, albumId, catalogLineList));
 
                         } else if (messageCode.equals(ASK_FOR_PHOTO_MSG)) {
-                            String targetVirtIp = sockIn.readLine();
                             String photoUriString = sockIn.readLine();
+                            Log.d(TAG, "Received askForPhoto: " + photoUriString);
                             OutputStream outputStream = socket.getOutputStream();
                             sendPhoto(outputStream, photoUriString);
                         }
@@ -369,9 +376,8 @@ public class WifiDirectConnectionManager {
                         socket.close();
                     }
                 } catch (IOException e) {
-                    Log.d("Error socket:", e.getMessage());
+                    e.printStackTrace();
                     break;
-                    //e.printStackTrace();
                 }
             }
 
