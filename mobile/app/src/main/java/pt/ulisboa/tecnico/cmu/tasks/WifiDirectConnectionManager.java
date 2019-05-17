@@ -58,6 +58,24 @@ public class WifiDirectConnectionManager {
         }
     }
 
+    public static void broadcastAlbumCatalog(Context context, Album album) {
+        Catalog albumCatalog = getAlbumCatalog(context, album);
+
+        for (SimWifiP2pDevice device : WifiDirectConnectionManager.networkPeers) {
+            new SendCatalogTask(device.getVirtIp(), albumCatalog).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    private static Catalog getAlbumCatalog(Context context, Album album) {
+        List<Catalog> allMyCatalogs = getAllMyCatalogs(context);
+        for (Catalog catalog : allMyCatalogs) {
+            if (TextUtils.equals(catalog.getAlbumName(), album.getName())) {
+                return catalog;
+            }
+        }
+        return null;
+    }
+
     public static void getAlbumPhotos(Album album, Context context, ViewAlbumAdapter viewAlbumAdapter,
         LinearLayoutManager layoutManager) {
 
