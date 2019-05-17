@@ -240,7 +240,8 @@ public final class RequestsUtils {
         return false;
     }
 
-    public static boolean createAlbumWifiDirect(Context context, String name, User[] users) {
+    public static boolean createAlbumWifiDirect(Context context, String name, User[] users)
+        throws UnauthorizedException {
         OkHttpClient client = getHttpClient(context);
 
         if (client == null) {

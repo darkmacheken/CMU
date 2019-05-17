@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.widget.Toast;
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity;
 import pt.ulisboa.tecnico.cmu.activities.ViewAlbumActivity;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
-    private ViewAlbumActivity mActivity;
+    private AlbumMenuActivity mActivity;
 
-    public SimWifiP2pBroadcastReceiver(ViewAlbumActivity activity) {
+    public SimWifiP2pBroadcastReceiver(AlbumMenuActivity activity) {
         super();
         this.mActivity = activity;
     }

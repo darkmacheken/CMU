@@ -1,13 +1,13 @@
 package pt.ulisboa.tecnico.cmu.tasks;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import io.opencensus.internal.StringUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,11 +43,10 @@ public class WifiDirectConnectionManager {
     public static SimWifiP2pDevice thisDevice;
     private static List<Catalog> peersCatalogs = new ArrayList<>();
 
-    public WifiDirectConnectionManager() {
-        init();
+    private WifiDirectConnectionManager() {
     }
 
-    private void init() {
+    public static void init() {
         new IncommingCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -59,9 +58,13 @@ public class WifiDirectConnectionManager {
         }
     }
 
-    public static void getAlbumPhotos(Album album, Context context, ViewAlbumAdapter viewAlbumAdapter) {
+    public static void getAlbumPhotos(Album album, Context context, ViewAlbumAdapter viewAlbumAdapter,
+        LinearLayoutManager layoutManager) {
+
+        Log.d(TAG, "Getting photos for album " + album.getName());
+
         //Get my photos
-        getMyPhotosForAlbum(album, context, viewAlbumAdapter);
+        getMyPhotosForAlbum(album, context, viewAlbumAdapter, layoutManager);
 
         //Get other users' photos
         AtomicInteger numDownloads = new AtomicInteger();
@@ -77,6 +80,7 @@ public class WifiDirectConnectionManager {
                         numDownloads.getAndIncrement();
                         Log.d(TAG, "Downloaded " + numDownloads + " photos...");
                         viewAlbumAdapter.addPhoto(fileResult.getAbsolutePath());
+                        layoutManager.scrollToPositionWithOffset(0, 0);
                     } catch (ExecutionException | InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -110,9 +114,9 @@ public class WifiDirectConnectionManager {
                 e.printStackTrace();
             }
             if (success) {
-                Log.d(TAG, "Catalog file created successfully - " + fileName + ".");
+                Log.d(TAG, "Catalog file created successfully - " + catalog.getAbsolutePath() + ".");
             } else {
-                Log.d(TAG, "Failed to create catalog file - " + fileName + "!");
+                Log.d(TAG, "Failed to create catalog file - " + catalog.getAbsolutePath() + "!");
             }
         }
     }
@@ -120,15 +124,17 @@ public class WifiDirectConnectionManager {
     public static void writeToCatalog(Album album, String photoUri, Context context) {
         String fileName = GoogleSignIn.getLastSignedInAccount(context).getDisplayName() + "_" + album.getName();
         File catalog = new File(getCatalogFolder(), fileName);
+
         try {
-            FileWriter writer = new FileWriter(catalog);
-            writer.append(photoUri);
+            FileWriter writer = new FileWriter(catalog, true);
+            writer.append(photoUri + "\n");
             writer.flush();
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "Line " + photoUri + " added to catalog " + fileName);
+
+        Log.d(TAG, "Line " + photoUri + " added to catalog " + catalog.getAbsolutePath());
     }
 
     private static List<Catalog> getAllMyCatalogs(Context context) {
@@ -139,15 +145,18 @@ public class WifiDirectConnectionManager {
         File[] catalogFileList = catalogFolder.listFiles();
 
         for (File catalogFile : catalogFileList) {
+            Log.d(TAG, "Found catalog: " + catalogFile.getName());
             String[] splitFileName = catalogFile.getName().split("_");
-            String albumName = splitFileName[splitFileName.length-1];
+            String albumName = splitFileName[splitFileName.length - 1];
             List<String> catalogLineList = new ArrayList<>();
             try {
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(catalogFile));
                 String catalogLine;
+                Log.d(TAG, "Reading catalog lines...");
                 while ((catalogLine = bufferedReader.readLine()) != null) {
                     if (!catalogLine.equals("")) {
                         catalogLineList.add(catalogLine);
+                        Log.d(TAG, catalogLine);
                     }
                 }
             } catch (IOException e) {
@@ -159,13 +168,17 @@ public class WifiDirectConnectionManager {
         return catalogs;
     }
 
-    private static void getMyPhotosForAlbum(Album album, Context context, ViewAlbumAdapter viewAlbumAdapter) {
+    private static void getMyPhotosForAlbum(Album album, Context context, ViewAlbumAdapter viewAlbumAdapter,
+        LinearLayoutManager layoutManager) {
         List<Catalog> allMyCatalogs = getAllMyCatalogs(context);
         for (Catalog catalog : allMyCatalogs) {
-            if (catalog.getAlbumName() == album.getName()) {
+            if (TextUtils.equals(catalog.getAlbumName(), album.getName())) {
                 List<String> photoUriStrings = catalog.getCatalogLineList();
+
                 for (String photoUriString : photoUriStrings) {
+                    Log.d(TAG, "Getting photo " + photoUriString);
                     viewAlbumAdapter.addPhoto(photoUriString);
+                    layoutManager.scrollToPositionWithOffset(0, 0);
                 }
             }
         }
@@ -175,7 +188,7 @@ public class WifiDirectConnectionManager {
         return userId + "_" + FilenameUtils.getName(catalogLine);
     }
 
-    private void sendPhoto(OutputStream outputStream, String photoUriString) {
+    private static void sendPhoto(OutputStream outputStream, String photoUriString) {
         new SendPhotoTask(outputStream, photoUriString).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -288,7 +301,7 @@ public class WifiDirectConnectionManager {
         }
     }
 
-    private class IncommingCommTask extends AsyncTask<Void, String, Void> {
+    private static class IncommingCommTask extends AsyncTask<Void, String, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {

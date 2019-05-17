@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.LoginTask;
+import pt.ulisboa.tecnico.cmu.tasks.WifiDirectConnectionManager;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
@@ -148,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startWifiDirectLoginActivity(View view) {
         MainActivity.choseWifiDirect = true;
+        WifiDirectConnectionManager.init();
         requestGdriveSignIn(NOT_FORCE_LOGIN);
     }
 

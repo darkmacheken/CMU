@@ -1,15 +1,12 @@
 package pt.ulisboa.tecnico.cmu.activities;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Messenger;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -56,7 +53,7 @@ import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 import pt.ulisboa.tecnico.cmu.utils.SimWifiP2pBroadcastReceiver;
 
-public class ViewAlbumActivity extends AppCompatActivity implements PeerListListener, GroupInfoListener {
+public class ViewAlbumActivity extends AppCompatActivity {
 
     private static final String TAG = "ViewAlbumActivity";
     private static final int GALLERY = 1;
@@ -69,14 +66,6 @@ public class ViewAlbumActivity extends AppCompatActivity implements PeerListList
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private TextView textView;
-    private SimWifiP2pBroadcastReceiver mReceiver;
-    private Messenger mService = null;
-    private SimWifiP2pManager mManager = null;
-    private Channel mChannel = null;
-    private boolean mBound = false;
-    public static SimWifiP2pSocketServer mSrvSocket = null;
-    private boolean isUpdatingPeers = false;
-    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +112,16 @@ public class ViewAlbumActivity extends AppCompatActivity implements PeerListList
         hideInfo();
 
         if (MainActivity.choseWifiDirect) {
-            setupWifiDirect();
+            WifiDirectConnectionManager.getAlbumPhotos(album, this, viewAlbumAdapter,
+                (LinearLayoutManager) layoutManager);
+
+            Context thisContext = this;
+            SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
+            pullToRefresh.setOnRefreshListener(() -> {
+                WifiDirectConnectionManager.getAlbumPhotos(album, thisContext, viewAlbumAdapter,
+                    (LinearLayoutManager) layoutManager);
+                pullToRefresh.setRefreshing(false);
+            });
         } else {
             new GetAlbumPhotosTask(this, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
 
@@ -134,134 +132,6 @@ public class ViewAlbumActivity extends AppCompatActivity implements PeerListList
                 pullToRefresh.setRefreshing(false);
             });
         }
-    }
-
-    private void setupWifiDirect() {
-        // initialize the WDSim API
-        SimWifiP2pSocketManager.Init(getApplicationContext());
-
-        // register broadcast receiver
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
-        intentFilter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
-        intentFilter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
-        intentFilter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        mReceiver = new SimWifiP2pBroadcastReceiver(this);
-        registerReceiver(mReceiver, intentFilter);
-        Intent intent = new Intent(this, SimWifiP2pService.class);
-
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        mBound = true;
-
-        WifiDirectConnectionManager.getAlbumPhotos(album, this, viewAlbumAdapter);
-
-        Context thisContext = this;
-        SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
-        pullToRefresh.setOnRefreshListener(() -> {
-            WifiDirectConnectionManager.getAlbumPhotos(album, thisContext, viewAlbumAdapter);
-            pullToRefresh.setRefreshing(false);
-        });
-    }
-
-    /* register the broadcast receiver with the intent values to be matched */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(mReceiver, intentFilter);
-    }
-
-    /* unregister the broadcast receiver */
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(mReceiver);
-    }
-
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = new Messenger(service);
-            mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mManager = null;
-            mChannel = null;
-            mBound = false;
-        }
-    };
-
-    @Override
-    public void onPeersAvailable(SimWifiP2pDeviceList peerDeviceList) {
-        List<SimWifiP2pDevice> refreshedPeers = new ArrayList<>(peerDeviceList.getDeviceList());
-
-        StringBuilder peersStr = new StringBuilder();
-
-        if (!refreshedPeers.equals(WifiDirectConnectionManager.peers)) {
-            WifiDirectConnectionManager.peers.clear();
-            WifiDirectConnectionManager.peers.addAll(refreshedPeers);
-
-            // Perform any other updates needed based on the new list of
-            // peers connected to the Wi-Fi P2P network.
-        }
-
-        if (WifiDirectConnectionManager.peers.isEmpty()) {
-            Log.d(TAG, "No devices found");
-            return;
-        }
-
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : peerDeviceList.getDeviceList()) {
-            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
-            peersStr.append(devstr);
-        }
-        Log.d(TAG, peersStr.toString());
-    }
-
-    @Override
-    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
-        List<SimWifiP2pDevice> refreshedNetworkPeers = new ArrayList<>();
-
-        StringBuilder peersStr = new StringBuilder();
-
-        WifiDirectConnectionManager.thisDevice = simWifiP2pDeviceList.getByName(simWifiP2pInfo.getDeviceName());
-
-        for (String deviceName : simWifiP2pInfo.getDevicesInNetwork()) {
-            refreshedNetworkPeers.add(simWifiP2pDeviceList.getByName(deviceName));
-        }
-
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : refreshedNetworkPeers) {
-            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
-            peersStr.append(devstr);
-        }
-        Log.d(TAG, peersStr.toString());
-
-        if (!refreshedNetworkPeers.equals(WifiDirectConnectionManager.networkPeers)) {
-            WifiDirectConnectionManager.networkPeers.clear();
-            WifiDirectConnectionManager.networkPeers.addAll(refreshedNetworkPeers);
-            WifiDirectConnectionManager.broadcastCatalogs(this);
-        }
-
-        if (refreshedNetworkPeers.isEmpty()) {
-            Log.d(TAG, "No devices found in group");
-            return;
-        }
-    }
-
-    public void updatePeers() {
-        mManager.requestPeers(mChannel, this);
-    }
-
-    public void updateNetworkPeers() {
-        mManager.requestGroupInfo(mChannel, this);
     }
 
     private void setupActionBar() {
@@ -337,6 +207,7 @@ public class ViewAlbumActivity extends AppCompatActivity implements PeerListList
 
                 viewAlbumAdapter.addPhoto(photo.getAbsolutePath());
                 ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+                showProgress(false);
 
             } else {
                 GoogleDriveUtils.createFile(new File(getRealPathFromURI(contentURI)), userLink.getFolderId())
