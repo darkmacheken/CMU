@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,9 +70,12 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.Phot
         photoViewHolder.photo.setOnClickListener(new PhotoOnClickListener(photoList.get(i)));
     }
 
-    public void addPhoto(String photo) {
-        photoList.add(0, photo);
-        notifyItemInserted(0);
+    public synchronized void addPhoto(String photo) {
+        if (!photoList.contains(photo)) {
+            Log.i("PhotoAdapter", "Adding photo with uri = " + photo);
+            photoList.add(0, photo);
+            notifyItemInserted(0);
+        }
     }
 
     @Override

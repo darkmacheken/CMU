@@ -44,8 +44,7 @@ public class CreateAlbumsTask extends AsyncTask<Void, Void, State> {
     protected State doInBackground(Void... noParams) {
         try {
             if (MainActivity.choseWifiDirect) {
-                //TODO
-                return RequestsUtils.createAlbumWifiDirect(context, name, users) ? State.SUCCESS : State.NOT_SUCCESS;
+                return RequestsUtils.createAlbumWifi(context, name, users) ? State.SUCCESS : State.NOT_SUCCESS;
             } else {
                 return RequestsUtils.createAlbum(context, name, users) ? State.SUCCESS : State.NOT_SUCCESS;
             }

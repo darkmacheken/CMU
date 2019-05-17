@@ -51,13 +51,24 @@ public class GetAlbumsTask extends AsyncTask<Void, List<Album>, Boolean> {
 
     @Override
     protected synchronized Boolean doInBackground(Void... noParams) {
+        String albumsCache;
         try {
-            String albumsCache = SharedPropertiesUtils.getAlbums(context, RequestsUtils.getUserId());
+            if (MainActivity.choseWifiDirect) {
+                albumsCache = SharedPropertiesUtils.getAlbumsWifi(context, RequestsUtils.getUserId());
+            } else {
+                albumsCache = SharedPropertiesUtils.getAlbums(context, RequestsUtils.getUserId());
+            }
+
             Album[] albumsFromCache = new Gson().fromJson(albumsCache, Album[].class);
             publishProgress(Arrays.asList(albumsFromCache));
             showProgress(false);
 
-            String albumsJson = RequestsUtils.getAlbums(context);
+            String albumsJson = "[]";
+            if (MainActivity.choseWifiDirect) {
+                albumsJson = RequestsUtils.getAlbumsWifi(context);
+            } else {
+                albumsJson = RequestsUtils.getAlbums(context);
+            }
 
             Album[] albumsFromJson = new Gson().fromJson(albumsJson, Album[].class);
 

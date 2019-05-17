@@ -7,23 +7,28 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.api.client.util.Base64;
 import io.opencensus.internal.StringUtils;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
@@ -80,7 +85,7 @@ public class WifiDirectConnectionManager {
 
     public static void getAlbumPhotos(Album album, Context context, ViewAlbumAdapter viewAlbumAdapter,
         LinearLayoutManager layoutManager) {
-
+        Log.d(TAG, context.getCacheDir().getAbsolutePath());
         Log.d(TAG, "Getting photos for album " + album.getName());
 
         //Get my photos
@@ -209,7 +214,16 @@ public class WifiDirectConnectionManager {
     }
 
     private static void sendPhoto(OutputStream outputStream, String photoUriString) {
-        new SendPhotoTask(outputStream, photoUriString).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        Log.d(TAG, "Sending photo: " + photoUriString);
+        try {
+            File file = new File(photoUriString);
+            byte[] bytes = FileUtils.readFileToByteArray(file);
+            outputStream.write((Base64.encodeBase64String(bytes) + "\n").getBytes());
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "Sent photo " + photoUriString);
     }
 
     private static class SendCatalogTask extends AsyncTask<Void, String, Void> {
@@ -265,10 +279,18 @@ public class WifiDirectConnectionManager {
                 clientSocket.getOutputStream().write(
                     (ASK_FOR_PHOTO_MSG + "\n" + photoUriString + "\n").getBytes());
 
-                file = new java.io.File(folderPath, fileId);
-                // Stream the file contents to a File.
+                Log.d(TAG, "Downloading photo to " + folderPath.getAbsolutePath() + fileId);
+
                 InputStream is = clientSocket.getInputStream();
-                FileUtils.copyInputStreamToFile(is, file);
+
+                BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(is));
+                String encodedPhoto = bufferedReader.readLine();
+                byte[] photoBytes = Base64.decodeBase64(encodedPhoto);
+
+                file = new java.io.File(folderPath, fileId);
+
+                FileUtils.writeByteArrayToFile(file, photoBytes);
 
                 clientSocket.close();
             } catch (IOException e) {
@@ -280,46 +302,6 @@ public class WifiDirectConnectionManager {
         @Override
         protected void onPostExecute(File result) {
             Log.d(TAG, "Asked for photo " + photoUriString + " to device " + targetDeviceVirtIp);
-        }
-    }
-
-    private static class SendPhotoTask extends AsyncTask<Void, String, Void> {
-
-        private final OutputStream outputStream;
-        private final String photoUriString;
-
-        public SendPhotoTask(OutputStream outputStream, String photoUriString) {
-            this.outputStream = outputStream;
-            this.photoUriString = photoUriString;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            int len;
-            byte buf[] = new byte[1024];
-            Log.d(TAG, "Sending photo: " + photoUriString);
-            try {
-                InputStream inputStream = getInputStreamFromPhotoUri();
-                while ((len = inputStream.read(buf)) != -1) {
-                    outputStream.write(buf, 0, len);
-                }
-                outputStream.close();
-                inputStream.close();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        private InputStream getInputStreamFromPhotoUri() throws FileNotFoundException {
-            File file = new File(photoUriString);
-            return new FileInputStream(file);
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            Log.d(TAG, "Sent photo " + photoUriString);
         }
     }
 

@@ -31,6 +31,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.exceptions.UnauthorizedException;
 import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
@@ -42,6 +43,7 @@ public final class RequestsUtils {
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String REGISTER_ENDPOINT = "/register";
     private static final String ALBUMS_ENDPOINT = "/albums";
+    private static final String ALBUMS_WIFI_ENDPOINT = "/albums/wifi";
     private static final String USERS_ENDPOINT = "/users";
     private static final String ALBUMS_ADD_USER_ENDPOINT = "/addUser";
     private static OkHttpClient httpClient;
@@ -189,12 +191,56 @@ public final class RequestsUtils {
 
             if (response.code() == 200) {
                 String albumsJson = response.body().string();
-                SharedPropertiesUtils.saveAlbums(context, userId, albumsJson);
+                    SharedPropertiesUtils.saveAlbums(context, userId, albumsJson);
                 return albumsJson;
             }
         } catch (IOException e) {
             Log.e(TAG, "Timeout to GET request /albums.", e);
             return SharedPropertiesUtils.getAlbums(context, userId);
+        }
+
+        return "[]";
+    }
+
+    /**
+     * Requests the user's albums.
+     *
+     * @param context the activity context.
+     * @return the string representing a list of albums in json.
+     * @throws UnauthorizedException if the token is invalid.
+     */
+    public static String getAlbumsWifi(Context context) throws UnauthorizedException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            return null;
+        }
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_WIFI_ENDPOINT)
+            .get()
+            .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == 401 || response.code() == 403) {
+                throw new UnauthorizedException();
+            }
+
+            if (response.body() == null) {
+                Log.e(TAG, "Response Body is Empty.");
+                return "[]";
+            }
+
+            if (response.code() == 200) {
+                String albumsJson = response.body().string();
+                SharedPropertiesUtils.saveAlbumsWifi(context, userId, albumsJson);
+                return albumsJson;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Timeout to GET request /albums.", e);
+            return SharedPropertiesUtils.getAlbumsWifi(context, userId);
         }
 
         return "[]";
@@ -248,7 +294,7 @@ public final class RequestsUtils {
         return false;
     }
 
-    public static boolean createAlbumWifiDirect(Context context, String name, User[] users)
+    public static boolean createAlbumWifi(Context context, String name, User[] users)
         throws UnauthorizedException {
         OkHttpClient client = getHttpClient(context);
 
@@ -263,7 +309,7 @@ public final class RequestsUtils {
                 + "\"users\":" + usersJson + "}");
 
         Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
-            .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_WIFI_ENDPOINT)
             .post(body)
             .build();
 
@@ -372,6 +418,41 @@ public final class RequestsUtils {
         }
     }
 
+    /**
+     * Adds an user to the given album.
+     *
+     * @param context     the activity context.
+     * @param albumId     the ID of the album.
+     * @param userIdToAdd the ID of the user to add.
+     * @throws UnauthorizedException if the token is invalid.
+     * @throws IOException           if an error occur while requesting.
+     */
+    public static void addUserToAlbumWifi(Context context, String albumId, String userIdToAdd)
+        throws UnauthorizedException, IOException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            throw new IOException("Couldn't get http client.");
+        }
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON, "{\"id\": \"" + userIdToAdd + "\"}");
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT + "/" + albumId
+                + ALBUMS_ADD_USER_ENDPOINT + "/wifi")
+            .post(body)
+            .build();
+
+        Response response = client.newCall(request).execute();
+
+        if (response.code() == 401 || response.code() == 403) {
+            throw new UnauthorizedException();
+        }
+
+        if (response.code() != 200) {
+            throw new IOException("The request has not code status 200.");
+        }
+    }
     public static String getUserId() {
         return userId;
     }

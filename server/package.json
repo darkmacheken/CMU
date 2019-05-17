@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "dist/main.js",
 	"scripts": {
-		"start": "tsc && node ./dist/main.js",
-		"dev": "tsc && nodemon ./dist/main.js"
+		"start": "./node_modules/.bin/tsc.cmd && node ./dist/main.js",
+		"dev": "C:\\Users\\pedrodaniel10\\AppData\\Roaming\\npm\\node_modules\\typescript\\bin\\tsc && nodemon ./dist/main.js"
 	},
 	"keywords": [],
 	"author": "",
@@ -27,6 +27,7 @@
 		"passport": "^0.4.0",
 		"passport-jwt": "^4.0.0",
 		"passport-local": "^1.0.0",
+		"typescript": "^3.4.5",
 		"uuid": "^3.3.2"
 	}
 }

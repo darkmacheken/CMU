@@ -14,12 +14,14 @@ export interface ILink {
 export class Album implements IAlbum {
 	public id: string;
 	public name: string;
+	public wifi: boolean;
 	public users: ILink[];
 
-	constructor(name: string) {
+	constructor(name: string, wifi: boolean) {
 		this.id = uuidv4();
 		this.name = name;
 		this.users = [];
+		this.wifi = wifi;
 	}
 
 	public addUser(user: ILink) {

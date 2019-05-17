@@ -202,16 +202,11 @@ public class ViewAlbumActivity extends AppCompatActivity {
             if (MainActivity.choseWifiDirect) {
                 WifiDirectConnectionManager.writeToCatalog(album, getRealPathFromURI(contentURI), this);
 
-                File pathAlbum = new File(getCacheDir(), album.getId());
-                File photo = new File(pathAlbum,
-                    WifiDirectConnectionManager.generateFileId("", getRealPathFromURI(contentURI)));
-                GoogleDriveUtils.copy(new File(getRealPathFromURI(contentURI)), photo);
-
-                viewAlbumAdapter.addPhoto(photo.getAbsolutePath());
+                viewAlbumAdapter.addPhoto(getRealPathFromURI(contentURI));
                 ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
                 showProgress(false);
 
-                WifiDirectConnectionManager.broadcastAlbumCatalog(this, album);
+                WifiDirectConnectionManager.broadcastCatalogs(this);
 
             } else {
                 GoogleDriveUtils.createFile(new File(getRealPathFromURI(contentURI)), userLink.getFolderId())

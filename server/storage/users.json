@@ -36,7 +36,20 @@
 		"name": "Penta Zozzle",
 		"email": "spicespikes@gmail.com",
 		"accessToken": "4/PgGYiuGnripSdH01R5czZRLF52Y26eNDQTzky2pSC_pM7Q0CWn6GPBNpYKvSKuvhDab5HURisUUL1EoTK5ZL0Oc",
-		"albums": [],
+		"albums": [
+			{
+				"id": "87d891a7-f738-4f75-b7b2-7b252cd0421e",
+				"name": "test"
+			},
+			{
+				"id": "e29b736a-bd71-44e7-b054-820f391e1fd9",
+				"name": "test"
+			},
+			{
+				"id": "8a2a9e7b-0cb6-4aa5-a717-2bbce3ff3347",
+				"name": "asdsadsadasd"
+			}
+		],
 		"token": {
 			"access_token": "ya29.Glv9Bp_4gXd88j9lVNtAXrVbYGfrcSMFfujIgcq5UG4IhbfVMoWsQ44mzpPKbsaOUxanlzPmCaIeA6bscHNlRwAAh57Pq0qZwf-u6EIKOV-_r3uEix1fTcOlbdYC",
 			"refresh_token": "1/pkBTTkfWSdO9pJ2d0JcS0az8_gSkIyKRZtFr0iyw2I0",
@@ -62,5 +75,21 @@
 			"expiry_date": 1556801501547
 		},
 		"folderId": "16mb75WjvLCAmXgyMX9gCHEe3CBz351BX"
+	},
+	{
+		"id": "110101073104324244032",
+		"name": "Leonardo Marques Epifânio",
+		"email": "leonardo.epifanio@edu.ulisboa.pt",
+		"accessToken": "4/TgFfWpD6J4IR2tsRyq1yD9bg-wR0hdA46alXAobph8qJHnXoQwbvQbw2Jy_pofHnogQe6rAi7FZL-tonnWBsaSU",
+		"albums": [],
+		"token": {
+			"access_token": "ya29.GlsNBzxj0uyS3AeICxxl-WLT69ODlA30IRqZAj2yRUKUymykdZnTHsEAA7Ja9PQiXPtz3FSdPCX3Y67eD0wg3A9knhPxX7dVlcBWHRJCTGYJkUMFXYGcT0PSCYFp",
+			"refresh_token": "1/XDRaoi-8UoEBsNawiWt4lGrEOVfbugn0KkoO1KZNHPc",
+			"scope": "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file openid https://www.googleapis.com/auth/userinfo.profile",
+			"token_type": "Bearer",
+			"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJjM2ZhYzE2YjczZmM4NDhkNDI2ZDVhMjI1YWM4MmJjMWMwMmFlZmQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDkzNzg2NTA2OTkta2cwZjJscGplOGxicTI1djViNTV1ZWllbjFkbmVlb2EuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTAxMDEwNzMxMDQzMjQyNDQwMzIiLCJoZCI6ImVkdS51bGlzYm9hLnB0IiwiZW1haWwiOiJsZW9uYXJkby5lcGlmYW5pb0BlZHUudWxpc2JvYS5wdCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiajV4QmpiMVNBYTZ0VzZ1MmRQdDlyZyIsIm5hbWUiOiJMZW9uYXJkbyBNYXJxdWVzIEVwaWbDom5pbyIsInBpY3R1cmUiOiJodHRwczovL2xoNS5nb29nbGV1c2VyY29udGVudC5jb20vLTRvR1JRVDZLazA0L0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FDSGkzcmMxWllLNU1PQjRXNGNWYU5nV0FHRWNJV1dYOWcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6Ikxlb25hcmRvIE1hcnF1ZXMiLCJmYW1pbHlfbmFtZSI6IkVwaWbDom5pbyIsImxvY2FsZSI6InB0LVBUIiwiaWF0IjoxNTU4MTI5NDk1LCJleHAiOjE1NTgxMzMwOTV9.e1PLRJJ5FG129qwq_x2CnwCeuf5rlJITN-BxP6aicUmzs2OXcoP1elRVIZL8kN_Ff4DCD7ebugqilRkfyTqvuEwg_uUdA15EjAMtA6Gke_oWU18xH_c5RsdqT9g6TZ9JVyIvltmYlGPHXWYd1QiVB9za3XTTnzVNu93o-MrwFKqUs3CA63LslvemllfV1pDYBMIum2COthZleFU4I_BgCb3RoikkuphOKs8HSVLUS84dor70KJ1EobwfxnnPPkkppA9wKkWAEA4ALOcOTrzQVXsOtOVGMwne1eE4sCojS8Ac1JSfCq-LbtjBxgeRwaTq9aRRLxBpD4wxZYzEgmL9jg",
+			"expiry_date": 1558133092965
+		},
+		"folderId": "1UNb0jL4Abn2-XIW8UHfLf6tKhn9oPbMc"
 	}
 ]

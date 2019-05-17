@@ -1,1 +1,20 @@
-[]
+[
+	{
+		"id": "87d891a7-f738-4f75-b7b2-7b252cd0421e",
+		"name": "test",
+		"users": [],
+		"wifi": false
+	},
+	{
+		"id": "e29b736a-bd71-44e7-b054-820f391e1fd9",
+		"name": "test",
+		"users": [],
+		"wifi": true
+	},
+	{
+		"id": "8a2a9e7b-0cb6-4aa5-a717-2bbce3ff3347",
+		"name": "asdsadsadasd",
+		"users": [],
+		"wifi": true
+	}
+]
