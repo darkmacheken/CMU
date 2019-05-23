@@ -36,20 +36,7 @@
 		"name": "Penta Zozzle",
 		"email": "spicespikes@gmail.com",
 		"accessToken": "4/PgGYiuGnripSdH01R5czZRLF52Y26eNDQTzky2pSC_pM7Q0CWn6GPBNpYKvSKuvhDab5HURisUUL1EoTK5ZL0Oc",
-		"albums": [
-			{
-				"id": "87d891a7-f738-4f75-b7b2-7b252cd0421e",
-				"name": "test"
-			},
-			{
-				"id": "e29b736a-bd71-44e7-b054-820f391e1fd9",
-				"name": "test"
-			},
-			{
-				"id": "8a2a9e7b-0cb6-4aa5-a717-2bbce3ff3347",
-				"name": "asdsadsadasd"
-			}
-		],
+		"albums": [],
 		"token": {
 			"access_token": "ya29.Glv9Bp_4gXd88j9lVNtAXrVbYGfrcSMFfujIgcq5UG4IhbfVMoWsQ44mzpPKbsaOUxanlzPmCaIeA6bscHNlRwAAh57Pq0qZwf-u6EIKOV-_r3uEix1fTcOlbdYC",
 			"refresh_token": "1/pkBTTkfWSdO9pJ2d0JcS0az8_gSkIyKRZtFr0iyw2I0",

@@ -161,6 +161,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
             case R.id.add_user:
                 Intent intent = new Intent(this, AddUserActivity.class);
                 intent.putExtra("viewAlbum", album.getId());
+                intent.putExtra("viewAlbumName", album.getName());
                 startActivity(intent);
                 return (true);
             default:

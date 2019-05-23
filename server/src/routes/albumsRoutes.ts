@@ -49,7 +49,7 @@ router.post("/:albumId/addUser", (req, res, next) => {
 
 // Add user to album wifi
 router.post("/:name/addUser/wifi", (req, res, next) => {
-	console.log("POST /albums/" + req.params.id + "/addUser/wifi");
+	console.log("POST /albums/" + req.params.name + "/addUser/wifi");
 	passport.authenticate("jwt", { session: false }, (err, user) => {
 		if (!req.body.id) {
 			res.status(400);
@@ -77,7 +77,12 @@ router.post("/:name/addUser/wifi", (req, res, next) => {
 			res.send({ error: "User with id " + userToAdd.id + " already is in the album" });
 		} else {
 			// save state
-			user.albums.push({ id: album.id, name: album.name });
+			userToAdd.albums.push({ id: album.id, name: album.name });
+			album.users.push({
+				userId: userToAdd.id,
+				folderId: "",
+				fileId: ""
+			});
 			albumList.saveToFile();
 			userList.saveToFile();
 
@@ -176,6 +181,25 @@ router.post("/wifi", (req, res, next) => {
 			const album = new Album(req.body.name, true);
 			albumList.addAlbum(album);
 			user.albums.push({ id: album.id, name: album.name });
+			album.users.push({
+				userId: user.id,
+				folderId: "",
+				fileId: ""
+			});
+
+			if (req.body.users) {
+				for (const user of req.body.users) {
+					const userObj = userList.findUserById(user.id);
+					if (userObj && userObj.id) {
+						userObj.albums.push({ id: album.id, name: album.name });
+						album.users.push({
+							userId: userObj.id,
+							folderId: "",
+							fileId: ""
+						});
+					}
+				}
+			}
 			userList.saveToFile();
 			albumList.saveToFile();
 

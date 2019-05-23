@@ -82,7 +82,7 @@ public class UserButtonListAdapter
             if (extras != null && !TextUtils.isEmpty(extras.getString("viewAlbum", ""))) {
                 Tasks.call(Executors.newSingleThreadExecutor(), () -> {
                     if (MainActivity.choseWifiDirect) {
-                        RequestsUtils.addUserToAlbumWifi(activity, , user.getId());
+                        RequestsUtils.addUserToAlbumWifi(activity, extras.getString("viewAlbumName", ""), user.getId());
                     } else {
                         RequestsUtils.addUserToAlbum(activity, extras.getString("viewAlbum", ""), user.getId());
                     }

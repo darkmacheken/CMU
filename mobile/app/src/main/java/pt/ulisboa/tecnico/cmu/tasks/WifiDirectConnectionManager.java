@@ -90,24 +90,38 @@ public class WifiDirectConnectionManager {
 
         //Get my photos
         getMyPhotosForAlbum(album, context, viewAlbumAdapter, layoutManager);
+        List<String> deviceIds = new ArrayList<>();
+        for (SimWifiP2pDevice device : networkPeers) {
+            deviceIds.add(device.getVirtIp());
+        }
 
         //Get other users' photos
         AtomicInteger numDownloads = new AtomicInteger();
         for (Catalog catalog : peersCatalogs) {
             if (catalog.getAlbumName().equals(album.getName())) {
-                for (String catalogLine : catalog.getCatalogLineList()) {
-                    AskForPhotoTask askForPhotoTask = (AskForPhotoTask) new AskForPhotoTask(catalog.getTargetVirtIp(),
-                        catalogLine, new File(context.getCacheDir(), album.getId()),
-                        generateFileId(catalog.getUserName(), catalogLine))
-                        .execute();
-                    try {
-                        File fileResult = askForPhotoTask.get();
-                        numDownloads.getAndIncrement();
-                        Log.d(TAG, "Downloaded " + numDownloads + " photos...");
-                        viewAlbumAdapter.addPhoto(fileResult.getAbsolutePath());
+                if (deviceIds.contains(catalog.getTargetVirtIp())) {
+                    for (String catalogLine : catalog.getCatalogLineList()) {
+                        AskForPhotoTask askForPhotoTask = (AskForPhotoTask) new AskForPhotoTask(catalog.getTargetVirtIp(),
+                            catalogLine, new File(context.getCacheDir(), album.getId()),
+                            generateFileId(catalog.getUserName(), catalogLine))
+                            .execute();
+                        try {
+                            File fileResult = askForPhotoTask.get();
+                            numDownloads.getAndIncrement();
+                            Log.d(TAG, "Downloaded " + numDownloads + " photos...");
+                            viewAlbumAdapter.addPhoto(fileResult.getAbsolutePath());
+                            layoutManager.scrollToPositionWithOffset(0, 0);
+                        } catch (ExecutionException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (String catalogLine : catalog.getCatalogLineList()) {
+                        File folderPath = new File(context.getCacheDir(), album.getId());
+                        String fileId = generateFileId(catalog.getUserName(), catalogLine);
+
+                        viewAlbumAdapter.addPhoto((new java.io.File(folderPath, fileId)).getAbsolutePath());
                         layoutManager.scrollToPositionWithOffset(0, 0);
-                    } catch (ExecutionException | InterruptedException e) {
-                        e.printStackTrace();
                     }
                 }
             }

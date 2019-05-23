@@ -114,23 +114,14 @@ public class MainActivity extends AppCompatActivity {
     private void requestGdriveSignIn(int forceLogin) {
         Log.d(TAG, "Requesting sign-in");
         GoogleSignInOptions signInOptions;
-        if (MainActivity.choseWifiDirect) {
-            signInOptions =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getResources().getString(R.string.server_id))
-                    .requestServerAuthCode(getResources().getString(R.string.server_id))
-                    .requestEmail()
-                    .build();
-        } else {
-            signInOptions =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getResources().getString(R.string.server_id))
-                    .requestServerAuthCode(getResources().getString(R.string.server_id))
-                    .requestEmail()
-                    .requestScopes(new Scope(DriveScopes.DRIVE_FILE), new Scope(DriveScopes.DRIVE_APPDATA),
-                        new Scope(DriveScopes.DRIVE_READONLY))
-                    .build();
-        }
+        signInOptions =
+            new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getResources().getString(R.string.server_id))
+                .requestServerAuthCode(getResources().getString(R.string.server_id))
+                .requestEmail()
+                .requestScopes(new Scope(DriveScopes.DRIVE_FILE), new Scope(DriveScopes.DRIVE_APPDATA),
+                    new Scope(DriveScopes.DRIVE_READONLY))
+                .build();
         GoogleSignInClient client = GoogleSignIn.getClient(this, signInOptions);
 
         // The result of the sign-in Intent is handled in onActivityResult.

@@ -49,20 +49,7 @@ public class AlbumMenuAdapter extends RecyclerView.Adapter<AlbumMenuAdapter.Albu
     }
 
     public void addAlbums(List<Album> albums) {
-        Set<String> albumsSet = new HashSet<>();
-        for (Album album : this.albumList) {
-            String id = album.getId();
-            albumsSet.add(id);
-        }
-
-        List<Album> filteredAlbums = new ArrayList<>();
-        for (Album album : albums) {
-            if (!albumsSet.contains(album.getId())) {
-                filteredAlbums.add(album);
-            }
-        }
-
-        albumList.addAll(filteredAlbums);
+        this.albumList = albums;
         notifyDataSetChanged();
     }
 
