@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "dist/main.js",
 	"scripts": {
-		"start": "./node_modules/.bin/tsc.cmd && node ./dist/main.js",
-		"dev": "C:\\Users\\pedrodaniel10\\AppData\\Roaming\\npm\\node_modules\\typescript\\bin\\tsc && nodemon ./dist/main.js"
+		"start": "tsc && node ./dist/main.js",
+		"dev": "tsc && nodemon ./dist/main.js"
 	},
 	"keywords": [],
 	"author": "",
