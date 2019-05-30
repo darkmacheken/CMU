@@ -29,7 +29,7 @@
         android:drawablePadding="20dp"
         android:drawableStart="@drawable/ic_cloud_circle_green"
         android:gravity="start|center_vertical|center_horizontal"
-        android:onClick="startLoginActivity"
+        android:onClick="startCloudStorageLoginActivity"
         android:text="@string/cloud_name"
         android:textAllCaps="false"
         android:textSize="30sp"/>
@@ -43,6 +43,7 @@
         android:drawablePadding="35dp"
         android:drawableStart="@drawable/ic_wifi_green"
         android:gravity="start|center_vertical"
+        android:onClick="startWifiDirectLoginActivity"
         android:text="@string/wifi_direct_name"
         android:textAllCaps="false"
         android:textSize="30sp"/>

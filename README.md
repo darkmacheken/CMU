@@ -8,6 +8,7 @@ The target platform for P2Photo is Android version >= 4.0.3 (API level 15+). To 
 - Google Play services 49+ ([download and configure](https://developer.android.com/google/play-services/setup.html))  
 - Nodejs 10.0.0+
 - Node Package Manager (npm)
+- Termite (check [here](https://nuno-santos.github.io/termite/wiki-docs/Home.html))
 
 Necessary node packages:
 - TypeScript 3.3+

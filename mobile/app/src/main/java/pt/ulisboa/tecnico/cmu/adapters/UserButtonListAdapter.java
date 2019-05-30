@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Tasks;
 import java.util.List;
 import java.util.concurrent.Executors;
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
@@ -80,7 +81,11 @@ public class UserButtonListAdapter
             Bundle extras = activity.getIntent().getExtras();
             if (extras != null && !TextUtils.isEmpty(extras.getString("viewAlbum", ""))) {
                 Tasks.call(Executors.newSingleThreadExecutor(), () -> {
-                    RequestsUtils.addUserToAlbum(activity, extras.getString("viewAlbum", ""), user.getId());
+                    if (MainActivity.choseWifiDirect) {
+                        RequestsUtils.addUserToAlbumWifi(activity, extras.getString("viewAlbumName", ""), user.getId());
+                    } else {
+                        RequestsUtils.addUserToAlbum(activity, extras.getString("viewAlbum", ""), user.getId());
+                    }
                     return null;
                 }).addOnFailureListener(e -> AlertUtils.alert("There was an error creating the album.", activity));
             } else {

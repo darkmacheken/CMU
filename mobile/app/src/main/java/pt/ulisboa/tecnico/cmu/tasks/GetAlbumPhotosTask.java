@@ -25,7 +25,9 @@ import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 import pt.ulisboa.tecnico.cmu.dataobjects.Link;
+import pt.ulisboa.tecnico.cmu.utils.CryptoUtils;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
+import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
 import pt.ulisboa.tecnico.cmu.utils.RequestsUtils.State;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
@@ -158,6 +160,7 @@ public class GetAlbumPhotosTask extends AsyncTask<Void, String, State> {
         for (Link link : this.album.getUsers()) {
             try {
                 String metaDataFile = Tasks.await(GoogleDriveUtils.readFile(link.getFileId()));
+                metaDataFile = CryptoUtils.asymDecipher(metaDataFile, RequestsUtils.getPublicKey(link.getUserId()));
                 if (link.getUserId().equals(this.googleAccount.getId())) {
                     SharedPropertiesUtils.saveAlbumUserMetadata(context, googleAccount.getId(), album.getId(),
                         metaDataFile);

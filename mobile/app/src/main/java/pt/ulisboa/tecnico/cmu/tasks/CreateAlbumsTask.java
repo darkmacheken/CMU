@@ -43,7 +43,11 @@ public class CreateAlbumsTask extends AsyncTask<Void, Void, State> {
     @Override
     protected State doInBackground(Void... noParams) {
         try {
-            return RequestsUtils.createAlbum(context, name, users) ? State.SUCCESS : State.NOT_SUCCESS;
+            if (MainActivity.choseWifiDirect) {
+                return RequestsUtils.createAlbumWifi(context, name, users) ? State.SUCCESS : State.NOT_SUCCESS;
+            } else {
+                return RequestsUtils.createAlbum(context, name, users) ? State.SUCCESS : State.NOT_SUCCESS;
+            }
         } catch (UnauthorizedException e) {
             return State.UNAUTHORIZED_REQUEST;
         }

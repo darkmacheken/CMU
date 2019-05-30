@@ -3,9 +3,11 @@ package pt.ulisboa.tecnico.cmu.activities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Messenger;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -29,14 +31,29 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager.Channel;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager.GroupInfoListener;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.adapters.ViewAlbumAdapter;
 import pt.ulisboa.tecnico.cmu.dataobjects.Album;
 import pt.ulisboa.tecnico.cmu.dataobjects.Link;
 import pt.ulisboa.tecnico.cmu.tasks.GetAlbumPhotosTask;
+import pt.ulisboa.tecnico.cmu.tasks.WifiDirectConnectionManager;
 import pt.ulisboa.tecnico.cmu.utils.AlertUtils;
+import pt.ulisboa.tecnico.cmu.utils.CryptoUtils;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
+import pt.ulisboa.tecnico.cmu.utils.RequestsUtils;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
+import pt.ulisboa.tecnico.cmu.utils.SimWifiP2pBroadcastReceiver;
 
 public class ViewAlbumActivity extends AppCompatActivity {
 
@@ -96,14 +113,27 @@ public class ViewAlbumActivity extends AppCompatActivity {
         this.textView = findViewById(R.id.textView);
         hideInfo();
 
-        new GetAlbumPhotosTask(this, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
+        if (MainActivity.choseWifiDirect) {
+            WifiDirectConnectionManager.getAlbumPhotos(album, this, viewAlbumAdapter,
+                (LinearLayoutManager) layoutManager);
 
-        Context thisContext = this;
-        SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
-        pullToRefresh.setOnRefreshListener(() -> {
-            new GetAlbumPhotosTask(thisContext, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
-            pullToRefresh.setRefreshing(false);
-        });
+            Context thisContext = this;
+            SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
+            pullToRefresh.setOnRefreshListener(() -> {
+                WifiDirectConnectionManager.getAlbumPhotos(album, thisContext, viewAlbumAdapter,
+                    (LinearLayoutManager) layoutManager);
+                pullToRefresh.setRefreshing(false);
+            });
+        } else {
+            new GetAlbumPhotosTask(this, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
+
+            Context thisContext = this;
+            SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeContainer);
+            pullToRefresh.setOnRefreshListener(() -> {
+                new GetAlbumPhotosTask(thisContext, viewAlbumAdapter, album, toolbar, progressBar, textView).execute();
+                pullToRefresh.setRefreshing(false);
+            });
+        }
     }
 
     private void setupActionBar() {
@@ -131,6 +161,7 @@ public class ViewAlbumActivity extends AppCompatActivity {
             case R.id.add_user:
                 Intent intent = new Intent(this, AddUserActivity.class);
                 intent.putExtra("viewAlbum", album.getId());
+                intent.putExtra("viewAlbumName", album.getName());
                 startActivity(intent);
                 return (true);
             default:
@@ -168,36 +199,50 @@ public class ViewAlbumActivity extends AppCompatActivity {
             Uri contentURI = data.getData();
 
             showProgress(true);
-            GoogleDriveUtils.createFile(new File(getRealPathFromURI(contentURI)), userLink.getFolderId())
-                .addOnCompleteListener(result -> {
-                    if (result.isSuccessful() && !TextUtils.isEmpty(result.getResult())) {
-                        String[] imagesArray = new Gson().fromJson(
-                            SharedPropertiesUtils.getAlbumUserMetadata(this, userLink.getUserId(), album.getId()),
-                            String[].class);
 
-                        List<String> imagesList = new ArrayList<>();
-                        if (imagesArray != null && imagesArray.length != 0) {
-                            imagesList = new ArrayList<>(Arrays.asList(imagesArray));
+            if (MainActivity.choseWifiDirect) {
+                WifiDirectConnectionManager.writeToCatalog(album, getRealPathFromURI(contentURI), this);
+
+                viewAlbumAdapter.addPhoto(getRealPathFromURI(contentURI));
+                ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
+                showProgress(false);
+
+                WifiDirectConnectionManager.broadcastCatalogs(this);
+
+            } else {
+                GoogleDriveUtils.createFile(new File(getRealPathFromURI(contentURI)), userLink.getFolderId())
+                    .addOnCompleteListener(result -> {
+                        if (result.isSuccessful() && !TextUtils.isEmpty(result.getResult())) {
+                            String[] imagesArray = new Gson().fromJson(
+                                SharedPropertiesUtils.getAlbumUserMetadata(this, userLink.getUserId(), album.getId()),
+                                String[].class);
+
+                            List<String> imagesList = new ArrayList<>();
+                            if (imagesArray != null && imagesArray.length != 0) {
+                                imagesList = new ArrayList<>(Arrays.asList(imagesArray));
+                            }
+
+                            imagesList.add(result.getResult());
+
+                            String metadata = new Gson().toJson(imagesList);
+                            SharedPropertiesUtils.saveAlbumUserMetadata(this, userLink.getUserId(), album.getId(),
+                                metadata);
+
+                            String metadataEncripted = CryptoUtils.asymCipher(metadata, RequestsUtils.getPrivateKey());
+
+                            GoogleDriveUtils.updateFile(userLink.getFileId(), metadataEncripted)
+                                .addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));
+
+                            File pathAlbum = new File(getCacheDir(), album.getId());
+                            File photo = new File(pathAlbum, result.getResult());
+                            GoogleDriveUtils.copy(new File(getRealPathFromURI(contentURI)), photo);
+                            viewAlbumAdapter.addPhoto(photo.getAbsolutePath());
+                            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
                         }
 
-                        imagesList.add(result.getResult());
-
-                        String metadata = new Gson().toJson(imagesList);
-                        SharedPropertiesUtils.saveAlbumUserMetadata(this, userLink.getUserId(), album.getId(),
-                            metadata);
-
-                        GoogleDriveUtils.updateFile(userLink.getFileId(), metadata)
-                            .addOnFailureListener(e -> Log.e(TAG, "Unable update metadata file.", e));
-
-                        File pathAlbum = new File(getCacheDir(), album.getId());
-                        File photo = new File(pathAlbum, result.getResult());
-                        GoogleDriveUtils.copy(new File(getRealPathFromURI(contentURI)), photo);
-                        viewAlbumAdapter.addPhoto(photo.getAbsolutePath());
-                        ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(0, 0);
-                    }
-
-                    showProgress(false);
-                }).addOnFailureListener(e -> AlertUtils.alert("Unable to upload the photo.", this));
+                        showProgress(false);
+                    }).addOnFailureListener(e -> AlertUtils.alert("Unable to upload the photo.", this));
+            }
         }
     }
 
@@ -228,5 +273,4 @@ public class ViewAlbumActivity extends AppCompatActivity {
         this.textView.setVisibility(View.INVISIBLE);
         this.toolbar.setVisibility(View.INVISIBLE);
     }
-
 }

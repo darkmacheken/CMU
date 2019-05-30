@@ -47,12 +47,25 @@ public final class SharedPropertiesUtils {
         return sp.getString("albums_" + userId, "[]");
     }
 
+    public static String getAlbumsWifi(Context context, String userId) {
+        SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
+        return sp.getString("albumswifi_" + userId, "[]");
+    }
+
     public static void saveAlbums(Context context, String userId, String albumsJson) {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
         ed.putString("albums_" + userId, albumsJson);
         ed.apply();
     }
+
+    public static void saveAlbumsWifi(Context context, String userId, String albumsJson) {
+        SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString("albumswifi_" + userId, albumsJson);
+        ed.apply();
+    }
+
 
     public static String getAlbumUserMetadata(Context context, String userId, String albumId) {
         SharedPreferences sp = context.getSharedPreferences("Albums", Context.MODE_PRIVATE);

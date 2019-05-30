@@ -47,6 +47,50 @@ router.post("/:albumId/addUser", (req, res, next) => {
 	})(req, res, next);
 });
 
+// Add user to album wifi
+router.post("/:name/addUser/wifi", (req, res, next) => {
+	console.log("POST /albums/" + req.params.name + "/addUser/wifi");
+	passport.authenticate("jwt", { session: false }, (err, user) => {
+		if (!req.body.id) {
+			res.status(400);
+			res.send({ error: "Wrong parameters" });
+			return;
+		}
+
+		const userToAdd = userList.findUserById(req.body.id);
+		const album = albumList.findAlbumByName(req.params.name);
+
+		if (err || !user) {
+			res.status(403);
+			res.send({ error: err.message });
+		} else if (album === undefined) {
+			res.status(400);
+			res.send({ error: "Album not found" });
+		} else if (userToAdd === undefined) {
+			res.status(400);
+			res.send({ error: "User not found" });
+		} else if (!userIsInAlbum(user.id, album)) {
+			res.status(400);
+			res.send({ error: "User doesn't belong to album with id " + album.id });
+		} else if (userIsInAlbum(userToAdd.id, album)) {
+			res.status(400);
+			res.send({ error: "User with id " + userToAdd.id + " already is in the album" });
+		} else {
+			// save state
+			userToAdd.albums.push({ id: album.id, name: album.name });
+			album.users.push({
+				userId: userToAdd.id,
+				folderId: "",
+				fileId: ""
+			});
+			albumList.saveToFile();
+			userList.saveToFile();
+
+			res.end();
+		}
+	})(req, res, next);
+});
+
 // List all albums
 router.get("/", (req, res, next) => {
 	passport.authenticate("jwt", { session: false }, (err: Error, user?: User) => {
@@ -61,7 +105,26 @@ router.get("/", (req, res, next) => {
 			res.status(403);
 			res.send({ error: err.message });
 		} else {
-			res.send(albumList.getUserAlbums(user));
+			res.send(albumList.getUserAlbums(user, false));
+		}
+	})(req, res, next);
+});
+
+// List all albums wifi
+router.get("/wifi", (req, res, next) => {
+	passport.authenticate("jwt", { session: false }, (err: Error, user?: User) => {
+		if (!user) {
+			console.log(`GET /albums/wifi { null }`);
+			res.status(403);
+			res.send({ error: "User not found." });
+			return;
+		}
+		console.log(`GET /albums/wifi { id: "${user.id}", name: "${user.name}, email: "${user.email}" }`);
+		if (err) {
+			res.status(403);
+			res.send({ error: err.message });
+		} else {
+			res.send(albumList.getUserAlbums(user, true));
 		}
 	})(req, res, next);
 });
@@ -97,6 +160,54 @@ router.post("/", (req, res, next) => {
 	})(req, res, next);
 });
 
+// Create a new album wifi
+router.post("/wifi", (req, res, next) => {
+	passport.authenticate("jwt", { session: false }, (err: Error, user?: User) => {
+		if (!user) {
+			console.log(`POST /albums { null }`, req.body);
+			res.status(403);
+			res.send({ error: "User not found." });
+			return;
+		}
+		console.log(`POST /albums/wifi { id: "${user.id}", name: "${user.name}, email: "${user.email}" }`, req.body);
+
+		if (err) {
+			res.status(403);
+			res.send({ error: err.message });
+		} else if (!req.body.name) {
+			res.status(400);
+			res.send({ error: "Wrong parameters" });
+		} else {
+			const album = new Album(req.body.name, true);
+			albumList.addAlbum(album);
+			user.albums.push({ id: album.id, name: album.name });
+			album.users.push({
+				userId: user.id,
+				folderId: "",
+				fileId: ""
+			});
+
+			if (req.body.users) {
+				for (const user of req.body.users) {
+					const userObj = userList.findUserById(user.id);
+					if (userObj && userObj.id) {
+						userObj.albums.push({ id: album.id, name: album.name });
+						album.users.push({
+							userId: userObj.id,
+							folderId: "",
+							fileId: ""
+						});
+					}
+				}
+			}
+			userList.saveToFile();
+			albumList.saveToFile();
+
+			res.end(JSON.stringify(album.getJson()));
+		}
+	})(req, res, next);
+});
+
 // Get a specific album
 router.get("/:albumId", (req, res, next) => {
 	console.log("GET /albums/" + req.params.albumId);
@@ -126,7 +237,7 @@ function userIsInAlbum(userId: string, album: Album): boolean {
 }
 
 async function createAlbum(user: User, name: string, users?: IUser[]): Promise<IAlbum> {
-	const album = new Album(name);
+	const album = new Album(name, false);
 	albumList.addAlbum(album);
 	user.albums.push({ id: album.id, name: album.name });
 

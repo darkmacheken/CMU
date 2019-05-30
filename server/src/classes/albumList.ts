@@ -35,11 +35,20 @@ export class AlbumList {
 		return undefined;
 	}
 
-	public getUserAlbums(user: User): Album[] {
+	public findAlbumByName(name: string): Album | undefined {
+		for (const album of this.list) {
+			if (album.name === name && album.wifi == true) {
+				return album;
+			}
+		}
+		return undefined;
+	}
+
+	public getUserAlbums(user: User, wifi: boolean): Album[] {
 		const albums = [];
 		for (const albumUser of user.albums) {
 			const album = this.findAlbumById(albumUser.id);
-			if (album) {
+			if (album && album.wifi == wifi) {
 				albums.push(album);
 			}
 		}

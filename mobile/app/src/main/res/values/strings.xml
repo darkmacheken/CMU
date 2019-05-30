@@ -2,7 +2,7 @@
     <string name="cmu_package">pt.ulisboa.tecnico.cmu</string>
 
     <string name="server_id">949378650699-kg0f2lpje8lbq25v5b55ueien1dneeoa.apps.googleusercontent.com</string>
-    <string name="server_url">https://192.168.1.67:8443</string>
+    <string name="server_url">https://194.210.61.110:8443</string>
 
     <!-- Strings related to Main Activity -->
     <string name="app_name">P2Photo</string>

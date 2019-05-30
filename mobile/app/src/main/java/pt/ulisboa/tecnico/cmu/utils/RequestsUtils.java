@@ -2,9 +2,13 @@ package pt.ulisboa.tecnico.cmu.utils;
 
 import android.content.Context;
 import android.util.Log;
+import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Key;
+import java.security.KeyFactory;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -13,6 +17,11 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Properties;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -22,6 +31,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.activities.MainActivity;
 import pt.ulisboa.tecnico.cmu.dataobjects.User;
 import pt.ulisboa.tecnico.cmu.exceptions.UnauthorizedException;
 import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
@@ -33,6 +43,7 @@ public final class RequestsUtils {
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String REGISTER_ENDPOINT = "/register";
     private static final String ALBUMS_ENDPOINT = "/albums";
+    private static final String ALBUMS_WIFI_ENDPOINT = "/albums/wifi";
     private static final String USERS_ENDPOINT = "/users";
     private static final String ALBUMS_ADD_USER_ENDPOINT = "/addUser";
     private static OkHttpClient httpClient;
@@ -180,12 +191,56 @@ public final class RequestsUtils {
 
             if (response.code() == 200) {
                 String albumsJson = response.body().string();
-                SharedPropertiesUtils.saveAlbums(context, userId, albumsJson);
+                    SharedPropertiesUtils.saveAlbums(context, userId, albumsJson);
                 return albumsJson;
             }
         } catch (IOException e) {
             Log.e(TAG, "Timeout to GET request /albums.", e);
             return SharedPropertiesUtils.getAlbums(context, userId);
+        }
+
+        return "[]";
+    }
+
+    /**
+     * Requests the user's albums.
+     *
+     * @param context the activity context.
+     * @return the string representing a list of albums in json.
+     * @throws UnauthorizedException if the token is invalid.
+     */
+    public static String getAlbumsWifi(Context context) throws UnauthorizedException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            return null;
+        }
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_WIFI_ENDPOINT)
+            .get()
+            .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == 401 || response.code() == 403) {
+                throw new UnauthorizedException();
+            }
+
+            if (response.body() == null) {
+                Log.e(TAG, "Response Body is Empty.");
+                return "[]";
+            }
+
+            if (response.code() == 200) {
+                String albumsJson = response.body().string();
+                SharedPropertiesUtils.saveAlbumsWifi(context, userId, albumsJson);
+                return albumsJson;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Timeout to GET request /albums.", e);
+            return SharedPropertiesUtils.getAlbumsWifi(context, userId);
         }
 
         return "[]";
@@ -215,6 +270,46 @@ public final class RequestsUtils {
 
         Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
             .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT)
+            .post(body)
+            .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == 401 || response.code() == 403) {
+                throw new UnauthorizedException();
+            }
+
+            if (response.body() == null) {
+                Log.e(TAG, "Response Body is Empty.");
+                return false;
+            }
+
+            if (response.code() == 200) {
+                return true;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to POST request /albums.", e);
+        }
+        return false;
+    }
+
+    public static boolean createAlbumWifi(Context context, String name, User[] users)
+        throws UnauthorizedException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            return false;
+        }
+
+        String usersJson = new Gson().toJson(users);
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON,
+            "{\"name\": \"" + name + "\","
+                + "\"users\":" + usersJson + "}");
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_WIFI_ENDPOINT)
             .post(body)
             .build();
 
@@ -323,6 +418,41 @@ public final class RequestsUtils {
         }
     }
 
+    /**
+     * Adds an user to the given album.
+     *
+     * @param context     the activity context.
+     * @param albumId     the ID of the album.
+     * @param userIdToAdd the ID of the user to add.
+     * @throws UnauthorizedException if the token is invalid.
+     * @throws IOException           if an error occur while requesting.
+     */
+    public static void addUserToAlbumWifi(Context context, String albumId, String userIdToAdd)
+        throws UnauthorizedException, IOException {
+        OkHttpClient client = getHttpClient(context);
+
+        if (client == null) {
+            throw new IOException("Couldn't get http client.");
+        }
+
+        RequestBody body = RequestBody.create(RequestsUtils.JSON, "{\"id\": \"" + userIdToAdd + "\"}");
+
+        Request request = new Request.Builder().addHeader("Authorization", "Bearer " + token)
+            .url(context.getResources().getString(R.string.server_url) + ALBUMS_ENDPOINT + "/" + albumId
+                + ALBUMS_ADD_USER_ENDPOINT + "/wifi")
+            .post(body)
+            .build();
+
+        Response response = client.newCall(request).execute();
+
+        if (response.code() == 401 || response.code() == 403) {
+            throw new UnauthorizedException();
+        }
+
+        if (response.code() != 200) {
+            throw new IOException("The request has not code status 200.");
+        }
+    }
     public static String getUserId() {
         return userId;
     }
@@ -369,6 +499,29 @@ public final class RequestsUtils {
             Log.e(TAG, "Unable to create HTTPS client.", e);
         }
         return httpClient;
+    }
+
+    public static Key getPrivateKey() {
+        try {
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(Base64.decodeBase64("MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDmfqQf+/N+DKXHBNcR+xsbzrrPP8c9goA4R3MnD3gLDp5GUZGNnPTYAPAsWg1+dIaTYU3DGK05nYrd8avKRfWCCypiVQUp4Za+D05GOpmCCVNrMJxJh73AErX/7UojA2ZH4TJXLBCEcBR5Z4tFbQBZZLxEHvsroQ7Opys0NiXyTuzzNyIGSvxrRO700dyvCQpgR2B9A7GquuEWUT6xPY3M5vxmIFlWju/ab/lKQPWHUsgZlrBSQvsDd8ddwN5E5HL2qRhwN3tgV2x1GFQgBNAvv9EUBg5vCur7kTymsSAGjHIe7P+5HFAZxCb1ZQ2fgP9OEdB+ekaqgXfNiKU/Wy53AgMBAAECggEATHTXplBh3X7+gnzFho5f2KKDbvm98lZWh9STivJjpG9N6w9lk67rvLba9CtO7JJkjYCqVbvawhDTHnnqvSbloCRqA8Il+1V8NkFHep43i13ikNzICs//DjZmrqUcgW7AP7mghC/2rqeq8vZ4ySe2BPEYThRkxn0fN0dWWnRXs/7+7IWGwc9rabZ0ZUqsnJE/63lodym5GY84wDo52I7TTTCOifpZmIPKDhJXEbWW8NooXV0cpsKlZEY4v8NgfNMIPgiVAVBNIOSegwO6fBpunW9Ab3yM6bEpU55RgHcI4f/gfMVFpPLoMPpVzybhAIefQRiA7gKMu3P8sLdH+8lpAQKBgQD8vm/dqDhdf9Yiac8MvVUOoRet0EcTRp9uoSqLB7C4wrt6Rp2vBuYMHZmT+JV/LtcGpd9xOFRNG8crsvKlHwm0o/4w2qM6mif2MRhZ6GxIuaPSLRN2eBD7X4MyiVQ4lIl1RctAVudEEN8wlzQ/jx5X1AFiX1aPcFM806QJUENAgQKBgQDpdtM3a+5cELqrwuxGJkXoHo6ODmS+GcXa3umPQNRTjMSrytR6iYjaG0DckBxK/iLhDYd7iZ/3XXeHeK9j+Z4PgaH0UMGS6/dMEIMZG5figPTply071nMuo0ETWYVBr1smPsYf9+XsBFe1/oOEq7RS5ILMj0cC+5IN76jxfH7y9wKBgQC6E5LUhFcLL2T97RyM6o/Gt39xblgFrwcOMgXaWg0X2fahLYBGLjQMU3aQZIHcIyYYNOLuvmQCaSMX3yWZv+IrZllsqmtmZ7xoGvksqFugp1wfDyS3IeqOx2EWQdkJ1wHknz/m3JRjnnBTm97RtJLIYsOqIzrdW/tMWxz35mm9AQKBgQDJB3h4kId+3yjeHco13V70sNsvl1VIHAkynh+fKsOp7dyr0MuFeEhPBoijY7P5HzwJbgzrY2ZLKkBydokQHTDtSUKbja4hRO58oPtB83ClqUU6nuJkVBR6ZDj04HDOTqC+He+cN2nUASlFnRLCetebSQkX+4e6GcV6GpPu3LSzoQKBgQCEchb/koer5RM1BlGVrzQZCvQ14bdKCfo64BcKZl+RFaLQef6Mcv1LYrNtg/g3ao5llxZYS+gk2+rtKz9B7LgNVBMIbVGEFlPrF1l2tKFV33moi0pm0hqlyJwvVkVBHnl8SjEprTD8VwylTNAxIRkuo4pCNbgE3w2CYNODnRkCaw=="));
+            KeyFactory rsaFact = KeyFactory.getInstance("RSA");
+            return rsaFact.generatePrivate(spec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public static Key getPublicKey(String userId) {
+        try {
+            byte[] encoded = Base64.decodeBase64("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5n6kH/vzfgylxwTXEfsbG866zz/HPYKAOEdzJw94Cw6eRlGRjZz02ADwLFoNfnSGk2FNwxitOZ2K3fGrykX1ggsqYlUFKeGWvg9ORjqZgglTazCcSYe9wBK1/+1KIwNmR+EyVywQhHAUeWeLRW0AWWS8RB77K6EOzqcrNDYl8k7s8zciBkr8a0Tu9NHcrwkKYEdgfQOxqrrhFlE+sT2NzOb8ZiBZVo7v2m/5SkD1h1LIGZawUkL7A3fHXcDeRORy9qkYcDd7YFdsdRhUIATQL7/RFAYObwrq+5E8prEgBoxyHuz/uRxQGcQm9WUNn4D/ThHQfnpGqoF3zYilP1sudwIDAQAB");
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            return kf.generatePublic(new X509EncodedKeySpec(encoded));
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.tasks.LoginTask;
+import pt.ulisboa.tecnico.cmu.tasks.WifiDirectConnectionManager;
 import pt.ulisboa.tecnico.cmu.utils.GoogleDriveUtils;
 import pt.ulisboa.tecnico.cmu.utils.SharedPropertiesUtils;
 
@@ -36,10 +37,13 @@ public class MainActivity extends AppCompatActivity {
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_INTERNAL_STORAGE",
-        "android.permission.READ_INTERNAL_STORAGE"
+        "android.permission.READ_INTERNAL_STORAGE",
+        "android.permission.INTERNET"
     };
     private static final int NOT_FORCE_LOGIN = 0;
     private static final int FORCE_LOGIN = 1;
+
+    public static boolean choseWifiDirect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,25 +79,27 @@ public class MainActivity extends AppCompatActivity {
                 SharedPropertiesUtils.saveLastLoginId(thisContext, googleAccount.getId());
                 new LoginTask(this, googleAccount).execute(forceLogin);
 
-                // Use the authenticated account to sign in to the Drive service.
-                GoogleAccountCredential credential =
-                    GoogleAccountCredential.usingOAuth2(
-                        this,
-                        Arrays.asList(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA, DriveScopes.DRIVE_READONLY));
-                credential.setSelectedAccount(googleAccount.getAccount());
+                if (!MainActivity.choseWifiDirect) {
+                    // Use the authenticated account to sign in to the Drive service.
+                    GoogleAccountCredential credential =
+                        GoogleAccountCredential.usingOAuth2(
+                            this,
+                            Arrays
+                                .asList(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA, DriveScopes.DRIVE_READONLY));
+                    credential.setSelectedAccount(googleAccount.getAccount());
 
-                Drive googleDriveService =
-                    new Builder(
-                        AndroidHttp.newCompatibleTransport(),
-                        new GsonFactory(),
-                        credential)
-                        .setApplicationName("P2Photo")
-                        .build();
+                    Drive googleDriveService =
+                        new Builder(
+                            AndroidHttp.newCompatibleTransport(),
+                            new GsonFactory(),
+                            credential)
+                            .setApplicationName("P2Photo")
+                            .build();
 
-                // The GoogleDriveUtils encapsulates all REST API and SAF functionality.
-                // Its instantiation is required before handling any onClick actions.
-                GoogleDriveUtils.setGoogleDriveService(googleDriveService);
-
+                    // The GoogleDriveUtils encapsulates all REST API and SAF functionality.
+                    // Its instantiation is required before handling any onClick actions.
+                    GoogleDriveUtils.setGoogleDriveService(googleDriveService);
+                }
             })
             .addOnFailureListener(exception -> {
                 Log.e(TAG, "Unable to sign in.", exception);
@@ -107,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void requestGdriveSignIn(int forceLogin) {
         Log.d(TAG, "Requesting sign-in");
-
-        GoogleSignInOptions signInOptions =
+        GoogleSignInOptions signInOptions;
+        signInOptions =
             new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getResources().getString(R.string.server_id))
                 .requestServerAuthCode(getResources().getString(R.string.server_id))
@@ -125,7 +131,17 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Called when the user taps the Cloud Storage button
      */
-    public void startLoginActivity(View view) {
+    public void startCloudStorageLoginActivity(View view) {
+        MainActivity.choseWifiDirect = false;
+        requestGdriveSignIn(NOT_FORCE_LOGIN);
+    }
+
+    /**
+     * Called when the user taps the Cloud Storage button
+     */
+    public void startWifiDirectLoginActivity(View view) {
+        MainActivity.choseWifiDirect = true;
+        WifiDirectConnectionManager.init();
         requestGdriveSignIn(NOT_FORCE_LOGIN);
     }
 
