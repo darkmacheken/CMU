@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="pt.ulisboa.tecnico.cmu">
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon">
+        <service
+            android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
+        <activity
+            android:label="@string/title_activity_add_user"
+            android:launchMode="singleTop"
+            android:name=".activities.AddUserActivity"/>
+        <activity
+            android:label="@string/title_activity_add_album"
+            android:launchMode="singleTop"
+            android:name=".activities.AddAlbumActivity"
+            android:parentActivityName=".activities.AlbumMenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity"/>
+        </activity>
+        <activity
+            android:label="@string/title_activity_view_photo"
+            android:name=".activities.ViewPhotoActivity"
+            android:parentActivityName=".activities.ViewAlbumActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.activities.ViewAlbumActivity"/>
+        </activity>
+        <activity
+            android:label="@string/title_activity_view_album"
+            android:launchMode="singleTop"
+            android:name=".activities.ViewAlbumActivity"
+            android:parentActivityName=".activities.AlbumMenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.activities.AlbumMenuActivity"/>
+        </activity>
+        <activity
+            android:label="@string/title_activity_album_menu"
+            android:launchMode="singleTop"
+            android:name=".activities.AlbumMenuActivity"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.activities.MainActivity"/>
+        </activity>
+        <activity android:name=".activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
